@@ -1,4 +1,3 @@
-package Ej1;
 import java.time.LocalTime;
 
 public class VideoJuego {
