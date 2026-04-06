@@ -12,10 +12,18 @@
 6. Introduccion_a_AWT_Swing_Eventos_Layouts
 ---
 ### Link de acceso: 
-#### [Campus Virtual](https://campusvirtual.ing.unlpam.edu.ar/mod/folder/view.php?id=970). 
+
+<div align="left">
+  <a href="https://campusvirtual.ing.unlpam.edu.ar/mod/folder/view.php?id=970">
+    <img src="https://campusvirtual.ing.unlpam.edu.ar/pluginfile.php/1/theme_academi/logo/1772739402/logo_2018_2018-03-06_105209.547313nuevo_logo_2018_2018-02-22_091324.5629_D9K22Ji.png" alt="Campus Virtual" width="200">
+  </a>
+</div>
+
 ---
 ## Diagramas Trabajo Final
 ### Diagramas a entregar / Dia 13/04
 > Space Invaders
+
 > Lode Runners
+
 > Pong
