@@ -11,11 +11,12 @@
 5. POO 5 Clase Concreta - Clase abstracta - Interface - Modificadores final 
 6. Introduccion_a_AWT_Swing_Eventos_Layouts
 ---
-### Link de acceso:
-###### [Campus Virtual](https://campusvirtual.ing.unlpam.edu.ar/mod/folder/view.php?id=970). 
+### Link de acceso: ###### [Campus Virtual](https://campusvirtual.ing.unlpam.edu.ar/mod/folder/view.php?id=970). 
 ---
 ## Diagramas Trabajo Final
-### Diagramas a entregar
+### Diagramas a entregar / Dia 13/04
 > Space Invaders
+
 > Lode Runners
+
 > Pong
