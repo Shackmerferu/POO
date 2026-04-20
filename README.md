@@ -24,7 +24,7 @@
 
 ---
 ## Diagramas Trabajo Final
-### Diagramas a entregar / Dia 13/04
+### Diagramas/Codigo a entregar 
 > Space Invaders
 
 > Lode Runners
