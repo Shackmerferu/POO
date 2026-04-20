@@ -5,7 +5,7 @@
 ### 
 1. 2026_POO_00 Introducción
 2. 2026_POO_01 CRC
-  2. POO 2 CRC - UML
+  * POO 2 CRC - UML
 3. POO 3 Clase Objeto Mensaje Polimorfismo estatico Atributo y Metodo de clase
 4. POO 4 Herencia - Polimorfismo dinamico - Subclase - Superclase - Constructores - this - super
 5. POO 5 Clase Concreta - Clase abstracta - Interface - Modificadores final 
