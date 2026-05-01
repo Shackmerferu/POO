@@ -1,13 +1,12 @@
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
-public class VideoJuego {
+public class VideoJuego{
 
     private static int cantidadDeVideoJuegosCreados = 0;
-    private String nombre;
     private LocalTime fechaDeLanzamiento;
     private final double precio;
-
+    private String nombre;
     public void jugar() {
         System.out.println("A jugar!!!");
     }
