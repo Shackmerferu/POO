@@ -1,5 +1,5 @@
 public class Misterio {
-    private String nombre;
+    private final String nombre;
     private static Misterio misterioso;
 
     private Misterio(String nombre) {
