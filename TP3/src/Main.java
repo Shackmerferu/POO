@@ -1,5 +1,5 @@
 
-
+/* 
 public class Main {
     public static void main(String[] args){
 
@@ -8,9 +8,8 @@ public class Main {
         VideoJuego Jueguito3 = new VideoJuego("zendaya", 200);
     
        VideoJuego.getCantidadDeVideoJuegosCreados();
-    
+        Prueba p = new Prueba();  
+        p.mensaje(); 
     }
 }
-
-//Hola Hola, este es un comentario para probar el commit.dsdsd
-//hola hola
+*/

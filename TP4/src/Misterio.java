@@ -10,7 +10,7 @@ public class Misterio {
             misterioso = new Misterio(nombre);
         }
         else{
-            System.out.println("...");
+            System.out.println("Ya existe una instancia de Misterio, no se puede crear otra.");
         }
         return misterioso;
     }
