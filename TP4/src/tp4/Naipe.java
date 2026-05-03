@@ -1,10 +1,10 @@
 package tp4;
 
-enum Palo {
-    CORAZONES, DIAMANTES, TREBOLES, PICAS, COMODIN
-}
-
 public class Naipe {
+    public enum Palo {
+        CORAZONES, DIAMANTES, TREBOLES, PICAS, COMODIN
+    }
+
     private final Palo palo;
     private final short valor;
     private static Naipe ultimo;

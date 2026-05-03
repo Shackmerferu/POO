@@ -2,6 +2,7 @@ package tp4;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import tp4.Naipe.Palo;
 
 public class Mazo {
     private final ArrayList<Naipe> cartas = new ArrayList<>();
