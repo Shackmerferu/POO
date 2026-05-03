@@ -1,3 +1,5 @@
+package tp4;
+
 public class Misterio {
     private final String nombre;
     private static Misterio misterioso;

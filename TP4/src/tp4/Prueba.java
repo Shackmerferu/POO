@@ -1,3 +1,5 @@
+package tp4;
+
 public class Prueba extends PruebaIncompleta {
 
     @Override

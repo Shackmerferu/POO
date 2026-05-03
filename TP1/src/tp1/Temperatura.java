@@ -1,3 +1,5 @@
+package tp1;
+
 public class Temperatura {
     double CaF(double c){
         return (c*9/5) +32;

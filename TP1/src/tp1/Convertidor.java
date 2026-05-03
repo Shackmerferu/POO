@@ -1,3 +1,5 @@
+package tp1;
+
 public class Convertidor {
     public  static void main(String[] args) {
         double valor = Double.parseDouble(args[0]);

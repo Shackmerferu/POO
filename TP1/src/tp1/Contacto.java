@@ -1,5 +1,7 @@
 
 
+package tp1;
+
 public class Contacto {
     private String nombre;
     private String numero;

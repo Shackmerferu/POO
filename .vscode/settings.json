@@ -1,3 +1,9 @@
 {
-    "java.debug.settings.onBuildFailureProceed": true
+    "java.debug.settings.onBuildFailureProceed": true,
+    "java.project.sourcePaths": [
+        "TP1/src",
+        "TP3/src",
+        "TP4/src",
+        "TP5/src"
+    ]
 }

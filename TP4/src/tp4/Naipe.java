@@ -1,3 +1,5 @@
+package tp4;
+
 enum Palo {
     CORAZONES, DIAMANTES, TREBOLES, PICAS, COMODIN
 }

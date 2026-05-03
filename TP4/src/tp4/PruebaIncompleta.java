@@ -1,3 +1,5 @@
+package tp4;
+
 public class PruebaIncompleta {
 
     public void texto1(){ System.out.println("Esta es una"); }

@@ -1,3 +1,5 @@
+package tp1;
+
 import java.util.Random;
 public class Ramdom {
     private Random nrorandom;
