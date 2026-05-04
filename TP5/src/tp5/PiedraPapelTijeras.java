@@ -1,8 +1,12 @@
 package tp5;
 
+import java.util.Random;
 
 public class PiedraPapelTijeras extends VideoJuego {
-
+    @SuppressWarnings("FieldMayBeFinal")
+    private Random rand = new Random();
+    String[] jugada = {"Piedra","Papel","Tijera"};
+    
     public PiedraPapelTijeras(String nombre,double precio,short pegi){
         super(nombre,precio,pegi);
         System.out.println("Se crea un objeto de tipo PPT");
@@ -11,6 +15,8 @@ public class PiedraPapelTijeras extends VideoJuego {
     @Override
     public void jugar(){
         System.out.println("Vamos a jugar PPT");
+        resultado=jugada[rand.nextInt(jugada.length)];
+
     }
     @Override
     public String getNombre(){

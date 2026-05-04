@@ -4,7 +4,7 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 public abstract class VideoJuego{
-
+    protected String resultado;
     private static int cantidadDeVideoJuegosCreados = 0;
     protected LocalTime fechaDeLanzamiento;
     protected double precio;
@@ -18,6 +18,11 @@ public abstract class VideoJuego{
         this.nombre = nombre;
     }
 
+
+    public void mostrarResultado() {
+        System.out.println("El resultado es: " + resultado);
+    }
+    
     @Override
     public String toString() {
         return "Name:" + nombre + " Lanzamiento:" + this.fechaDeLanzamiento + " Precio(ARS):" + this.precio;
