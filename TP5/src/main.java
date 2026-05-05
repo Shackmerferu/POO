@@ -23,7 +23,7 @@ public class Main{
         dados.jugar();*/
          ArrayList<Multiplicable> lista = new ArrayList<>();
 
-        // Crear objetos
+      
         NumeroEntero num = new NumeroEntero(5);
 
         int[] vec = {1, 2, 3};
@@ -35,12 +35,12 @@ public class Main{
         };
         MiMatriz matriz = new MiMatriz(mat);
 
-        // Agregar a la lista
+      
         lista.add(num);
         lista.add(vector);
         lista.add(matriz);
 
-        // Recorrer y aplicar operaciones
+      
         for (Multiplicable obj : lista) {
             obj.multiplicar(2);
             obj.mostrarResultado();
@@ -48,3 +48,6 @@ public class Main{
         }
     }
 }
+
+
+
