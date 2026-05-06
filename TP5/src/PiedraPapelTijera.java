@@ -1,20 +1,16 @@
 public class PiedraPapelTijera extends VideoJuego {
-        public PiedraPapelTijera(){
-        super("Tijera", 12000, "JuanMe", "+12");
-        System.out.println("Se crea un objeto de tipo PiedraPapelTijera");
+    public PiedraPapelTijera(String nombre, double precio, String editorial, String pegi){
+        super(nombre,precio,editorial,pegi);
+        System.out.println("se crea objeto de tipo PiedraPapelTijera ");
     }
-    @Override
-    void jugar(){
-        String[] opciones = {"piedra", "papel", "tijera"};
-        int indice= (int) (Math.random() * opciones.length);
-        this.resultado= opciones[indice]; 
-        System.out.println("Vamo a jugar cra");
-
-    }
-    @Override
-    String getNombre(){
-        return this.nombre;
-    }
+@Override
+void  jugar(){
+        String[] opcion ={"piedra","papel","tijera"};
+        int indicealeatorio = (int) (Math.random()*3);
+        this.resultado = opcion[indicealeatorio];
 }
-
-
+@Override
+    String getNombre(){
+        return  this.nombre;
+}
+}
