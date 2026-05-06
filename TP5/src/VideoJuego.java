@@ -16,10 +16,16 @@ abstract class VideoJuego {
         this.pegi=pegi;
     }
     public VideoJuego(String nombre , int precio,  String editorial,String pegi){
-        this(nombre, (double) precio, editorial, pegi);
+        this.nombre=nombre;
+        this.precio=precio; 
+        this.editorial=editorial; 
+        this.pegi=pegi;
     }
      public VideoJuego(String nombre , String precio,  String editorial,String pegi){
-        this(nombre, Double.parseDouble(precio), editorial, pegi);
+        this.nombre=nombre;
+        this.precio=Double.parseDouble(precio); 
+        this.editorial=editorial; 
+        this.pegi=pegi;
     }
     public void mostrarResultado(){
         System.out.println(resultado);

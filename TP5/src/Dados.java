@@ -2,8 +2,12 @@ import java.util.Random;
 
 
 public class Dados extends VideoJuego {
-        public Dados(){
-        super("Dadin", 120, "JuanPi", "+21");
+    public Dados() {
+        super("Dados Genérico", 0.0, "Sin Editorial", "PEGI 3");
+        System.out.println("Se ha creado un objeto de tipo Dados vacío.");
+    }
+    public Dados(String nombre, double precio, String editorial,String pegi){
+        super(nombre,precio,editorial,pegi);
         System.out.println("Se crea un objeto de tipo Dados");
     }
     @Override

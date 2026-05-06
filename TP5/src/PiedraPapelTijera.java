@@ -1,6 +1,11 @@
+import java.util.Random;
 public class PiedraPapelTijera extends VideoJuego {
-        public PiedraPapelTijera(){
-        super("Tijera", 12000, "JuanMe", "+12");
+    public PiedraPapelTijera() {
+        super("Sin nombre", 0.0, "Sin editorial", "Desconocido"); // O los valores por defecto
+        System.out.println("Se crea un objeto vacío");
+    }
+    public PiedraPapelTijera(String nombre, double precio, String editorial,String pegi){
+        super(nombre,precio,editorial,pegi);
         System.out.println("Se crea un objeto de tipo PiedraPapelTijera");
     }
     @Override
