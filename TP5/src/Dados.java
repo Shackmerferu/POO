@@ -1,17 +1,19 @@
+import java.util.Random;
+
+
 public class Dados extends VideoJuego {
         public Dados(){
-        super("Dadin", 120, "JuanPi", "No se que es pegi");
+        super("Dadin", 120, "JuanPi", "+21");
         System.out.println("Se crea un objeto de tipo Dados");
     }
     @Override
     void jugar(){
-        System.out.println("Vamo a jugar cra");
-
+    int  n = (int) (Math.random() * 6) + 1;
+    this.resultado= n + ""; 
+    System.out.println(resultado);
     }
     @Override
     String getNombre(){
         return this.nombre;
     }
 }
-
-

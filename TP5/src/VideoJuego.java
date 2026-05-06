@@ -6,6 +6,7 @@ abstract class VideoJuego {
     protected String editorial;
     protected double precio;
     protected String pegi;
+    protected String resultado;
 
     public VideoJuego(String nombre, double precio, String editorial,String pegi){
         this.nombre=nombre;
@@ -15,16 +16,13 @@ abstract class VideoJuego {
         this.pegi=pegi;
     }
     public VideoJuego(String nombre , int precio,  String editorial,String pegi){
-        this.precio=precio;
-        this.fechaDeLanzamiento = LocalTime.now();
-        this.pegi=pegi;
-        this.editorial=editorial;
+        this(nombre, (double) precio, editorial, pegi);
     }
      public VideoJuego(String nombre , String precio,  String editorial,String pegi){
-        this.precio = Double.parseDouble(precio);
-        this.fechaDeLanzamiento = LocalTime.now();
-        this.pegi=pegi;
-        this.editorial=editorial;
+        this(nombre, Double.parseDouble(precio), editorial, pegi);
+    }
+    public void mostrarResultado(){
+        System.out.println(resultado);
     }
     abstract void jugar();
     abstract String getNombre();
