@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Categoria{
 
     private final ArrayList<VideoJuego> Juegos;
-
+    
 
     public Categoria(){
         Juegos = new ArrayList<>();
