@@ -101,8 +101,6 @@ public class Calculadora extends JFrame implements ActionListener {
             nuevaOperacion = true;
         }
     }
-
-
     public static void main (String[] args){
         new Calculadora();
     }
