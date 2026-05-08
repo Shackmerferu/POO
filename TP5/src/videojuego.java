@@ -14,7 +14,7 @@ abstract class VideoJuego {
         this.editorial=editorial;
         this.fechaDeLanzamiento = LocalTime.now();
         this.pegi=pegi;
-        System.out.println("Se crea un objeto de tipo VideoJuego");
+
     }
     public VideoJuego(String nombre , int precio,  String editorial,String pegi){
         this(nombre, (double) precio, editorial, pegi);
