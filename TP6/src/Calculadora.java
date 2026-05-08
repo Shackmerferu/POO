@@ -10,7 +10,7 @@ public class Calculadora extends Frame implements ActionListener, KeyListener {
     public Calculadora() {
         
         setTitle("Calculadora Toni");
-        setSize(300, 400);
+        setSize(600, 500);
         
         pantalla = new TextField("0"); 
         pantalla.setEditable(false);
