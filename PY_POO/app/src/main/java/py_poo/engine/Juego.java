@@ -9,7 +9,11 @@ public abstract class Juego {
     protected int puntuacion;
     protected Nivel nivelActual;
     protected List<Entidad> entidades;
-
+    private int ResX;
+    private int ResY;
+    protected boolean Fullscreen;
+    private Juego juego;
+    private List<Jugador> jugador;
     public void iniciar() {
     }
 
