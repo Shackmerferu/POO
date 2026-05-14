@@ -15,6 +15,7 @@ public abstract class Juego {
     private Juego juego;
     private List<Jugador> jugador;
     public void iniciar() {
+        
     }
 
     public void actualizar() {
