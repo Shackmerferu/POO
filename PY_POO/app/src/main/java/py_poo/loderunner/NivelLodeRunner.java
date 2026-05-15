@@ -6,3 +6,4 @@ public class NivelLodeRunner extends Nivel {
     public void generarMapa() {
     }
 }
+
