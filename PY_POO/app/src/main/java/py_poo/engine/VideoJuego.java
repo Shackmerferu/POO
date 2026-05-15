@@ -3,17 +3,19 @@ package py_poo.engine;
 import java.util.List;
 import py_poo.entities.Entidad;
 
-public abstract class Juego {
-    protected String nombre;
-    protected boolean activo;
-    protected int puntuacion;
-    protected Nivel nivelActual;
-    protected List<Entidad> entidades;
+public abstract class VideoJuego {
+    protected String Nombre;
+    protected boolean Activo;
+    protected int Puntuacion;
+    protected Nivel NivelActual;
+    protected List<Entidad> Entidades;
     private int ResX;
     private int ResY;
     protected boolean Fullscreen;
-    private Juego juego;
-    private List<Jugador> jugador;
+    private VideoJuego Juego;
+    private List<Jugador> Jugador;
+    private String Resultado;
+
     public void iniciar() {
         
     }

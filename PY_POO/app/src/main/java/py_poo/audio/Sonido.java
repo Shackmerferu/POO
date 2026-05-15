@@ -3,7 +3,7 @@ package py_poo.audio;
 import javax.sound.sampled.Clip;
 
 public class Sonido {
-    private Clip clip;
+    private Clip Clip;
 
     public void play() {
     }
