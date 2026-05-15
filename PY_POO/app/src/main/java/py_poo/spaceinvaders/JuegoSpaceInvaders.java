@@ -1,8 +1,8 @@
 package py_poo.spaceinvaders;
 
-import py_poo.engine.Juego;
+import py_poo.engine.VideoJuego;
 
-public class JuegoSpaceInvaders extends Juego {
+public class JuegoSpaceInvaders extends VideoJuego {
     public void iniciar() {
     }
 
