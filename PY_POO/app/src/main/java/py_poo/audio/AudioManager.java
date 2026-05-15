@@ -4,7 +4,7 @@ import java.util.Map;
 import javax.sound.sampled.Clip;
 
 public class AudioManager {
-    private Map<String, Clip> sonidos;
+    private Map<String, Clip> Sonido;
 
     public void cargarSonido() {
     }

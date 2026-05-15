@@ -4,9 +4,9 @@ import java.util.List;
 import py_poo.entities.Entidad;
 
 public abstract class Nivel {
-    protected int numero;
-    protected String mapa;
-    protected List<Entidad> entidades;
+    protected int Numero;
+    protected String[] Mapa;
+    protected List<Entidad> Entidad;
 
     public void cargar() {
     }
