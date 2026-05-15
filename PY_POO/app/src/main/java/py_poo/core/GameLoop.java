@@ -3,9 +3,9 @@ package py_poo.core;
 import py_poo.engine.Escena;
 
 public class GameLoop {
-    private boolean running;
-    private int fps;
-    private Escena currentScene;
+    private boolean Running;
+    private int Fps;
+    private Escena CurrentScene;
 
     public void start() {
     }

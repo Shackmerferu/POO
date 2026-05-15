@@ -1,7 +1,7 @@
 package py_poo.engine;
 
 public class Temporizador {
-    private long tiempo;
+    private long Tiempo;
 
     public void iniciar() {
     }

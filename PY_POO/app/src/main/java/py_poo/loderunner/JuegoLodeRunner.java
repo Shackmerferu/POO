@@ -1,8 +1,8 @@
 package py_poo.loderunner;
 
-import py_poo.engine.Juego;
+import py_poo.engine.VideoJuego;
 
-public class JuegoLodeRunner extends Juego {
+public class JuegoLodeRunner extends VideoJuego {
     public void iniciar() {
     }
 

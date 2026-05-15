@@ -1,18 +1,18 @@
 package py_poo.core;
 
 import java.util.List;
-import py_poo.engine.Juego;
+import py_poo.engine.VideoJuego;
 
 public class GestorJuegos {
-    private List<Juego> juegos;
-    private Juego juegoActual;
+    private List<Videojuego> Juego;
+    private Videojuego JuegoActual;
 
-    public void iniciarJuego(String nombre) {
+    public void iniciarJuego(String Nombre) {
     }
 
     public void cerrarJuego() {
     }
 
-    public void cambiarJuego(Juego juego) {
+    public void cambiarJuego(Videojuego Juego) {
     }
 }
