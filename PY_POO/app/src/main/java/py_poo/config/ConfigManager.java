@@ -9,4 +9,10 @@ public class ConfigManager {
 
     public void guardar() {
     }
+
+    public void leer() {
+    }
+
+    public void escribir() {
+    }
 }

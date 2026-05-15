@@ -1,6 +1,6 @@
 package py_poo.engine;
 
-import py_poo.entities.Entidad;
+import py_poo.entities.ObjetoGrafico;
 
 public class Camara {
     private float X;
@@ -9,6 +9,6 @@ public class Camara {
     public void mover() {
     }
 
-    public void seguirEntidad(Entidad Entidad) {
+    public void seguirJugador(ObjetoGrafico ObjetoGrafico) {
     }
 }

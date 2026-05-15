@@ -1,6 +1,6 @@
 package py_poo.entities;
 
-public class Pelota extends Entidad {
+public class Pelota extends ObjetoGrafico {
     private float direccionX;
     private float direccionY;
 
@@ -9,4 +9,5 @@ public class Pelota extends Entidad {
 
     public void rebotar() {
     }
+    
 }

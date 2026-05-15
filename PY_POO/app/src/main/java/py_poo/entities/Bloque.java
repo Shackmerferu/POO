@@ -1,8 +1,11 @@
 package py_poo.entities;
 
-public class Bloque extends Entidad {
-    private boolean destruible;
+public abstract class Bloque extends ObjetoGrafico {
+    protected boolean destruible;
+    protected int valor;
 
+    public void recoger() {
+    }
     public void destruir() {
     }
 }

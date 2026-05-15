@@ -3,7 +3,7 @@ package py_poo.ranking;
 import java.util.List;
 
 public class RankingManager {
-    private List<Puntaje> puntajes;
+    private List<Integer> puntajes;
 
     public void agregarPuntaje() {
     }

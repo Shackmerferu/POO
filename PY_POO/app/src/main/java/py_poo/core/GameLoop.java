@@ -1,24 +1,38 @@
 package py_poo.core;
 
-import py_poo.engine.Escena;
+import py_poo.engine.EstadoJuego;
+import py_poo.engine.VideoJuego;
 
-public class GameLoop {
-    private boolean Running;
-    private int Fps;
-    private Escena CurrentScene;
+public class GameLoop extends com.entropyinteractive.GameLoop {
+    private EstadoJuego Estado; 
+    private VideoJuego Videojuego;
 
-    public void start() {
+    public void setEstado(EstadoJuego Estado) {
+        this.Estado = Estado;
     }
 
-    public void stop() {
+    public EstadoJuego getEstado() {
+        return Estado;
     }
 
-    public void update() {
+    public void setVideoJuego(VideoJuego Videojuego) {
+        this.Videojuego = Videojuego;
     }
 
-    public void render() {
+    public VideoJuego getVideoJuego() {
+        return Videojuego;
     }
 
-    public void run() {
+    public void startup() {
+    }
+
+    
+    public void shutdown() {
+    }
+
+    protected void update(double delta) {
+    }
+
+    public void draw() {
     }
 }

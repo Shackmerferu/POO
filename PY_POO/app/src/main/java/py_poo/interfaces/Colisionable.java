@@ -1,8 +1,12 @@
 package py_poo.interfaces;
 
-import py_poo.entities.Entidad;
+import java.awt.Rectangle;
+
+import py_poo.entities.ObjetoGrafico;
 
 public interface Colisionable {
-    void colisionar(Entidad entidad);
+    void colisionar(ObjetoGrafico entidad);
     Object getBounds();
+    public Rectangle getcolision();
+    public Void setcolision(int Dimension);
 }
