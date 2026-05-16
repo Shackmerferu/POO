@@ -42,12 +42,23 @@ public abstract class VideoJuego {
                 pausa();
                 break;
             case GAME_OVER:
-                
+                finalizar(EstadoJuego.GAME_OVER, "Fin del juego");
+                break;
         }
     }
 
-    protected void finalizar(){}
-      
+    protected void finalizar(EstadoJuego estadoFinal,String resultado){
+      this.Activo=false;
+      this.estado= estadoFinal;
+    this.Resultado = resultado;
+
+    if(this.NivelActual !=null){
+        this.NivelActual.finalizarNivel();
+    }
+    if (this.Entidades !=null){
+        this.Entidades.clear();
+    }
+    }
     protected void pausa(){}
 
     protected void crearPartida(){}
@@ -56,7 +67,7 @@ public abstract class VideoJuego {
     
     public void cargarNivel(){}
 
-    public void getResultado(){}
+    public String getResultado(){ return Resultado;}
 
     public void renderizar(java.awt.Graphics g){}
 

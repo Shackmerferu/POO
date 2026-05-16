@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="bucleJuego2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/PY_POO/app/bin/main/resources/libs/bucleJuego.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
