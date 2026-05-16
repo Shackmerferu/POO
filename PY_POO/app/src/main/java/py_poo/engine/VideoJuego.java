@@ -82,9 +82,42 @@ public abstract class VideoJuego {
         
     }
 
-    protected void reiniciar(){}
+    protected void reiniciar(){
+
+        resetPuntaje();
+
+        this.estado=EstadoJuego.MENU;
+        this.Activo=true;
+        this.Resultado=null;
+
+        if (Entidades!=null){
+            Entidades.clear();
+        }
+        if (NivelActual!=null){
+            NivelActual.finalizarNivel();
+            NivelActual=null;
+        }
+        iniciar();
+
+    }
     
-    public void cargarNivel(){}
+    public void cargarNivel(){
+
+        if (Entidades!=null){
+            Entidades.clear();
+        }
+
+        if (NivelActual==null){
+            System.out.println("ERROR NO HAY MAS NIVEL PAPA");
+            return;
+        }
+
+        NivelActual.cargar();
+
+this.estado=EstadoJuego.JUGANDO;
+this.Activo=true;
+        System.out.println("Nivel cargado: " + NivelActual.toString());
+    }
 
     public String getResultado(){return Resultado;}
 
