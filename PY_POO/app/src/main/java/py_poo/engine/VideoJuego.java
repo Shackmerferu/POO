@@ -42,21 +42,51 @@ public abstract class VideoJuego {
                 pausa();
                 break;
             case GAME_OVER:
-                
+                finalizar(EstadoJuego.GAME_OVER, "Fin del juego");
+                break;
+            case VICTORIA:
+                getResultado();
+                break;
+
         }
     }
 
-    protected void finalizar(){}
-      
-    protected void pausa(){}
+    protected void finalizar(EstadoJuego estadoFinal,String resultado){
+        this.Activo=false;
+        this.estado= estadoFinal;
+        this.Resultado = resultado;
 
-    protected void crearPartida(){}
+        if(this.NivelActual !=null){
+            this.NivelActual.finalizarNivel();
+        }
+        if (this.Entidades !=null){
+            this.Entidades.clear();
+        }
+
+
+    }
+      
+    protected void pausa(){
+        if(!Activo)return;
+        if(this.estado == EstadoJuego.JUGANDO){
+            this.estado = EstadoJuego.PAUSA;
+            System.out.println("JUEGO EN PAUSA");
+        }
+        if(this.estado == EstadoJuego.PAUSA){
+            this.estado = EstadoJuego.JUGANDO;
+            System.out.println("JUEGO REANUDADO");
+        }
+    }
+
+    protected void crearPartida(){
+        
+    }
 
     protected void reiniciar(){}
     
     public void cargarNivel(){}
 
-    public void getResultado(){}
+    public String getResultado(){return Resultado;}
 
     public void renderizar(java.awt.Graphics g){}
 
