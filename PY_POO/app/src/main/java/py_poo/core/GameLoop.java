@@ -1,16 +1,9 @@
 package py_poo.core;
 
-import java.awt.Graphics2D;
-
 import py_poo.engine.EstadoJuego;
 import py_poo.engine.VideoJuego;
 
-public class GameLoop extends com.entropyinteractive.Game {
-    public GameLoop(String title, int width, int height) {
-        super(title, width, height);
-        //TODO Auto-generated constructor stub
-    }
-
+public class GameLoop extends com.entropyinteractive.GameLoop {
     private EstadoJuego Estado; 
     private VideoJuego Videojuego;
 
@@ -29,28 +22,17 @@ public class GameLoop extends com.entropyinteractive.Game {
     public VideoJuego getVideoJuego() {
         return Videojuego;
     }
+
+    public void startup() {
+    }
+
     
-    @Override
-    public void gameStartup() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'gameStartup'");
+    public void shutdown() {
     }
 
-    @Override
-    public void gameUpdate(double var1) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'gameUpdate'");
+    protected void update(double delta) {
     }
 
-    @Override
-    public void gameDraw(Graphics2D var1) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'gameDraw'");
-    }
-
-    @Override
-    public void gameShutdown() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'gameShutdown'");
+    public void draw() {
     }
 }
