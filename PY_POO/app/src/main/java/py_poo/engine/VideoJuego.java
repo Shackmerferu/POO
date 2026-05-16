@@ -42,15 +42,31 @@ public abstract class VideoJuego {
                 pausa();
                 break;
             case GAME_OVER:
-                
+               
+            case VICTORIA:
+                getResultado();
+                break;
+
         }
     }
 
     protected void finalizar(){}
       
-    protected void pausa(){}
+    protected void pausa(){
+        if(!Activo)return;
+        if(this.estado == EstadoJuego.JUGANDO){
+            this.estado = EstadoJuego.PAUSA;
+            System.out.println("JUEGO EN PAUSA")
+        }
+        if(this.estado == EstadoJuego.PAUSA){
+            this.estado = EstadoJuego.JUGANDO
+            System.out.println("JUEGO REANUDADO")
+        }
+    }
 
-    protected void crearPartida(){}
+    protected void crearPartida(){
+        
+    }
 
     protected void reiniciar(){}
     
