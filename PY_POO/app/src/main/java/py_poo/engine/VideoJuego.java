@@ -17,7 +17,12 @@ public abstract class VideoJuego {
     private List<Jugador> Jugador;
     private String Resultado;
 
-    protected void iniciar(){}
+    protected void iniciar(){
+        this.Activo = true;
+        this.estado= EstadoJuego.MENU;
+        iniciapuntaje();
+        cargarNivel();
+    }
 
     protected void actualizar(){}
 
@@ -32,6 +37,8 @@ public abstract class VideoJuego {
     public void cargarNivel(){}
 
     public void getResultado(){}
+
+    public void renderizar(java.awt.Graphics g){}
 
     public void getGanador(){}
 
