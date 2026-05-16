@@ -1,15 +1,12 @@
 package py_poo.input;
 
+import com.entropyinteractive.Keyboard;
+import py_poo.core.GameLoop;
+
 public class InputManager {
-    private boolean[] teclas;
 
-    public void keyPressed() {
-    }
-
-    public void keyReleased() {
-    }
-
-    public boolean isKeyPressed(int key) {
-        return false;
+    public boolean isKeyPressed(int keyCode) {
+        Keyboard kb = GameLoop.getTeclado();
+        return kb != null && kb.isKeyPressed(keyCode);
     }
 }
