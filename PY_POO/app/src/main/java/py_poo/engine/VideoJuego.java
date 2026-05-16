@@ -4,6 +4,8 @@ import java.util.List;
 
 import py_poo.entities.ObjetoGrafico;
 
+import py_poo.engine.EstadoJuego;
+
 public abstract class VideoJuego {
     protected String Nombre;
     protected boolean Activo;
@@ -17,9 +19,29 @@ public abstract class VideoJuego {
     private List<Jugador> Jugador;
     private String Resultado;
 
-    protected void iniciar(){}
+    protected void iniciar(){
 
-    protected void actualizar(){}
+    }
+
+    protected void actualizar(){
+        if(!Activo){
+            return;
+        }
+        switch (estado) {
+            case MENU:
+                crearPartida();
+                estado= EstadoJuego.JUGANDO;
+                break;
+            case JUGANDO:
+                cargarNivel();
+                break;
+            case PAUSA:
+                pausa();
+                break;
+            case GAME_OVER:
+                
+        }
+    }
 
     protected void finalizar(){}
       

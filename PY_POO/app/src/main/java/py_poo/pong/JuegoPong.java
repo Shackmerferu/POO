@@ -9,6 +9,7 @@ public class JuegoPong extends VideoJuego {
     }
 
     public void actualizar() {
+        
     }
 
     public void pause(){
