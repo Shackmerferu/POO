@@ -45,6 +45,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import py_poo.pong.JuegoPong;
+
 public class Launcher extends JFrame {
 
     static final Color
@@ -115,13 +117,13 @@ public class Launcher extends JFrame {
 
     static class GameEntry {
         String name, icon;
-        boolean fullscreen, sound = true, music = true;
+        boolean fullscreen, sound = true, music = true, vsAI = true;
         String skin = "original", speed = "media";
         int winPoints = 15;
 
         GameEntry(String name, String icon) { this.name = name; this.icon = icon; }
         void resetConfig() {
-            fullscreen = false; sound = true; music = true;
+            fullscreen = false; sound = true; music = true; vsAI = true;
             skin = "original"; speed = "media"; winPoints = 15;
         }
     }
@@ -616,10 +618,14 @@ public class Launcher extends JFrame {
             combSpeed.setSelectedItem(g.speed);
             addFormRow(form, "Velocidad invasores", combSpeed);
         }
+        JCheckBox cbVsAI = null;
+
         if ("Pong".equals(g.name)) {
             combPoints = darkCombo(new String[]{"11", "15", "21"});
             combPoints.setSelectedItem(String.valueOf(g.winPoints));
             addFormRow(form, "Puntos para ganar", combPoints);
+            cbVsAI = darkCheck("", g.vsAI);
+            addFormRow(form, "vs IA", cbVsAI);
         }
 
         p.add(form, BorderLayout.CENTER);
@@ -645,6 +651,7 @@ public class Launcher extends JFrame {
             g.skin       = (String) combSkin.getSelectedItem();
             if (fSpeed  != null) g.speed     = (String) fSpeed.getSelectedItem();
             if (fPoints != null) g.winPoints = Integer.parseInt((String) fPoints.getSelectedItem());
+            if (cbVsAI != null)  g.vsAI      = cbVsAI.isSelected();
             dlg.dispose();
         }));
 
@@ -688,10 +695,18 @@ public class Launcher extends JFrame {
             return;
         }
         GameEntry g = games.get(focused);
-        JOptionPane.showMessageDialog(this,
-                "Iniciando " + g.name + " como " + player + "...\n" +
-                "(Aquí va la instancia del juego.)",
-                "Lanzar juego", JOptionPane.INFORMATION_MESSAGE);
+        if ("Pong".equals(g.name)) {
+            JuegoPong pong = new JuegoPong();
+            pong.setOpJuego(g.vsAI);
+            JOptionPane.showMessageDialog(this,
+                    "Iniciando " + g.name + " como " + player + "...\n" +
+                    "vs IA: " + g.vsAI,
+                    "Lanzar juego", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Iniciando " + g.name + " como " + player + "...",
+                    "Lanzar juego", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     // ─── Tabs ──────────────────────────────────────────────
