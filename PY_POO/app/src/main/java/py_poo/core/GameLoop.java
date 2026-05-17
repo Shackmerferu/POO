@@ -5,11 +5,11 @@ import com.entropyinteractive.Keyboard;
 import com.entropyinteractive.Mouse;
 import com.entropyinteractive.MouseWheel;
 
-import py_poo.engine.VideoJuego;
+import py_poo.interfaces.JuegoLoopable;
 
 public class GameLoop extends com.entropyinteractive.JGame {
     private static GameLoop instancia;
-    private VideoJuego videojuego;
+    private JuegoLoopable videojuego;
     private static double deltaTime;
 
     public GameLoop(String title, int width, int height) {
@@ -17,11 +17,11 @@ public class GameLoop extends com.entropyinteractive.JGame {
         instancia = this;
     }
 
-    public void setVideoJuego(VideoJuego vj) {
+    public void setVideoJuego(JuegoLoopable vj) {
         this.videojuego = vj;
     }
 
-    public VideoJuego getVideoJuego() {
+    public JuegoLoopable getVideoJuego() {
         return videojuego;
     }
 

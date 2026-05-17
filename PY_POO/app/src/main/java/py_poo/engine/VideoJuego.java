@@ -3,10 +3,9 @@ package py_poo.engine;
 import java.util.List;
 
 import py_poo.entities.ObjetoGrafico;
+import py_poo.interfaces.JuegoLoopable;
 
-import py_poo.engine.EstadoJuego;
-
-public abstract class VideoJuego {
+public abstract class VideoJuego implements JuegoLoopable {
     protected String Nombre;
     protected boolean Activo;
     protected EstadoJuego estado;
@@ -19,14 +18,14 @@ public abstract class VideoJuego {
     private List<Jugador> Jugador;
     private String Resultado;
 
-    protected void iniciar(){
+    public void iniciar(){
         this.Activo = true;
         this.estado= EstadoJuego.MENU;
         iniciapuntaje();
         cargarNivel();
     }
 
-    protected void actualizar(){
+    public void actualizar(){
         if(!Activo){
             return;
         }
@@ -51,7 +50,11 @@ public abstract class VideoJuego {
         }
     }
 
-    protected void finalizar(EstadoJuego estadoFinal,String resultado){
+    public void finalizar(){
+        finalizar(EstadoJuego.GAME_OVER, "Juego terminado");
+    }
+
+    protected void finalizar(EstadoJuego estadoFinal, String resultado){
         this.Activo=false;
         this.estado= estadoFinal;
         this.Resultado = resultado;
@@ -79,7 +82,6 @@ public abstract class VideoJuego {
     }
 
     protected void crearPartida(){
-        
     }
 
     protected void reiniciar(){
