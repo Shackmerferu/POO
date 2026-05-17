@@ -8,5 +8,6 @@ public abstract class Personaje extends ObjetoGrafico {
     }
 
     public void recibirDanio(int cantidad) {
+        this.vidas =- cantidad;
     }
 }

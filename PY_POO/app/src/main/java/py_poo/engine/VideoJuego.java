@@ -1,5 +1,6 @@
 package py_poo.engine;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import py_poo.entities.ObjetoGrafico;
@@ -18,21 +19,24 @@ public abstract class VideoJuego implements JuegoLoopable {
     private List<Jugador> Jugador;
     private String Resultado;
 
-    public void iniciar(){
+    public void iniciar() {
         this.Activo = true;
-        this.estado= EstadoJuego.MENU;
+        this.estado = EstadoJuego.MENU;
+        this.Entidades = new ArrayList<>();
+        this.Puntuacion = new ArrayList<>();
+        this.Jugador = new ArrayList<>();
         iniciapuntaje();
         cargarNivel();
     }
 
-    public void actualizar(){
-        if(!Activo){
+    public void actualizar() {
+        if (!Activo) {
             return;
         }
         switch (estado) {
             case MENU:
                 crearPartida();
-                estado= EstadoJuego.JUGANDO;
+                estado = EstadoJuego.JUGANDO;
                 break;
             case JUGANDO:
                 cargarNivel();
@@ -50,91 +54,106 @@ public abstract class VideoJuego implements JuegoLoopable {
         }
     }
 
-    public void finalizar(){
-        finalizar(EstadoJuego.GAME_OVER, "Juego terminado");
+    public void finalizar() {
+        finalizar(EstadoJuego.GAME_OVER, "Juego cerro repentinamente");
     }
 
-    protected void finalizar(EstadoJuego estadoFinal, String resultado){
-        this.Activo=false;
-        this.estado= estadoFinal;
+    protected void finalizar(EstadoJuego estadoFinal, String resultado) {
+        this.Activo = false;
+        this.estado = estadoFinal;
         this.Resultado = resultado;
 
-        if(this.NivelActual !=null){
+        if (this.NivelActual != null) {
             this.NivelActual.finalizarNivel();
         }
-        if (this.Entidades !=null){
+        if (this.Entidades != null) {
             this.Entidades.clear();
         }
 
-
     }
-      
-    protected void pausa(){
-        if(!Activo)return;
-        if(this.estado == EstadoJuego.JUGANDO){
+
+    protected void pausa() {
+        if (!Activo)
+            return;
+        if (this.estado == EstadoJuego.JUGANDO) {
             this.estado = EstadoJuego.PAUSA;
             System.out.println("JUEGO EN PAUSA");
         }
-        if(this.estado == EstadoJuego.PAUSA){
+        if (this.estado == EstadoJuego.PAUSA) {
             this.estado = EstadoJuego.JUGANDO;
             System.out.println("JUEGO REANUDADO");
         }
     }
 
-    protected void crearPartida(){
+    protected void crearPartida() {
     }
 
-    protected void reiniciar(){
+    protected void reiniciar() {
 
         resetPuntaje();
 
-        this.estado=EstadoJuego.MENU;
-        this.Activo=true;
-        this.Resultado=null;
+        this.estado = EstadoJuego.MENU;
+        this.Activo = true;
+        this.Resultado = null;
 
-        if (Entidades!=null){
+        if (Entidades != null) {
             Entidades.clear();
         }
-        if (NivelActual!=null){
+        if (NivelActual != null) {
             NivelActual.finalizarNivel();
-            NivelActual=null;
+            NivelActual = null;
         }
         iniciar();
 
     }
-    
-    public void cargarNivel(){
 
-        if (Entidades!=null){
+    public void cargarNivel() {
+
+        if (Entidades != null) {
             Entidades.clear();
         }
 
-        if (NivelActual==null){
+        if (NivelActual == null) {
             System.out.println("ERROR NO HAY MAS NIVEL PAPA");
             return;
         }
 
         NivelActual.cargar();
 
-this.estado=EstadoJuego.JUGANDO;
-this.Activo=true;
+        this.estado = EstadoJuego.JUGANDO;
+        this.Activo = true;
         System.out.println("Nivel cargado: " + NivelActual.toString());
     }
 
-    public String getResultado(){return Resultado;}
+    public String getResultado() {
+        return Resultado;
+    }
 
-    public void renderizar(java.awt.Graphics g){}
+    public void renderizar(java.awt.Graphics g){
+        for (ObjetoGrafico entidad : Entidades) {
+            entidad.display(g);
+            
+        }
 
-    public void getGanador(){}
+    }
 
-    public void getPerdedor(){}
+    public void getGanador() {
+    }
 
-    public List<Integer> getpuntaje(){return Puntuacion;}
+    public void getPerdedor() {
+    }
 
-    public void iniciapuntaje(){}
+    public List<Integer> getpuntaje() {
+        return Puntuacion;
+    }
 
-    public void sumarPunto(int Puntaje){}
+    public void iniciapuntaje() {
+    }
 
-    public void resetPuntaje(){}
+    public void sumarPunto(int Puntaje) {
+    }
+
+    public void resetPuntaje() {
+    }
 
 }

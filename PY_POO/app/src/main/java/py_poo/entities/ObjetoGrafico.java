@@ -1,7 +1,6 @@
 package py_poo.entities;
 
 import java.awt.Dimension;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
@@ -50,7 +49,7 @@ public abstract class ObjetoGrafico {
     
     public void desaparecer(){}
 
-    public void display(Graphics2D g) {
+    public void display(java.awt.Graphics g) {
         g.drawImage(sprite, (int) this.getX(), (int) this.getY(), null);
     }
 
