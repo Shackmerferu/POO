@@ -19,7 +19,7 @@ public abstract class VideoJuego implements JuegoLoopable {
     private List<Jugador> Jugador;
     private String Resultado;
 
-    public void iniciar() {
+    protected void iniciar() {
         this.Activo = true;
         this.estado = EstadoJuego.MENU;
         this.Entidades = new ArrayList<>();
@@ -138,6 +138,7 @@ public abstract class VideoJuego implements JuegoLoopable {
     }
 
     public void getGanador() {
+
     }
 
     public void getPerdedor() {
@@ -147,13 +148,16 @@ public abstract class VideoJuego implements JuegoLoopable {
         return Puntuacion;
     }
 
-    public void iniciapuntaje() {
+    public void iniciapuntaje(int ) {
+        
     }
 
-    public void sumarPunto(int Puntaje) {
+    public void sumarPunto(int id,int Puntaje) {
+        Puntuacion.set(id,Puntuacion.get(id) + Puntaje);
     }
 
     public void resetPuntaje() {
+        Puntuacion.clear();
     }
 
 }
