@@ -22,6 +22,21 @@ public class JuegoPong extends VideoJuego {
     }
 
     public void actualizar() {
+        switch (estado) {
+            case MENU:
+                if (input.isEnterPressed()) {
+                    estado = EstadoJuego.JUGANDO;
+                }
+                break;
+            case JUGANDO:
+                
+                break;
+            case PAUSA:
+                if (input.isEnterPressed()) {
+                    estado = EstadoJuego.JUGANDO;
+                }
+                break;
+        }
     }
 
     public void pause(){
@@ -32,5 +47,13 @@ public class JuegoPong extends VideoJuego {
     protected void crearPartida() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'crearPartida'");
+    }
+    @Override
+    public void getGanador(){
+
+    }
+    @Override
+    public void getPerdedor(){
+
     }
 }

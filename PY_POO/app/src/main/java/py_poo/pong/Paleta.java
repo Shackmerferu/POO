@@ -1,7 +1,8 @@
-package py_poo.entities;
+package py_poo.pong;
 
 import java.util.ArrayList;
 
+import py_poo.entities.ObjetoGrafico;
 import py_poo.interfaces.Movible;
 
 public class Paleta extends ObjetoGrafico implements Movible {

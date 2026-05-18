@@ -11,7 +11,19 @@ public class JuegoSpaceInvaders extends VideoJuego {
 
     @Override
     protected void crearPartida() {
-        // TODO Auto-generated method stub
+       
         throw new UnsupportedOperationException("Unimplemented method 'crearPartida'");
+    }
+
+    @Override
+    public void getGanador() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getGanador'");
+    }
+
+    @Override
+    public void getPerdedor() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getPerdedor'");
     }
 }
