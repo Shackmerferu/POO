@@ -26,7 +26,6 @@ public abstract class VideoJuego implements JuegoLoopable {
         this.Puntuacion = new ArrayList<>();
         this.Jugador = new ArrayList<>();
         iniciapuntaje(null, null);
-        iniciapuntaje(int);
         cargarNivel();
     }
 
@@ -86,15 +85,15 @@ public abstract class VideoJuego implements JuegoLoopable {
         }
     }
 
-    protected abstract void crearPartida();
-    protected void crearPartida(){
+
+    protected void crearPartida() {
         Entidades.clear();
-        iniciapuntaje(int);
+        iniciapuntaje(null, null);
         renderizar(null);
         this.estado = EstadoJuego.JUGANDO;
-    
+
     }
-        
+
 
     protected void reiniciar() {
 
@@ -137,20 +136,17 @@ public abstract class VideoJuego implements JuegoLoopable {
         return Resultado;
     }
 
-    public void renderizar(java.awt.Graphics g){
+    public void renderizar(java.awt.Graphics g) {
         for (ObjetoGrafico entidad : Entidades) {
             entidad.display(g);
-            
+
         }
 
     }
 
-    public void getGanador() {
+    public abstract void getGanador();
 
-    }
-
-    public void getPerdedor() {
-    }
+    public abstract void getPerdedor();
 
     public List<Integer> getpuntaje() {
         return Puntuacion;
@@ -166,16 +162,16 @@ public abstract class VideoJuego implements JuegoLoopable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    public void iniciapuntaje(int x ) {
-        
     }
 
-    public void sumarPunto(int id,int Puntaje) {
-        Puntuacion.set(id,Puntuacion.get(id) + Puntaje);
+        public void sumarPunto( int id, int Puntaje){
+            Puntuacion.set(id, Puntuacion.get(id) + Puntaje);
+        }
+
+        public void resetPuntaje() {
+            Puntuacion.clear();
+        }
+
     }
 
-    public void resetPuntaje() {
-        Puntuacion.clear();
-    }
 
-}
