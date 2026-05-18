@@ -11,7 +11,14 @@ public class InputManager {
     }
 
     public boolean isEnterPressed() {
-        return isKeyPressed(10); 
-       
+        return isKeyPressed(10);
+    }
+
+    public boolean isUpPressed() {
+        return isKeyPressed(38);
+    }
+
+    public boolean isDownPressed() {
+        return isKeyPressed(40);
     }
 }
