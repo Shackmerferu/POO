@@ -35,7 +35,7 @@ public abstract class VideoJuego implements JuegoLoopable {
         }
         switch (estado) {
             case MENU:
-                crearPartida();
+                renderizar(null);
                 estado = EstadoJuego.JUGANDO;
                 break;
             case JUGANDO:

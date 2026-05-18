@@ -17,11 +17,13 @@ public class JuegoSpaceInvaders extends VideoJuego {
 
     @Override
     public String getGanador() {
-        return "";
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getGanador'");
     }
 
     @Override
     public String getPerdedor() {
-        return "";
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getPerdedor'");
     }
 }
