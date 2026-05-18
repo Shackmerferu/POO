@@ -144,9 +144,9 @@ public abstract class VideoJuego implements JuegoLoopable {
 
     }
 
-    public abstract void getGanador();
+    public abstract String getGanador();
 
-    public abstract void getPerdedor();
+    public abstract String getPerdedor();
 
     public List<Integer> getpuntaje() {
         return Puntuacion;

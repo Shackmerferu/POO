@@ -1,14 +1,11 @@
 package py_poo.pong;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-
 import py_poo.engine.EstadoJuego;
 import py_poo.engine.VideoJuego;
 import py_poo.input.InputManager;
 
-public class JuegoPong extends VideoJuego {
+public  class JuegoPong extends VideoJuego {
+    private static final int PUNTAJE_VICTORIA = 15;
     private boolean OpJuego;
     private InputManager input;
 
@@ -30,7 +27,34 @@ public class JuegoPong extends VideoJuego {
 
     @Override
     protected void crearPartida() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'crearPartida'");
+       super.crearPartida();
+    }
+
+    @Override
+    public String getGanador() {
+        if (Puntuacion == null || Puntuacion.size() < 2) {
+            return null;
+        }
+
+        int puntajeJ1 = Puntuacion.get(0);
+        int puntajeJ2 = Puntuacion.get(1);
+
+        if (puntajeJ1 >= PUNTAJE_VICTORIA && puntajeJ1 > puntajeJ2) {
+            return "Jugador 1";
+        }
+        if (puntajeJ2 >= PUNTAJE_VICTORIA && puntajeJ2 > puntajeJ1) {
+            return "Jugador 2";
+        }
+
+        return null;
+    }
+
+    @Override
+    public String getPerdedor() {
+        String ganador = getGanador();
+        if (ganador == null) {
+            return null;
+        }
+        return "Jugador 1".equals(ganador) ? "Jugador 2" : "Jugador 1";
     }
 }

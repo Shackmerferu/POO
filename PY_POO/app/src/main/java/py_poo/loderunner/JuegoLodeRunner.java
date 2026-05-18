@@ -14,4 +14,14 @@ public class JuegoLodeRunner extends VideoJuego {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'crearPartida'");
     }
+
+    @Override
+    public String getGanador() {
+        return "";
+    }
+
+    @Override
+    public String getPerdedor() {
+        return "";
+    }
 }
