@@ -19,6 +19,21 @@ public  class JuegoPong extends VideoJuego {
     }
 
     public void actualizar() {
+        switch (estado) {
+            case MENU:
+                if (input.isEnterPressed()) {
+                    estado = EstadoJuego.JUGANDO;
+                }
+                break;
+            case JUGANDO:
+                
+                break;
+            case PAUSA:
+                if (input.isEnterPressed()) {
+                    estado = EstadoJuego.JUGANDO;
+                }
+                break;
+        }
     }
 
     public void pause(){
@@ -56,5 +71,13 @@ public  class JuegoPong extends VideoJuego {
             return null;
         }
         return "Jugador 1".equals(ganador) ? "Jugador 2" : "Jugador 1";
+    }
+    @Override
+    public void getGanador(){
+
+    }
+    @Override
+    public void getPerdedor(){
+
     }
 }
