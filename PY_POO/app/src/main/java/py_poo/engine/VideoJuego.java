@@ -26,6 +26,7 @@ public abstract class VideoJuego implements JuegoLoopable {
         this.Puntuacion = new ArrayList<>();
         this.Jugador = new ArrayList<>();
         iniciapuntaje(null, null);
+        iniciapuntaje(int);
         cargarNivel();
     }
 
@@ -86,6 +87,14 @@ public abstract class VideoJuego implements JuegoLoopable {
     }
 
     protected abstract void crearPartida();
+    protected void crearPartida(){
+        Entidades.clear();
+        iniciapuntaje(int);
+        renderizar(null);
+        this.estado = EstadoJuego.JUGANDO;
+    
+    }
+        
 
     protected void reiniciar() {
 
@@ -157,6 +166,8 @@ public abstract class VideoJuego implements JuegoLoopable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    public void iniciapuntaje(int x ) {
+        
     }
 
     public void sumarPunto(int id,int Puntaje) {
