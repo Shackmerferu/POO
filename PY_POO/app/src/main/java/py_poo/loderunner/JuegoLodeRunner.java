@@ -17,7 +17,7 @@ public class JuegoLodeRunner extends VideoJuego {
 
     @Override
     public String getGanador() {
-        return "";
+return "";
     }
 
     @Override
