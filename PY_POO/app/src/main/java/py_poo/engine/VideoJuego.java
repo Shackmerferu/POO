@@ -2,7 +2,7 @@ package py_poo.engine;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.awt.Graphics;
 import py_poo.entities.ObjetoGrafico;
 import py_poo.interfaces.JuegoLoopable;
 
@@ -19,13 +19,13 @@ public abstract class VideoJuego implements JuegoLoopable {
     private List<Jugador> Jugador;
     private String Resultado;
 
-    protected void iniciar() {
+    public void iniciar() {
         this.Activo = true;
         this.estado = EstadoJuego.MENU;
         this.Entidades = new ArrayList<>();
         this.Puntuacion = new ArrayList<>();
         this.Jugador = new ArrayList<>();
-        iniciapuntaje();
+        iniciapuntaje(null, null);
         cargarNivel();
     }
 
@@ -85,8 +85,7 @@ public abstract class VideoJuego implements JuegoLoopable {
         }
     }
 
-    protected void crearPartida() {
-    }
+    protected abstract void crearPartida();
 
     protected void reiniciar() {
 
@@ -148,8 +147,16 @@ public abstract class VideoJuego implements JuegoLoopable {
         return Puntuacion;
     }
 
-    public void iniciapuntaje(int ) {
-        
+    public void iniciapuntaje(Jugador J1, Jugador J2) {
+        try {
+            if (J1 != null) {
+                Puntuacion.add(0);
+            } else if (J2 != null) {
+                Puntuacion.add(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void sumarPunto(int id,int Puntaje) {

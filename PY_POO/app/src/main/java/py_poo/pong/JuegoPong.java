@@ -27,4 +27,10 @@ public class JuegoPong extends VideoJuego {
     public void pause(){
         estado = EstadoJuego.PAUSA;
     }
+
+    @Override
+    protected void crearPartida() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'crearPartida'");
+    }
 }

@@ -5,7 +5,6 @@ import javax.swing.UIManager;
 
 public class App {
     public static void main(String[] args) {
-        // Intentar usar el LookAndFeel del sistema para mejor renderizado de fuentes
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
