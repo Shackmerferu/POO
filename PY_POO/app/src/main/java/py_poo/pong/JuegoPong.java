@@ -72,12 +72,5 @@ public  class JuegoPong extends VideoJuego {
         }
         return "Jugador 1".equals(ganador) ? "Jugador 2" : "Jugador 1";
     }
-    @Override
-    public void getGanador(){
 
-    }
-    @Override
-    public void getPerdedor(){
-
-    }
 }
