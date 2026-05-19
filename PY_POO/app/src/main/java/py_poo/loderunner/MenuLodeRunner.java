@@ -1,4 +1,5 @@
-package py_poo.pong;
+package py_poo.loderunner;
+
 
 import java.awt.Color;
 import java.awt.Font;
@@ -10,13 +11,13 @@ import py_poo.input.MouseManager;
 import py_poo.ui.Boton;
 import py_poo.ui.MenuPrincipal;
 
-public class MenuPong extends MenuPrincipal {
+public class MenuLodeRunner extends MenuPrincipal {
     private Boton botonJugar;
     private Boton botonSalir;
     private InputManager input;
     private MouseManager mouse;
 
-    public MenuPong(InputManager input, MouseManager mouse) {
+    public MenuLodeRunner(InputManager input, MouseManager mouse) {
         this.input = input;
         this.mouse = mouse;
         int centerX = Constantes.WIDTH / 2 - 100;
@@ -59,7 +60,7 @@ public class MenuPong extends MenuPrincipal {
         Font fuenteTitulo = g.getFont().deriveFont(Font.BOLD, 48f);
         g.setFont(fuenteTitulo);
         g.setColor(Color.WHITE);
-        String titulo = "PONG";
+        String titulo = "LODE RUNNER";
         int textWidth = g.getFontMetrics().stringWidth(titulo);
         g.drawString(titulo, (Constantes.WIDTH - textWidth) / 2, 150);
 
@@ -68,22 +69,23 @@ public class MenuPong extends MenuPrincipal {
     }
 //Revisar todo esto, es para dejarlo funcional.
    public void dibujar(java.awt.Graphics g) {
-    // 1. Pintamos el fondo negro para el menú del Pong
-    g.setColor(java.awt.Color.BLACK);
-    g.fillRect(0, 0, 800, 600); // Ajustalo a la resolución de tu pantalla (800x600)
+    // 1. Fondo gris oscuro (tipo piedra de mina / cueva)
+    g.setColor(new java.awt.Color(25, 27, 34)); 
+    g.fillRect(0, 0, 800, 600); 
 
-    // 2. Configuramos el título principal
+    // 2. Título principal en Amarillo Oro brillante
     g.setFont(new java.awt.Font("Consolas", java.awt.Font.BOLD, 45));
-    g.setColor(java.awt.Color.GREEN); // Verde retro / cyberpunk
-    g.drawString("ARCADE PONG", 260, 200);
+    g.setColor(new java.awt.Color(255, 210, 60)); // Color oro
+    g.drawString("LODE RUNNER", 265, 200);
 
-    // 3. Configuramos los textos de instrucciones
+    // 3. Texto de instrucción en un Blanco Hueso para que no sature
     g.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 18));
-    g.setColor(java.awt.Color.WHITE);
-    g.drawString("PRESIONA 'ENTER' PARA COMENZAR", 240, 340);
+    g.setColor(new java.awt.Color(240, 240, 240));
+    g.drawString("PRESIONA 'ENTER' PARA HACER GUITA LOCO", 200, 340);
     
+    // 4. Instrucciones de los controles en un tono Ámbar/Naranja suave
     g.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 14));
-    g.setColor(java.awt.Color.GRAY);
-    g.drawString("Controles: W/S (J1)  |  Flechas Arriba/Abajo (J2)", 205, 400);
+    g.setColor(new java.awt.Color(230, 140, 60));
+    g.drawString("Controles: Flechas (Moverse)  |  Z / X (Cavar Izq / Der)", 185, 410);
 }
 }

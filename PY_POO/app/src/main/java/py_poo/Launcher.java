@@ -706,13 +706,30 @@ public class Launcher extends JFrame {
 
         Launcher.this.setVisible(false);
 
+
+        GameLoop gl = new GameLoop(g.name, Constantes.WIDTH, Constantes.HEIGHT);
+        gl.setVideoJuego(vj);
+
+        new Thread(() -> {
+            try {
+               
+                gl.run(Constantes.FPS); 
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            } finally {
+                SwingUtilities.invokeLater(() -> Launcher.this.setVisible(true));
+            }
+        }).start();
+        
+        
+        /*
         GameLoop gl = new GameLoop(g.name, Constantes.WIDTH, Constantes.HEIGHT);
         gl.setVideoJuego(vj);
 
         new Thread(() -> {
             gl.run(Constantes.FPS);
             SwingUtilities.invokeLater(() -> Launcher.this.setVisible(true));
-        }).start();
+        }).start();*/
     }
 
     private VideoJuego crearJuego(String nombre) {

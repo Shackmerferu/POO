@@ -1,5 +1,4 @@
-package py_poo.pong;
-
+package py_poo.spaceinvaders;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -9,14 +8,14 @@ import py_poo.input.InputManager;
 import py_poo.input.MouseManager;
 import py_poo.ui.Boton;
 import py_poo.ui.MenuPrincipal;
-
-public class MenuPong extends MenuPrincipal {
+public class MenuSpaceInvaders extends MenuPrincipal {
+    
     private Boton botonJugar;
     private Boton botonSalir;
     private InputManager input;
     private MouseManager mouse;
 
-    public MenuPong(InputManager input, MouseManager mouse) {
+    public MenuSpaceInvaders(InputManager input, MouseManager mouse) {
         this.input = input;
         this.mouse = mouse;
         int centerX = Constantes.WIDTH / 2 - 100;
@@ -59,7 +58,7 @@ public class MenuPong extends MenuPrincipal {
         Font fuenteTitulo = g.getFont().deriveFont(Font.BOLD, 48f);
         g.setFont(fuenteTitulo);
         g.setColor(Color.WHITE);
-        String titulo = "PONG";
+        String titulo = "S P A C E   I N V A D E R S";
         int textWidth = g.getFontMetrics().stringWidth(titulo);
         g.drawString(titulo, (Constantes.WIDTH - textWidth) / 2, 150);
 
@@ -67,23 +66,26 @@ public class MenuPong extends MenuPrincipal {
         botonSalir.renderizar(g);
     }
 //Revisar todo esto, es para dejarlo funcional.
-   public void dibujar(java.awt.Graphics g) {
-    // 1. Pintamos el fondo negro para el menú del Pong
+  public void dibujar(java.awt.Graphics g) {
+    // 1. Pintamos el fondo negro (el espacio exterior)
     g.setColor(java.awt.Color.BLACK);
-    g.fillRect(0, 0, 800, 600); // Ajustalo a la resolución de tu pantalla (800x600)
+    g.fillRect(0, 0, 800, 600); 
 
-    // 2. Configuramos el título principal
+    // 2. Configuramos el título principal con temática espacial
     g.setFont(new java.awt.Font("Consolas", java.awt.Font.BOLD, 45));
-    g.setColor(java.awt.Color.GREEN); // Verde retro / cyberpunk
-    g.drawString("ARCADE PONG", 260, 200);
+    g.setColor(java.awt.Color.GREEN); 
+    g.drawString("SPACE INVADERS", 240, 200);
 
-    // 3. Configuramos los textos de instrucciones
+    // 3. Texto de instrucción principal
     g.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 18));
     g.setColor(java.awt.Color.WHITE);
-    g.drawString("PRESIONA 'ENTER' PARA COMENZAR", 240, 340);
+    g.drawString("PRESIONA 'ENTER' PARA DEFENDER LA TIERRA", 195, 340);
     
+    // 4. Instrucciones de los controles para la nave
     g.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 14));
     g.setColor(java.awt.Color.GRAY);
-    g.drawString("Controles: W/S (J1)  |  Flechas Arriba/Abajo (J2)", 205, 400);
+    g.drawString("Controles: Flechas Izq/Der (Moverse)  |  Espacio (Disparar)", 160, 400);
 }
 }
+
+

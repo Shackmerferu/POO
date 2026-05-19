@@ -26,7 +26,6 @@ public abstract class VideoJuego implements JuegoLoopable {
         this.Puntuacion = new ArrayList<>();
         this.Jugador = new ArrayList<>();
         iniciapuntaje(null, null);
-        cargarNivel();
     }
 
     public void actualizar() {
@@ -35,14 +34,11 @@ public abstract class VideoJuego implements JuegoLoopable {
         }
         switch (estado) {
             case MENU:
-                renderizar(null);
-                estado = EstadoJuego.JUGANDO;
                 break;
             case JUGANDO:
-                cargarNivel();
+              actualizarLogicaJuego(); // logica del juego
                 break;
             case PAUSA:
-                pausa();
                 break;
             case GAME_OVER:
                 finalizar(EstadoJuego.GAME_OVER, "Fin del juego");
@@ -93,7 +89,7 @@ public abstract class VideoJuego implements JuegoLoopable {
         this.estado = EstadoJuego.JUGANDO;
 
     }
-
+    protected abstract void actualizarLogicaJuego();
 
     protected void reiniciar() {
 
