@@ -17,43 +17,35 @@ public class JuegoPong extends VideoJuego {
         this.OpJuego = opJuego;
     }
 
+  @Override
     public void iniciar() {
-        super.iniciar();
-        menu = new MenuPong(input, null);
+        
+        super.iniciar(); 
+        
+     
+        this.input = new InputManager(); 
+        
+   
+        this.menu = new MenuPong(input, null); 
+        
+        
         this.estado = EstadoJuego.MENU;
-        this.input = new InputManager();
-        this.menu = new MenuPong(input, null);
-        this.input = new InputManager();
-        renderizar(null);
-        actualizar();
     }
 
-    public void actualizar() {
-        switch (estado) {
-            case MENU:
-                if (input.isEnterPressed()) {
-                    estado = EstadoJuego.JUGANDO;
-                }
-                break;
-            case JUGANDO:
-                
-                break;
-            case PAUSA:
-                if (input.isEnterPressed()) {
-                    estado = EstadoJuego.JUGANDO;
-                }
-                break;
-        }
-    }
 
     public void pause(){
         estado = EstadoJuego.PAUSA;
     }
-
+    @Override
+    public void renderizar(Graphics g){
+        super.renderizar(g);
+        if (this.estado == EstadoJuego.MENU && menu != null) {
+            menu.dibujar(g); 
+        }
+    }
     @Override
     protected void crearPartida() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'crearPartida'");
+        
     }
     @Override
     public String getGanador(){
@@ -66,5 +58,13 @@ public class JuegoPong extends VideoJuego {
 
     }
    @Override
-    protected void actualizarLogicaJuego() {} // Lógica del juego Pong
+ protected void actualizarLogicaJuego() {
+    if (this.estado == EstadoJuego.MENU) {
+            if (input.isEnterPressed()) {
+                crearPartida(); 
+            }
+            return; 
+        }
+     //Si estamos jugando, acá va la física de la pelota y las paletas:   
+ }
 }

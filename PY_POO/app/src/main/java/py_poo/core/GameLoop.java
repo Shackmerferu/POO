@@ -75,4 +75,14 @@ public class GameLoop extends com.entropyinteractive.JGame {
             videojuego.finalizar();
         }
     }
+    
+public void run(int fps) {
+    super.run(fps); 
+}
+/*
+    public void run() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'run'");
+    }
+        */
 }
