@@ -22,10 +22,11 @@ public class MenuPong extends MenuPrincipal {
         int centerX = Constantes.WIDTH / 2 - 100;
         int centerY = Constantes.HEIGHT / 2 - 50;
         botonJugar = new Boton("Jugar", centerX, centerY, 200, 50, () -> {
-            // Acción al hacer clic en "Jugar"
+            botonJugar.click();
             System.out.println("Iniciar juego...");
         });
         botonSalir = new Boton("Salir", centerX, centerY + 70, 200, 50, () -> {
+            botonSalir.click();
             // Acción al hacer clic en "Salir"
             System.out.println("Salir del juego...");
             System.exit(0);

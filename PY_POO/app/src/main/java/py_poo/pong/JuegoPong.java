@@ -19,6 +19,7 @@ public class JuegoPong extends VideoJuego {
 
     public void iniciar() {
         super.iniciar();
+        menu = new MenuPong(input, null);
         this.estado = EstadoJuego.MENU;
         this.input = new InputManager();
         this.menu = new MenuPong(input, null);
@@ -64,4 +65,6 @@ public class JuegoPong extends VideoJuego {
         return Nombre;
 
     }
+   @Override
+    protected void actualizarLogicaJuego() {} // Lógica del juego Pong
 }
