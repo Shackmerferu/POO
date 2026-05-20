@@ -12,7 +12,8 @@ public class JuegoPong extends VideoJuego {
     private boolean OpJuego;
     private InputManager input;
     private MenuPong menu;
-
+    private Paleta paleta1;
+    private Paleta paleta2;
     public void setOpJuego(boolean opJuego) {
         this.OpJuego = opJuego;
     }
@@ -42,6 +43,14 @@ public class JuegoPong extends VideoJuego {
         if (this.estado == EstadoJuego.MENU && menu != null) {
             menu.dibujar(g); 
         }
+        if(estado == EstadoJuego.JUGANDO){
+            if(paleta1 != null) {
+                paleta1.dibujar(g);
+            }
+            if(paleta2 != null) {
+                paleta2.dibujar(g);
+            }
+        }
     }
     @Override
     protected void crearPartida() {
@@ -64,7 +73,12 @@ public class JuegoPong extends VideoJuego {
                 crearPartida(); 
             }
             return; 
+    }
+    if (this.estado == EstadoJuego.JUGANDO) {
+            if (paleta1 != null) paleta1.Mover();
+            if (paleta2 != null) paleta2.Mover();
+            
         }
-     //Si estamos jugando, acá va la física de la pelota y las paletas:   
+    }
  }
-}
+
