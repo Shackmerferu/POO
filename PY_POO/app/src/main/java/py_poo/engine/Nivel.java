@@ -1,12 +1,12 @@
 package py_poo.engine;
 
 import java.util.List;
-import py_poo.entities.Entidad;
+import py_poo.entities.ObjetoGrafico;
 
 public abstract class Nivel {
-    protected int numero;
-    protected String mapa;
-    protected List<Entidad> entidades;
+    protected int Numero;
+    protected String[] Mapa;
+    protected List<ObjetoGrafico> Entidad;
 
     public void cargar() {
     }

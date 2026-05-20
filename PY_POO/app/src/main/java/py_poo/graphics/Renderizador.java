@@ -1,9 +1,9 @@
 package py_poo.graphics;
 
-import py_poo.entities.Entidad;
+import py_poo.entities.ObjetoGrafico;
 
 public class Renderizador {
-    public void renderizarEntidad(Entidad entidad) {
+    public void renderizarEntidad(ObjetoGrafico entidad) {
     }
 
     public void limpiarPantalla() {

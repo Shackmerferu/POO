@@ -1,15 +1,13 @@
 package py_poo.entities;
 
-public abstract class Personaje extends Entidad {
+public abstract class Personaje extends ObjetoGrafico {
     protected int vidas;
     protected int direccion;
 
     public void mover() {
     }
 
-    public void atacar() {
-    }
-
     public void recibirDanio(int cantidad) {
+        this.vidas =- cantidad;
     }
 }

@@ -45,6 +45,14 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import py_poo.core.Constantes;
+import py_poo.core.GameLoop;
+import py_poo.engine.VideoJuego;
+import py_poo.loderunner.JuegoLodeRunner;
+import py_poo.pong.JuegoPong;
+import py_poo.spaceinvaders.JuegoSpaceInvaders;
+
+
 public class Launcher extends JFrame {
 
     static final Color
@@ -688,10 +696,49 @@ public class Launcher extends JFrame {
             return;
         }
         GameEntry g = games.get(focused);
-        JOptionPane.showMessageDialog(this,
-                "Iniciando " + g.name + " como " + player + "...\n" +
-                "(Aquí va la instancia del juego.)",
-                "Lanzar juego", JOptionPane.INFORMATION_MESSAGE);
+        VideoJuego vj = crearJuego(g.name);
+        if (vj == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Juego no implementado: " + g.name, "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Launcher.this.setVisible(false);
+
+
+        GameLoop gl = new GameLoop(g.name, Constantes.WIDTH, Constantes.HEIGHT);
+        gl.setVideoJuego(vj);
+
+        new Thread(() -> {
+            try {
+               
+                gl.run(Constantes.FPS); 
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            } finally {
+                SwingUtilities.invokeLater(() -> Launcher.this.setVisible(true));
+            }
+        }).start();
+        
+        
+        /*
+        GameLoop gl = new GameLoop(g.name, Constantes.WIDTH, Constantes.HEIGHT);
+        gl.setVideoJuego(vj);
+
+        new Thread(() -> {
+            gl.run(Constantes.FPS);
+            SwingUtilities.invokeLater(() -> Launcher.this.setVisible(true));
+        }).start();*/
+    }
+
+    private VideoJuego crearJuego(String nombre) {
+        return switch (nombre) {
+            case "Pong" -> new JuegoPong();
+            case "Space Invaders" -> new JuegoSpaceInvaders();
+            case "Lode Runner" -> new JuegoLodeRunner();
+            default -> null;
+        };
     }
 
     // ─── Tabs ──────────────────────────────────────────────

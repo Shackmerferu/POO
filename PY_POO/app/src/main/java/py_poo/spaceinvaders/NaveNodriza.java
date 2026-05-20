@@ -1,8 +1,22 @@
 package py_poo.spaceinvaders;
 
-import py_poo.entities.Entidad;
+import java.util.Random;
 
-public class NaveNodriza extends Entidad {
+import py_poo.entities.ObjetoGrafico;
+
+public class NaveNodriza extends ObjetoGrafico {
+
+    private static Random random = new Random();
+
+    public NaveNodriza(String sprite) {
+        super(sprite);
+    }
+
+    public static int puntaje() {
+        return (random.nextInt(6) + 1) * 50;
+    }
+
     public void cruzarPantalla() {
+
     }
 }

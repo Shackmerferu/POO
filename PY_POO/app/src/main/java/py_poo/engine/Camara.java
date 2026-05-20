@@ -1,14 +1,14 @@
 package py_poo.engine;
 
-import py_poo.entities.Entidad;
+import py_poo.entities.ObjetoGrafico;
 
 public class Camara {
-    private float x;
-    private float y;
+    private float X;
+    private float Y;
 
     public void mover() {
     }
 
-    public void seguirEntidad(Entidad entidad) {
+    public void seguirJugador(ObjetoGrafico ObjetoGrafico) {
     }
 }
