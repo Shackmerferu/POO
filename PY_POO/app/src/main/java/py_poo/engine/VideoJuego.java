@@ -34,6 +34,7 @@ public abstract class VideoJuego implements JuegoLoopable {
         }
         switch (estado) {
             case MENU:
+                actualizarLogicaJuego(); // permite navegar menu y salir
                 break;
             case JUGANDO:
               actualizarLogicaJuego(); // logica del juego
@@ -41,7 +42,7 @@ public abstract class VideoJuego implements JuegoLoopable {
             case PAUSA:
                 break;
             case GAME_OVER:
-                finalizar(EstadoJuego.GAME_OVER, "Fin del juego");
+                actualizarLogicaJuego(); // permite reiniciar con Enter
                 break;
             case VICTORIA:
                 getResultado();

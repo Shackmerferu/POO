@@ -3,10 +3,17 @@ package py_poo.pong;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 
+import py_poo.collision.CollisionManager;
+import py_poo.core.Constantes;
+import py_poo.core.GameLoop;
 import py_poo.engine.EstadoJuego;
 import py_poo.engine.VideoJuego;
 import py_poo.input.InputManager;
+import py_poo.utils.CargadorRecursos;
 
 public class JuegoPong extends VideoJuego {
     private boolean OpJuego;
@@ -14,71 +21,173 @@ public class JuegoPong extends VideoJuego {
     private MenuPong menu;
     private Paleta paleta1;
     private Paleta paleta2;
+    private PelotaPong pelota;
+    private CollisionManager collisionManager;
+    private int puntosJ1;
+    private int puntosJ2;
+    private int PUNTOS_MAX = 11; // configurable desde Launcher
+    private BufferedImage fondo; // fondo escalado a 800x600
+    private boolean modoIA; // true = vs IA, false = 2 jugadores
+    private IA_Pong ia; 
+
     public void setOpJuego(boolean opJuego) {
         this.OpJuego = opJuego;
     }
 
-  @Override
-    public void iniciar() {
-        
-        super.iniciar(); 
-        
-     
-        this.input = new InputManager(); 
-        
-   
-        this.menu = new MenuPong(input, null); 
-        
-        
-        this.estado = EstadoJuego.MENU;
+    public void setPuntosMax(int puntos) {
+        this.PUNTOS_MAX = puntos;
     }
 
+    @Override
+    public void iniciar() {
+        super.iniciar();
+        this.input = new InputManager();
+        this.menu = new MenuPong(input, null);
+        this.collisionManager = new CollisionManager();
+        this.puntosJ1 = 0;
+        this.puntosJ2 = 0;
+        this.estado = EstadoJuego.MENU;
+        CargadorRecursos cr = new CargadorRecursos();
+        this.fondo = cr.cargarImagen("imagenes/Fondo Pong.png");
+    }
 
-    public void pause(){
+    public void pause() {
         estado = EstadoJuego.PAUSA;
     }
+
     @Override
-    public void renderizar(Graphics g){
+    public void renderizar(Graphics g) {
         super.renderizar(g);
-        if (this.estado == EstadoJuego.MENU && menu != null) {
-            menu.dibujar(g); 
+        Graphics2D g2d = (g instanceof Graphics2D) ? (Graphics2D) g : null;
+        if (g2d != null) {
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON); // suaviza bordes
+            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON); // suaviza texto
         }
-        if(estado == EstadoJuego.JUGANDO){
-            if(paleta1 != null) {
-                paleta1.dibujar(g);
+        if (this.estado == EstadoJuego.MENU && menu != null) {
+            menu.dibujar(g);
+        }
+        if (estado == EstadoJuego.JUGANDO || estado == EstadoJuego.GAME_OVER) {
+            if (fondo != null) {
+                g.drawImage(fondo, 0, 0, Constantes.WIDTH, Constantes.HEIGHT, null); // fondo con red incluida
+            } else {
+                g.setColor(Color.BLACK);
+                g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
             }
-            if(paleta2 != null) {
-                paleta2.dibujar(g);
+
+            if (paleta1 != null) paleta1.dibujar(g);
+            if (paleta2 != null) paleta2.dibujar(g);
+            if (pelota != null) pelota.display(g);
+
+            g.setFont(new Font("Consolas", Font.BOLD, 36));
+            g.setColor(Color.WHITE);
+            g.drawString(String.valueOf(puntosJ1), Constantes.WIDTH / 4, 50);
+            g.drawString(String.valueOf(puntosJ2), 3 * Constantes.WIDTH / 4, 50);
+
+            if (estado == EstadoJuego.GAME_OVER) {
+                g.setFont(new Font("Consolas", Font.BOLD, 48));
+                g.setColor(Color.YELLOW);
+                String ganador;
+                if (puntosJ1 >= PUNTOS_MAX) {
+                    ganador = "JUGADOR 1";
+                } else {
+                    ganador = modoIA ? "IA" : "JUGADOR 2";
+                }
+                g.drawString("GANADOR: " + ganador, Constantes.WIDTH / 2 - 200, Constantes.HEIGHT / 2);
+                g.setFont(new Font("Consolas", Font.PLAIN, 20));
+                g.setColor(Color.GRAY);
+                g.drawString("Presiona ENTER para volver al menu", Constantes.WIDTH / 2 - 160, Constantes.HEIGHT / 2 + 50);
             }
         }
     }
+
     @Override
     protected void crearPartida() {
-        
-    }
-    @Override
-    public String getGanador(){
-        return Nombre;
-
-    }
-    @Override
-    public String getPerdedor(){
-        return Nombre;
-
-    }
-   @Override
- protected void actualizarLogicaJuego() {
-    if (this.estado == EstadoJuego.MENU) {
-            if (input.isEnterPressed()) {
-                crearPartida(); 
-            }
-            return; 
-    }
-    if (this.estado == EstadoJuego.JUGANDO) {
-            if (paleta1 != null) paleta1.Mover();
-            if (paleta2 != null) paleta2.Mover();
-            
+        paleta1 = new Paleta(input, 1);
+        paleta1.ResetearPOS();
+        paleta2 = new Paleta(input, 2);
+        paleta2.ResetearPOS();
+        pelota = new PelotaPong();
+        puntosJ1 = 0;
+        puntosJ2 = 0;
+        this.estado = EstadoJuego.JUGANDO;
+        if (modoIA) {
+            ia = new IA_Pong(pelota, paleta2, 2);
+        } else {
+            ia = null;
         }
     }
- }
+
+    @Override
+    public String getGanador() {
+        return Nombre;
+    }
+
+    @Override
+    public String getPerdedor() {
+        return Nombre;
+    }
+
+    @Override
+    protected void actualizarLogicaJuego() {
+        if (this.estado == EstadoJuego.MENU) {
+            if (input.isUpPressed() || input.isWPressed()) {
+                menu.setSeleccion(Math.max(0, menu.getSeleccion() - 1));
+            }
+            if (input.isDownPressed() || input.isSPressed()) {
+                menu.setSeleccion(Math.min(2, menu.getSeleccion() + 1));
+            }
+            if (input.isEnterPressed()) {
+                if (menu.getSeleccion() == 2) {
+                    GameLoop.terminarJuego(); // vuelve al Launcher
+                    return;
+                }
+                modoIA = (menu.getSeleccion() == 0); // opcion 0 = vs IA
+                crearPartida();
+            }
+            return;
+        }
+
+        if (this.estado == EstadoJuego.GAME_OVER) {
+            if (input.isEnterPressed()) {
+                reiniciar();
+            }
+            return;
+        }
+
+        if (this.estado == EstadoJuego.JUGANDO) {
+            if (paleta1 != null) paleta1.Mover();
+            if (modoIA) {
+                if (ia != null) ia.calcularMovimiento();
+            } else {
+                if (paleta2 != null) paleta2.Mover();
+            }
+            if (pelota != null) {
+                pelota.mover();
+                pelota.rebotarParedes();
+
+                if (collisionManager.colisiona(pelota, paleta1)) {
+                    pelota.rebotarPaleta(paleta1);
+                }
+                if (collisionManager.colisiona(pelota, paleta2)) {
+                    pelota.rebotarPaleta(paleta2);
+                }
+
+                if (pelota.salioIzquierda()) {
+                    puntosJ2++;
+                    pelota.reiniciar(false); // sirve hacia la izquierda (perdedor)
+                }
+                if (pelota.salioDerecha()) {
+                    puntosJ1++;
+                    if (modoIA && ia != null) ia.incrementarDificultad(); // IA mas rapida con cada punto
+                    pelota.reiniciar(true); // sirve hacia la derecha (perdedor)
+                }
+
+                if (puntosJ1 >= PUNTOS_MAX || puntosJ2 >= PUNTOS_MAX) {
+                    estado = EstadoJuego.GAME_OVER;
+                }
+            }
+        }
+    }
+
+}
 

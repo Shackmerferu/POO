@@ -730,6 +730,9 @@ public class Launcher extends JFrame {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
+        if (vj instanceof JuegoPong) {
+            ((JuegoPong) vj).setPuntosMax(g.winPoints); // pasa los puntos del config al juego
+        }
 
         Launcher.this.setVisible(false);
 
@@ -739,7 +742,7 @@ public class Launcher extends JFrame {
 
         new Thread(() -> {
             try {
-               
+                
                 gl.run(Constantes.FPS); 
             } catch (Exception ex) {
                 ex.printStackTrace();
