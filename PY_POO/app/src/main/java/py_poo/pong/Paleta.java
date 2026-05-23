@@ -19,31 +19,31 @@ public class Paleta extends ObjetoGrafico implements Movible {
 
     @Override
     public void Mover() {
-       int direccion = 0;
+       int direccionY = 0;
 
        
         if (idJugador == 1) {
             if (input.isWPressed()) {
-                direccion = -1; 
+                direccionY = -1; 
             }
             if (input.isSPressed()) {
-                direccion = 1;  
+                direccionY = 1;  
             }
         }
 
        
         if (idJugador == 2) {
             if (input.isUpPressed()) {
-                direccion = -1; 
+                direccionY = -1; 
             }
             if (input.isDownPressed()) {
-                direccion = 1;  
+                direccionY = 1;  
             }
         }
 
         
-        if (direccion != 0) {
-            int nuevaY = (int) (getY() + (direccion * velocidad));
+        if (direccionY != 0) {
+            int nuevaY = (int) (getY() + (direccionY * velocidad));
             
             
             if (nuevaY >= 0 && nuevaY <= (600 - 100)) { 

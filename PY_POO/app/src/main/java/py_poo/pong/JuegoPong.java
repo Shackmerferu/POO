@@ -27,9 +27,12 @@ public class JuegoPong extends VideoJuego {
         this.input = new InputManager(); 
         
    
-        this.menu = new MenuPong(input, null); 
-        
-        
+        this.menu = new MenuPong(input, this); 
+        this.menu.setAlwaysOnTop(true);  
+        this.menu.setVisible(true);       
+        this.menu.requestFocus();
+        this.menu.setAlwaysOnTop(false);
+
         this.estado = EstadoJuego.MENU;
     }
 
@@ -40,9 +43,6 @@ public class JuegoPong extends VideoJuego {
     @Override
     public void renderizar(Graphics g){
         super.renderizar(g);
-        if (this.estado == EstadoJuego.MENU && menu != null) {
-            menu.dibujar(g); 
-        }
         if(estado == EstadoJuego.JUGANDO){
             if(paleta1 != null) {
                 paleta1.dibujar(g);

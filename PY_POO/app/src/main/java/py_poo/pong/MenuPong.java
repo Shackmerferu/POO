@@ -1,89 +1,87 @@
 package py_poo.pong;
 
 import java.awt.Color;
-import java.awt.Font;
+import java.awt.Component;
 import java.awt.Graphics;
-
-import py_poo.core.Constantes;
-import py_poo.input.InputManager;
-import py_poo.input.MouseManager;
-import py_poo.ui.Boton;
-import py_poo.ui.MenuPrincipal;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import py_poo.ui.MenuPrincipal; 
 
 public class MenuPong extends MenuPrincipal {
-    private Boton botonJugar;
-    private Boton botonSalir;
-    private InputManager input;
-    private MouseManager mouse;
 
-    public MenuPong(InputManager input, MouseManager mouse) {
-        this.input = input;
-        this.mouse = mouse;
-        int centerX = Constantes.WIDTH / 2 - 100;
-        int centerY = Constantes.HEIGHT / 2 - 50;
-        botonJugar = new Boton("Jugar", centerX, centerY, 200, 50, () -> {
-            botonJugar.click();
-            System.out.println("Iniciar juego...");
-        });
-        botonSalir = new Boton("Salir", centerX, centerY + 70, 200, 50, () -> {
-            botonSalir.click();
-            // Acción al hacer clic en "Salir"
-            System.out.println("Salir del juego...");
-            System.exit(0);
-        });
-    }
-
-    @Override
-    public void actualizar() {
-        if (input.isUpPressed()) {
-            botonJugar.setSeleccionado(true);
-            botonSalir.setSeleccionado(false);
-        } else if (input.isDownPressed()) {
-            botonJugar.setSeleccionado(false);
-            botonSalir.setSeleccionado(true);
-        }
-
-        if (input.isEnterPressed()) {
-            if (botonJugar.contains(mouse.getX(), mouse.getY())) {
-                botonJugar.click();
-            } else if (botonSalir.contains(mouse.getX(), mouse.getY())) {
-                botonSalir.click();
-            }
-        }
-    }
-
-    public void renderizar(Graphics g) {
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
-
-        Font fuenteTitulo = g.getFont().deriveFont(Font.BOLD, 48f);
-        g.setFont(fuenteTitulo);
-        g.setColor(Color.WHITE);
-        String titulo = "PONG";
-        int textWidth = g.getFontMetrics().stringWidth(titulo);
-        g.drawString(titulo, (Constantes.WIDTH - textWidth) / 2, 150);
-
-        botonJugar.renderizar(g);
-        botonSalir.renderizar(g);
-    }
-//Revisar todo esto, es para dejarlo funcional.
-   public void dibujar(java.awt.Graphics g) {
-    // 1. Pintamos el fondo negro para el menú del Pong
-    g.setColor(java.awt.Color.BLACK);
-    g.fillRect(0, 0, 800, 600); // Ajustalo a la resolución de tu pantalla (800x600)
-
-    // 2. Configuramos el título principal
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.BOLD, 45));
-    g.setColor(java.awt.Color.GREEN); // Verde retro / cyberpunk
-    g.drawString("ARCADE PONG", 260, 200);
-
-    // 3. Configuramos los textos de instrucciones
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 18));
-    g.setColor(java.awt.Color.WHITE);
-    g.drawString("PRESIONA 'ENTER' PARA COMENZAR", 240, 340);
+    private JuegoPong juego;
     
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 14));
-    g.setColor(java.awt.Color.GRAY);
-    g.drawString("Controles: W/S (J1)  |  Flechas Arriba/Abajo (J2)", 205, 400);
-}
+
+    public MenuPong(py_poo.input.InputManager input, JuegoPong juego) {
+       
+        super(
+            "Arcade Pong - Menú Principal", 
+            "ARCADE PONG", 
+            Color.GREEN,
+            "J1: W / S", 
+            "J2: Flechas" 
+        );
+        this.juego = juego;
+
+      
+        this.tarjetaCentral.setLayout(new BoxLayout(this.tarjetaCentral, BoxLayout.Y_AXIS));
+
+        
+        JButton btnNuevaPartida = new JButton("NUEVA PARTIDA");
+        JButton btnOpciones = new JButton("OPCIONES");
+        JButton btnSalir = new JButton("SALIR");
+
+       
+        btnNuevaPartida.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnOpciones.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnSalir.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        
+        this.tarjetaCentral.add(Box.createVerticalStrut(50));
+
+        
+        btnNuevaPartida.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               
+                MenuPong.this.setVisible(false);
+                MenuPong.this.dispose();
+                if (juego != null) {
+                    juego.crearPartida(); 
+                }
+            }
+        });
+
+        
+        btnOpciones.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Opciones, seguimos laburando loco para");
+            }
+        });
+
+       
+        btnSalir.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MenuPong.this.setVisible(false);
+                MenuPong.this.dispose();
+                System.exit(0); 
+            }
+        });
+
+        
+        this.tarjetaCentral.add(btnNuevaPartida);
+        this.tarjetaCentral.add(Box.createVerticalStrut(15));
+        this.tarjetaCentral.add(btnOpciones);
+        this.tarjetaCentral.add(Box.createVerticalStrut(15));
+        this.tarjetaCentral.add(btnSalir);
+    }
+
+
+  
 }
