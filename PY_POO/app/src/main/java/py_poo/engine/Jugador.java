@@ -1,14 +1,16 @@
 package py_poo.engine;
 
-public final class Jugador {
+public  class Jugador {
     private String Nombre;
-    private static int id = 0;
+    private  int id;
+    private static int contadorid = 0;
     public Jugador(){
-        this.id=id++;
+        this.id=contadorid++;
         this.Nombre="Player";
     }
+
     public Jugador(String Nombre){
-        this.id=id++;
+        this.id=contadorid++;
         this.Nombre=Nombre;
     }
     public void setNombre(String Nombre){
