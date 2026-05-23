@@ -703,7 +703,7 @@ public class Launcher extends JFrame {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-
+        vj.setNombreJugador(player);
         Launcher.this.setVisible(false);
 
 
