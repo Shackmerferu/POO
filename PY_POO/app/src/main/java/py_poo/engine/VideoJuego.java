@@ -20,6 +20,7 @@ public abstract class VideoJuego implements JuegoLoopable {
     protected List<Jugador> Jugador;
     private String Resultado;
     protected RankingManager rankingManager = new RankingManager();
+    protected String nombreJugadorPrincipal;
 
 
     public void iniciar() {
@@ -163,7 +164,8 @@ public abstract class VideoJuego implements JuegoLoopable {
         try {
             if (J1 != null) {
                 Puntuacion.add(0);
-            } else if (J2 != null) {
+            }
+            if (J2 != null) {
                 Puntuacion.add(0);
             }
         } catch (Exception e) {
@@ -179,6 +181,9 @@ public abstract class VideoJuego implements JuegoLoopable {
             Puntuacion.clear();
         }
 
+    public void setNombreJugador(String nombre) {
+        this.nombreJugadorPrincipal = nombre;
+    }
     }
 
 
