@@ -2,9 +2,10 @@ package py_poo.engine;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.Graphics;
+
 import py_poo.entities.ObjetoGrafico;
 import py_poo.interfaces.JuegoLoopable;
+import py_poo.loderunner.Nivel;
 
 public abstract class VideoJuego implements JuegoLoopable {
     protected String Nombre;

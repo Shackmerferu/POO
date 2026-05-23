@@ -44,6 +44,13 @@ public class PelotaPong extends ObjetoGrafico {
 
         dy = factorAngulo * velocidadBase;
 
+        // empujar la pelota fuera de la paleta para evitar rebotes multiples
+        if (dx > 0) {
+            setX(p.getX() + p.getWidth());
+        } else {
+            setX(p.getX() - getWidth());
+        }
+
         aumentarVelocidad();
     }
 
