@@ -16,10 +16,10 @@ import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,12 +47,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import py_poo.core.Constantes;
-import py_poo.utils.CargadorRecursos;
 import py_poo.core.GameLoop;
 import py_poo.engine.VideoJuego;
 import py_poo.loderunner.JuegoLodeRunner;
 import py_poo.pong.JuegoPong;
 import py_poo.spaceinvaders.JuegoSpaceInvaders;
+import py_poo.utils.CargadorRecursos;
 
 
 public class Launcher extends JFrame {
@@ -730,10 +730,7 @@ public class Launcher extends JFrame {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if (vj instanceof JuegoPong) {
-            ((JuegoPong) vj).setPuntosMax(g.winPoints); // pasa los puntos del config al juego
-        }
-
+        vj.setNombreJugador(player);
         Launcher.this.setVisible(false);
 
 

@@ -6,6 +6,7 @@ import java.util.List;
 import py_poo.entities.ObjetoGrafico;
 import py_poo.interfaces.JuegoLoopable;
 import py_poo.loderunner.Nivel;
+import py_poo.ranking.RankingManager;
 
 public abstract class VideoJuego implements JuegoLoopable {
     protected String Nombre;
@@ -17,8 +18,11 @@ public abstract class VideoJuego implements JuegoLoopable {
     private int ResX;
     private int ResY;
     protected boolean Fullscreen;
-    private List<Jugador> Jugador;
+    protected List<Jugador> Jugador;
     private String Resultado;
+    protected RankingManager rankingManager = new RankingManager();
+    protected String nombreJugadorPrincipal;
+
 
     public void iniciar() {
         this.Activo = true;
@@ -60,6 +64,14 @@ public abstract class VideoJuego implements JuegoLoopable {
         this.Activo = false;
         this.estado = estadoFinal;
         this.Resultado = resultado;
+
+        if (Jugador!=null && Puntuacion!=null){
+            for (int i = 0; i < Jugador.size(); i++) {
+                String nombre=Jugador.get(i).getNombre();
+                int puntos= i< Puntuacion.size() ? Puntuacion.get(i):0;
+                rankingManager.agregarPuntaje(nombre,this.Nombre,puntos);
+            }
+        }
 
         if (this.NivelActual != null) {
             this.NivelActual.finalizarNivel();
@@ -154,7 +166,8 @@ public abstract class VideoJuego implements JuegoLoopable {
         try {
             if (J1 != null) {
                 Puntuacion.add(0);
-            } else if (J2 != null) {
+            }
+            if (J2 != null) {
                 Puntuacion.add(0);
             }
         } catch (Exception e) {
@@ -170,6 +183,9 @@ public abstract class VideoJuego implements JuegoLoopable {
             Puntuacion.clear();
         }
 
+    public void setNombreJugador(String nombre) {
+        this.nombreJugadorPrincipal = nombre;
+    }
     }
 
 
