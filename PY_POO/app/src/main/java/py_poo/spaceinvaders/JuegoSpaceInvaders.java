@@ -13,17 +13,17 @@ public class JuegoSpaceInvaders extends VideoJuego {
     
     @Override
     public void iniciar() {
-        super.iniciar(); 
+        super.iniciar();
         
-     
-        this.input = new InputManager(); 
+        this.input = new InputManager();
         
-   
-        this.menu = new MenuSpaceInvaders(input, null); 
+        this.menu = new MenuSpaceInvaders(this.input, this);
         
+        this.menu.setVisible(true);
         
         this.estado = EstadoJuego.MENU;
     }
+    
     @Override
     protected void actualizarLogicaJuego() {
     if (this.estado == EstadoJuego.MENU) {
@@ -41,8 +41,8 @@ public class JuegoSpaceInvaders extends VideoJuego {
     @Override
     public void renderizar(Graphics g){
         super.renderizar(g);
-        if (this.estado == EstadoJuego.MENU && menu != null) {
-            menu.dibujar(g); 
+        if (this.estado == EstadoJuego.JUGANDO) {
+
         }
     }
    

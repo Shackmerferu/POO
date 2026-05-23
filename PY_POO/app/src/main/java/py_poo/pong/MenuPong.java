@@ -2,86 +2,58 @@ package py_poo.pong;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import py_poo.ui.MenuPrincipal; 
+
+import py_poo.core.Constantes;
+import py_poo.input.InputManager;
+import py_poo.ui.MenuPrincipal;
 
 public class MenuPong extends MenuPrincipal {
+    private InputManager input;
+    private int seleccion;
 
-    private JuegoPong juego;
-    
-
-    public MenuPong(py_poo.input.InputManager input, JuegoPong juego) {
-       
-        super(
-            "Arcade Pong - Menú Principal", 
-            "ARCADE PONG", 
-            Color.GREEN,
-            "J1: W / S", 
-            "J2: Flechas" 
-        );
-        this.juego = juego;
-
-      
-        this.tarjetaCentral.setLayout(new BoxLayout(this.tarjetaCentral, BoxLayout.Y_AXIS));
-
-        
-        JButton btnNuevaPartida = new JButton("NUEVA PARTIDA");
-        JButton btnOpciones = new JButton("OPCIONES");
-        JButton btnSalir = new JButton("SALIR");
-
-       
-        btnNuevaPartida.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnOpciones.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnSalir.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        
-        this.tarjetaCentral.add(Box.createVerticalStrut(50));
-
-        
-        btnNuevaPartida.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-               
-                MenuPong.this.setVisible(false);
-                MenuPong.this.dispose();
-                if (juego != null) {
-                    juego.crearPartida(); 
-                }
-            }
-        });
-
-        
-        btnOpciones.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null, "Opciones, seguimos laburando loco para");
-            }
-        });
-
-       
-        btnSalir.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MenuPong.this.setVisible(false);
-                MenuPong.this.dispose();
-                System.exit(0); 
-            }
-        });
-
-        
-        this.tarjetaCentral.add(btnNuevaPartida);
-        this.tarjetaCentral.add(Box.createVerticalStrut(15));
-        this.tarjetaCentral.add(btnOpciones);
-        this.tarjetaCentral.add(Box.createVerticalStrut(15));
-        this.tarjetaCentral.add(btnSalir);
+    public MenuPong(InputManager input, Object mouse) {          
+        super("ARCADE PONG", "ARCADE PONG", Color.GREEN, "W/S para J1", "Flechas Arriba/Abajo para J2");
+        this.input = input;
+        this.seleccion = 0;
     }
 
+    public int getSeleccion() {
+        return seleccion;
+    }
 
-  
+    public void setSeleccion(int seleccion) {
+        this.seleccion = seleccion;
+    }
+
+    @Override
+    public void actualizar() {
+    }
+
+    public void dibujar(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
+
+        g.setFont(new Font("Consolas", Font.BOLD, 45));
+        g.setColor(Color.GREEN);
+        g.drawString("ARCADE PONG", 260, 200);
+
+        String[] opciones = {"1 JUGADOR (VS IA)", "2 JUGADORES", "SALIR"}; // opcion 2 = salir al Launcher
+        g.setFont(new Font("Consolas", Font.PLAIN, 20));
+        for (int i = 0; i < opciones.length; i++) {
+            if (i == seleccion) {
+                g.setColor(Color.YELLOW);
+                g.drawString("> " + opciones[i], 280, 310 + i * 35);
+            } else {
+                g.setColor(Color.WHITE);
+                g.drawString("  " + opciones[i], 280, 310 + i * 35);
+            }
+        }
+
+        g.setFont(new Font("Consolas", Font.PLAIN, 14));
+        g.setColor(Color.GRAY);
+        g.drawString("W/S o Flechas para mover | ENTER para seleccionar", 205, 420);
+        g.drawString("Controles: W/S (J1)  |  Flechas Arriba/Abajo (J2)", 205, 440);
+    }
 }

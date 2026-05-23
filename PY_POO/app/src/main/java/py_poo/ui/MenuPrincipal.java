@@ -8,6 +8,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import py_poo.input.InputManager;
+import py_poo.input.MouseManager;
+
 public class MenuPrincipal extends JFrame{
     protected JLabel tituloLbl;
     protected JLabel ctrlJ1;
@@ -38,7 +41,7 @@ public class MenuPrincipal extends JFrame{
         tarjetaCentral.setBackground(Color.LIGHT_GRAY);
         add(tarjetaCentral, BorderLayout.CENTER);
     }
-    
+
     public void actualizar() {
     }
 
