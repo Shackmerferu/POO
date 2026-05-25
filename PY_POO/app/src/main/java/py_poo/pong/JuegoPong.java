@@ -156,7 +156,6 @@ public class JuegoPong extends VideoJuego {
 
         if (this.estado == EstadoJuego.JUGANDO) {
             if (paleta1 != null) paleta1.Mover();
-            if(Input.iskeypressed())
             if (modoIA) {
                 if (ia != null) ia.calcularMovimiento();
             } else {
