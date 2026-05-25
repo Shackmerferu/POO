@@ -111,7 +111,7 @@ public class JuegoPong extends VideoJuego {
         puntosJ2 = 0;
         this.estado = EstadoJuego.JUGANDO;
         if (modoIA) {
-            ia = new IA_Pong(pelota, paleta2, 2);
+            ia = new IA_Pong(pelota, paleta2, 1);
         } else {
             ia = null;
         }
@@ -149,13 +149,14 @@ public class JuegoPong extends VideoJuego {
 
         if (this.estado == EstadoJuego.GAME_OVER) {
             if (input.isEnterPressed()) {
-                reiniciar();
+                GameLoop.terminarJuego();
             }
             return;
         }
 
         if (this.estado == EstadoJuego.JUGANDO) {
             if (paleta1 != null) paleta1.Mover();
+            if(Input.iskeypressed())
             if (modoIA) {
                 if (ia != null) ia.calcularMovimiento();
             } else {
@@ -184,6 +185,7 @@ public class JuegoPong extends VideoJuego {
 
                 if (puntosJ1 >= PUNTOS_MAX || puntosJ2 >= PUNTOS_MAX) {
                     estado = EstadoJuego.GAME_OVER;
+
                 }
             }
         }

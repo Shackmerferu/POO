@@ -159,8 +159,8 @@ public class Launcher extends JFrame {
         setLocationRelativeTo(null);
         games.addAll(Arrays.asList(
             new GameEntry("Pong", "🏓", "imagenes/Portada Pong.png"),
-            new GameEntry("Space Invaders", "👾", null),
-            new GameEntry("Lode Runner", "🏃", null)
+            new GameEntry("Space Invaders", "👾", "imagenes/Portada Space.png"),
+            new GameEntry("Lode Runner", "🏃", "imagenes/Portada Lode_Runner.png")
         ));
         JPanel root = darkPanel(new BorderLayout());
         root.add(buildTopBar(), BorderLayout.NORTH);

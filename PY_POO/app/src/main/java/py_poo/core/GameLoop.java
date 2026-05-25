@@ -1,6 +1,7 @@
 package py_poo.core;
 
 import java.awt.Graphics2D;
+
 import com.entropyinteractive.Keyboard;
 import com.entropyinteractive.Mouse;
 import com.entropyinteractive.MouseWheel;

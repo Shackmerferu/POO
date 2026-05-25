@@ -79,7 +79,6 @@ public abstract class VideoJuego implements JuegoLoopable {
         if (this.Entidades != null) {
             this.Entidades.clear();
         }
-
     }
 
     protected void pausa() {

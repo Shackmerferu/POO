@@ -20,7 +20,7 @@ public class IA_Pong {
 
     public void setDificultad(int dificultad) {
         this.dificultad = dificultad;
-        velocidad = 5; // arranca igual que el jugador y luego aumenta con el puntaje
+        velocidad = 3; // arranca igual que el jugador y luego aumenta con el puntaje
         switch (dificultad) {
             case 1: margenError = 30; margenMinimo = 15; break; // facil
             case 2: margenError = 15; margenMinimo = 3;  break; // medio

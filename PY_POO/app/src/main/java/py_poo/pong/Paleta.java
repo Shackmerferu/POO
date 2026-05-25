@@ -9,7 +9,7 @@ import py_poo.input.InputManager;
 import py_poo.interfaces.Movible;
 
 public class Paleta extends ObjetoGrafico implements Movible {
-    private int velocidad = 5;
+    private int velocidad = 3;
     private InputManager input;
     private int idJugador;
 
