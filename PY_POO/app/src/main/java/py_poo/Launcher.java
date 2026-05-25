@@ -45,7 +45,13 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import py_poo.core.Constantes;
+import py_poo.core.GameLoop;
+import py_poo.engine.VideoJuego;
+import py_poo.loderunner.JuegoLodeRunner;
 import py_poo.pong.JuegoPong;
+import py_poo.spaceinvaders.JuegoSpaceInvaders;
+
 
 public class Launcher extends JFrame {
 
@@ -117,13 +123,13 @@ public class Launcher extends JFrame {
 
     static class GameEntry {
         String name, icon;
-        boolean fullscreen, sound = true, music = true, vsAI = true;
+        boolean fullscreen, sound = true, music = true;
         String skin = "original", speed = "media";
         int winPoints = 15;
 
         GameEntry(String name, String icon) { this.name = name; this.icon = icon; }
         void resetConfig() {
-            fullscreen = false; sound = true; music = true; vsAI = true;
+            fullscreen = false; sound = true; music = true;
             skin = "original"; speed = "media"; winPoints = 15;
         }
     }
@@ -618,14 +624,10 @@ public class Launcher extends JFrame {
             combSpeed.setSelectedItem(g.speed);
             addFormRow(form, "Velocidad invasores", combSpeed);
         }
-        JCheckBox cbVsAI = null;
-
         if ("Pong".equals(g.name)) {
             combPoints = darkCombo(new String[]{"11", "15", "21"});
             combPoints.setSelectedItem(String.valueOf(g.winPoints));
             addFormRow(form, "Puntos para ganar", combPoints);
-            cbVsAI = darkCheck("", g.vsAI);
-            addFormRow(form, "vs IA", cbVsAI);
         }
 
         p.add(form, BorderLayout.CENTER);
@@ -651,7 +653,6 @@ public class Launcher extends JFrame {
             g.skin       = (String) combSkin.getSelectedItem();
             if (fSpeed  != null) g.speed     = (String) fSpeed.getSelectedItem();
             if (fPoints != null) g.winPoints = Integer.parseInt((String) fPoints.getSelectedItem());
-            if (cbVsAI != null)  g.vsAI      = cbVsAI.isSelected();
             dlg.dispose();
         }));
 
@@ -695,18 +696,49 @@ public class Launcher extends JFrame {
             return;
         }
         GameEntry g = games.get(focused);
-        if ("Pong".equals(g.name)) {
-            JuegoPong pong = new JuegoPong();
-            pong.setOpJuego(g.vsAI);
+        VideoJuego vj = crearJuego(g.name);
+        if (vj == null) {
             JOptionPane.showMessageDialog(this,
-                    "Iniciando " + g.name + " como " + player + "...\n" +
-                    "vs IA: " + g.vsAI,
-                    "Lanzar juego", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "Iniciando " + g.name + " como " + player + "...",
-                    "Lanzar juego", JOptionPane.INFORMATION_MESSAGE);
+                    "Juego no implementado: " + g.name, "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        vj.setNombreJugador(player);
+        Launcher.this.setVisible(false);
+
+
+        GameLoop gl = new GameLoop(g.name, Constantes.WIDTH, Constantes.HEIGHT);
+        gl.setVideoJuego(vj);
+
+        new Thread(() -> {
+            try {
+               
+                gl.run(Constantes.FPS); 
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            } finally {
+                SwingUtilities.invokeLater(() -> Launcher.this.setVisible(true));
+            }
+        }).start();
+        
+        
+        /*
+        GameLoop gl = new GameLoop(g.name, Constantes.WIDTH, Constantes.HEIGHT);
+        gl.setVideoJuego(vj);
+
+        new Thread(() -> {
+            gl.run(Constantes.FPS);
+            SwingUtilities.invokeLater(() -> Launcher.this.setVisible(true));
+        }).start();*/
+    }
+
+    private VideoJuego crearJuego(String nombre) {
+        return switch (nombre) {
+            case "Pong" -> new JuegoPong();
+            case "Space Invaders" -> new JuegoSpaceInvaders();
+            case "Lode Runner" -> new JuegoLodeRunner();
+            default -> null;
+        };
     }
 
     // ─── Tabs ──────────────────────────────────────────────

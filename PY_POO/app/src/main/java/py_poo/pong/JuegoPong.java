@@ -11,53 +11,74 @@ import py_poo.input.InputManager;
 public class JuegoPong extends VideoJuego {
     private boolean OpJuego;
     private InputManager input;
-
+    private MenuPong menu;
+    private Paleta paleta1;
+    private Paleta paleta2;
     public void setOpJuego(boolean opJuego) {
         this.OpJuego = opJuego;
     }
 
+  @Override
     public void iniciar() {
-        super.iniciar();
+        
+        super.iniciar(); 
+        
+     
+        this.input = new InputManager(); 
+        
+   
+        this.menu = new MenuPong(input, null); 
+        
+        
         this.estado = EstadoJuego.MENU;
     }
 
-    public void actualizar() {
-        switch (estado) {
-            case MENU -> {
-                if (input != null) {
-                    if (input.isKeyPressed('1')) {
-                        OpJuego = false;
-                        estado = EstadoJuego.JUGANDO;
-                    } else if (input.isKeyPressed('2')) {
-                        OpJuego = true;
-                        estado = EstadoJuego.JUGANDO;
-                    }
-                }
-            }
-            case JUGANDO -> {
-                // lógica de la partida
-            }
-            case PAUSA -> {
-                // lógica de pausa
-            }
-        }
-    }
-
-    @Override
-    public void renderizar(Graphics g) {
-        if (estado == EstadoJuego.MENU) {
-            g.setColor(Color.BLACK);
-            g.fillRect(0, 0, 800, 600);
-            g.setColor(Color.WHITE);
-            g.setFont(new Font("Dialog", Font.BOLD, 36));
-            g.drawString("PONG", 340, 150);
-            g.setFont(new Font("Dialog", Font.PLAIN, 20));
-            g.drawString("Presiona 1 — 1 vs 1", 300, 280);
-            g.drawString("Presiona 2 — 1 vs Bot", 300, 330);
-        }
-    }
 
     public void pause(){
         estado = EstadoJuego.PAUSA;
     }
-}
+    @Override
+    public void renderizar(Graphics g){
+        super.renderizar(g);
+        if (this.estado == EstadoJuego.MENU && menu != null) {
+            menu.dibujar(g); 
+        }
+        if(estado == EstadoJuego.JUGANDO){
+            if(paleta1 != null) {
+                paleta1.dibujar(g);
+            }
+            if(paleta2 != null) {
+                paleta2.dibujar(g);
+            }
+        }
+    }
+    @Override
+    protected void crearPartida() {
+        
+    }
+    @Override
+    public String getGanador(){
+        return Nombre;
+
+    }
+    @Override
+    public String getPerdedor(){
+        return Nombre;
+
+    }
+   @Override
+ protected void actualizarLogicaJuego() {
+    if (this.estado == EstadoJuego.MENU) {
+            if (input.isEnterPressed()) {
+                crearPartida(); 
+            }
+            return; 
+    }
+    if (this.estado == EstadoJuego.JUGANDO) {
+            if (paleta1 != null) paleta1.Mover();
+            if (paleta2 != null) paleta2.Mover();
+            
+        }
+    }
+ }
+

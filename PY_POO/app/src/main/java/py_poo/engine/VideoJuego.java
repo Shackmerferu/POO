@@ -1,10 +1,13 @@
 package py_poo.engine;
 
+import java.util.ArrayList;
 import java.util.List;
-
+import java.awt.Graphics;
 import py_poo.entities.ObjetoGrafico;
+import py_poo.interfaces.JuegoLoopable;
+import py_poo.ranking.RankingManager;
 
-public abstract class VideoJuego {
+public abstract class VideoJuego implements JuegoLoopable {
     protected String Nombre;
     protected boolean Activo;
     protected EstadoJuego estado;
@@ -14,42 +17,173 @@ public abstract class VideoJuego {
     private int ResX;
     private int ResY;
     protected boolean Fullscreen;
-    private List<Jugador> Jugador;
+    protected List<Jugador> Jugador;
     private String Resultado;
+    protected RankingManager rankingManager = new RankingManager();
+    protected String nombreJugadorPrincipal;
 
-    protected void iniciar(){
+
+    public void iniciar() {
         this.Activo = true;
-        this.estado= EstadoJuego.MENU;
-        iniciapuntaje();
-        cargarNivel();
+        this.estado = EstadoJuego.MENU;
+        this.Entidades = new ArrayList<>();
+        this.Puntuacion = new ArrayList<>();
+        this.Jugador = new ArrayList<>();
+        iniciapuntaje(null, null);
     }
 
-    protected void actualizar(){}
+    public void actualizar() {
+        if (!Activo) {
+            return;
+        }
+        switch (estado) {
+            case MENU:
+                break;
+            case JUGANDO:
+              actualizarLogicaJuego(); // logica del juego
+                break;
+            case PAUSA:
+                break;
+            case GAME_OVER:
+                finalizar(EstadoJuego.GAME_OVER, "Fin del juego");
+                break;
+            case VICTORIA:
+                getResultado();
+                break;
 
-    protected void finalizar(){}
-      
-    protected void pausa(){}
+        }
+    }
 
-    protected void crearPartida(){}
+    public void finalizar() {
+        finalizar(EstadoJuego.GAME_OVER, "Juego cerro repentinamente");
+    }
 
-    protected void reiniciar(){}
-    
-    public void cargarNivel(){}
+    protected void finalizar(EstadoJuego estadoFinal, String resultado) {
+        this.Activo = false;
+        this.estado = estadoFinal;
+        this.Resultado = resultado;
 
-    public void getResultado(){}
+        if (Jugador!=null && Puntuacion!=null){
+            for (int i = 0; i < Jugador.size(); i++) {
+                String nombre=Jugador.get(i).getNombre();
+                int puntos= i< Puntuacion.size() ? Puntuacion.get(i):0;
+                rankingManager.agregarPuntaje(nombre,this.Nombre,puntos);
+            }
+        }
 
-    public void renderizar(java.awt.Graphics g){}
+        if (this.NivelActual != null) {
+            this.NivelActual.finalizarNivel();
+        }
+        if (this.Entidades != null) {
+            this.Entidades.clear();
+        }
 
-    public void getGanador(){}
+    }
 
-    public void getPerdedor(){}
+    protected void pausa() {
+        if (!Activo)
+            return;
+        if (this.estado == EstadoJuego.JUGANDO) {
+            this.estado = EstadoJuego.PAUSA;
+            System.out.println("JUEGO EN PAUSA");
+        }
+        if (this.estado == EstadoJuego.PAUSA) {
+            this.estado = EstadoJuego.JUGANDO;
+            System.out.println("JUEGO REANUDADO");
+        }
+    }
 
-    public List<Integer> getpuntaje(){return Puntuacion;}
 
-    public void iniciapuntaje(){}
+    protected void crearPartida() {
+        Entidades.clear();
+        iniciapuntaje(null, null);
+        renderizar(null);
+        this.estado = EstadoJuego.JUGANDO;
 
-    public void sumarPunto(int Puntaje){}
+    }
+    protected abstract void actualizarLogicaJuego();
 
-    public void resetPuntaje(){}
+    protected void reiniciar() {
 
-}
+        resetPuntaje();
+
+        this.estado = EstadoJuego.MENU;
+        this.Activo = true;
+        this.Resultado = null;
+
+        if (Entidades != null) {
+            Entidades.clear();
+        }
+        if (NivelActual != null) {
+            NivelActual.finalizarNivel();
+            NivelActual = null;
+        }
+        iniciar();
+
+    }
+
+    public void cargarNivel() {
+
+        if (Entidades != null) {
+            Entidades.clear();
+        }
+
+        if (NivelActual == null) {
+            System.out.println("ERROR NO HAY MAS NIVEL PAPA");
+            return;
+        }
+
+        NivelActual.cargar();
+
+        this.estado = EstadoJuego.JUGANDO;
+        this.Activo = true;
+        System.out.println("Nivel cargado: " + NivelActual.toString());
+    }
+
+    public String getResultado() {
+        return Resultado;
+    }
+
+    public void renderizar(java.awt.Graphics g) {
+        for (ObjetoGrafico entidad : Entidades) {
+            entidad.display(g);
+
+        }
+
+    }
+
+    public abstract String getGanador();
+
+    public abstract String getPerdedor();
+
+    public List<Integer> getpuntaje() {
+        return Puntuacion;
+    }
+
+    public void iniciapuntaje(Jugador J1, Jugador J2) {
+        try {
+            if (J1 != null) {
+                Puntuacion.add(0);
+            }
+            if (J2 != null) {
+                Puntuacion.add(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+        public void sumarPunto( int id, int Puntaje){
+            Puntuacion.set(id, Puntuacion.get(id) + Puntaje);
+        }
+
+        public void resetPuntaje() {
+            Puntuacion.clear();
+        }
+
+    public void setNombreJugador(String nombre) {
+        this.nombreJugadorPrincipal = nombre;
+    }
+    }
+
+

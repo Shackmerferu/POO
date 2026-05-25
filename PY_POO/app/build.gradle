@@ -26,6 +26,9 @@ dependencies {
 
     // BucleJuego (game loop engine)
     implementation files('src/main/resources/libs/bucleJuego.jar')
+
+    // SQLite JDBC
+    implementation 'org.xerial:sqlite-jdbc:3.51.0.0'
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
