@@ -4,7 +4,7 @@ import java.util.List;
 
 import py_poo.entities.ObjetoGrafico;
 
-public class Nivel {
+public abstract class Nivel {
     public static final char VACIO = ' ';
     public static final char LADRILLO = '#';
     public static final char LADRILLO_IRROMPIBLE = 'X';
@@ -16,6 +16,8 @@ public class Nivel {
     public static final char RECOLECTOR = 'R';
     public static final char PUERTA = 'P';
 
+    protected int Numero;
+    protected String[] Mapa;
     protected char[][] mapa;
     protected int tile_size = 40;
     protected List<ObjetoGrafico> Entidades;
@@ -23,20 +25,26 @@ public class Nivel {
     public int getTile_size() {
         return tile_size;
     }
-    public char getTile(int x , int y){
+
+    public char getTile(int x, int y) {
         return mapa[x][y];
     }
-    public void agregarEntidad(ObjetoGrafico entidad){
-        
-        Entidades.add(entidad);
-    }
 
-    public void finalizarNivel() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void agregarEntidad(ObjetoGrafico entidad) {
+        if (Entidades != null) {
+            Entidades.add(entidad);
+        }
     }
 
     public void cargar() {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
+    public void actualizar() {
+    }
+
+    public void renderizar() {
+    }
+
+    public void finalizarNivel() {
+    }
 }

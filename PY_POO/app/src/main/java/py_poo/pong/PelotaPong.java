@@ -42,7 +42,19 @@ public class PelotaPong extends ObjetoGrafico {
         double maxDesvio = p.getHeight() / 2.0;
         double factorAngulo = diferencia / maxDesvio;
 
-        dy = factorAngulo * velocidadBase;
+        if(Math.abs(diferencia)<=5.0){
+            double factorRan = (Math.random()*2)-1;
+            
+            if(factorRan==0){
+                factorRan=0.7;
+            }
+            dy = factorRan * velocidadBase;
+        }else{
+            maxDesvio = p.getHeight() / 2.0;
+            factorAngulo = diferencia / maxDesvio;
+            dy = factorAngulo * velocidadBase;
+        }
+       
 
         // empujar la pelota fuera de la paleta para evitar rebotes multiples
         if (dx > 0) {
