@@ -15,6 +15,7 @@ public class MenuPong extends MenuPrincipal {
     private int delay = 150;
 
     public MenuPong(InputManager input, Object mouse) {
+        super("Pong", "Menú Principal", Color.BLACK, "Jugar", "Salir");
         this.input = input;
         this.seleccion = 0;
     }

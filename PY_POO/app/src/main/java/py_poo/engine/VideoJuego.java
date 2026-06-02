@@ -39,15 +39,15 @@ public abstract class VideoJuego implements JuegoLoopable {
         }
         switch (estado) {
             case MENU:
-                actualizarLogicaJuego(); // permite navegar menu y salir
+                actualizarLogicaJuego(); 
                 break;
             case JUGANDO:
-              actualizarLogicaJuego(); // logica del juego
+              actualizarLogicaJuego(); 
                 break;
             case PAUSA:
                 break;
             case GAME_OVER:
-                actualizarLogicaJuego(); // permite reiniciar con Enter
+                actualizarLogicaJuego(); 
                 break;
             case VICTORIA:
                 getResultado();
