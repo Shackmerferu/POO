@@ -11,8 +11,8 @@ public class PelotaPong extends ObjetoGrafico {
     private double velocidadBase;
 
     public PelotaPong() {
-        super("imagenes/Pelota Pong.png");
-        this.velocidadBase = 5.5;
+        super("imagenes/Pong/Pelota Pong.png");
+        this.velocidadBase = 3.5;
         setDimension(new java.awt.Dimension(16, 16)); // fuerza tamano logico 16x16 (sprite 130x130 escalado)
         reiniciar();
     }
@@ -84,13 +84,13 @@ public class PelotaPong extends ObjetoGrafico {
         setX(Constantes.WIDTH / 2.0 - getWidth() / 2.0);
         setY(Constantes.HEIGHT / 2.0 - getHeight() / 2.0);
         dx = Math.random() < 0.5 ? velocidadBase : -velocidadBase;
-        dy = (Math.random() < 0.5 ? 1 : -1) * (velocidadBase * 0.6);
+
     }
 
     public void reiniciar(boolean haciaLaDerecha) { // sirve hacia el lado del perdedor
         setX(Constantes.WIDTH / 2.0 - getWidth() / 2.0);
         setY(Constantes.HEIGHT / 2.0 - getHeight() / 2.0);
         dx = haciaLaDerecha ? velocidadBase : -velocidadBase;
-        dy = (Math.random() < 0.5 ? 1 : -1) * (velocidadBase * 0.6);
+
     }
 }

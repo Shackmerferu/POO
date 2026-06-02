@@ -12,9 +12,9 @@ import py_poo.ui.MenuPrincipal;
 public class MenuPong extends MenuPrincipal {
     private InputManager input;
     private int seleccion;
+    private int delay = 150;
 
-    public MenuPong(InputManager input, Object mouse) {          
-        super("ARCADE PONG", "ARCADE PONG", Color.GREEN, "W/S para J1", "Flechas Arriba/Abajo para J2");
+    public MenuPong(InputManager input, Object mouse) {
         this.input = input;
         this.seleccion = 0;
     }

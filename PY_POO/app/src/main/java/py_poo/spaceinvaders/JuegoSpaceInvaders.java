@@ -32,7 +32,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
             }
             return; 
         }
-     //Si estamos jugando, acá va la física de la pelota y las paletas:   
+       
  }
     
     public void pause(){

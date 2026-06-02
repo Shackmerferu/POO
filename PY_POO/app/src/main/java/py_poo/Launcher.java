@@ -20,6 +20,7 @@ import java.awt.image.BufferedImage;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,6 +54,7 @@ import py_poo.engine.VideoJuego;
 import py_poo.loderunner.JuegoLodeRunner;
 import py_poo.pong.JuegoPong;
 import py_poo.spaceinvaders.JuegoSpaceInvaders;
+import py_poo.utils.CargadorRecursos;
 
 
 public class Launcher extends JFrame {
@@ -159,8 +161,8 @@ public class Launcher extends JFrame {
         setLocationRelativeTo(null);
         games.addAll(Arrays.asList(
             new GameEntry("Pong", "🏓", "imagenes/Portada Pong.png"),
-            new GameEntry("Space Invaders", "👾", null),
-            new GameEntry("Lode Runner", "🏃", null)
+            new GameEntry("Space Invaders", "👾", "imagenes/Portada Space.png"),
+            new GameEntry("Lode Runner", "🏃", "imagenes/Portada Lode_Runner.png")
         ));
         JPanel root = darkPanel(new BorderLayout());
         root.add(buildTopBar(), BorderLayout.NORTH);
