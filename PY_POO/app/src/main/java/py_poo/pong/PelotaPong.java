@@ -11,7 +11,7 @@ public class PelotaPong extends ObjetoGrafico {
     private double velocidadBase;
 
     public PelotaPong() {
-        super("imagenes/Pelota Pong.png");
+        super("imagenes/Pong/Pelota Pong.png");
         this.velocidadBase = 3.5;
         setDimension(new java.awt.Dimension(16, 16)); // fuerza tamano logico 16x16 (sprite 130x130 escalado)
         reiniciar();

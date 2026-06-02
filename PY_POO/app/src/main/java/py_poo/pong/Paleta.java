@@ -14,7 +14,7 @@ public class Paleta extends ObjetoGrafico implements Movible {
     private int idJugador;
 
     public Paleta(InputManager input, int idJugador) {
-        super(idJugador == 1 ? "imagenes/Paleta 1.png" : "imagenes/Paleta 2.png");
+        super(idJugador == 1 ? "imagenes/Pong/Paleta 1.png" : "imagenes/Pong/Paleta 2.png");
         this.input = input;
         this.idJugador = idJugador;
         setDimension(new java.awt.Dimension(20, 100)); // fuerza tamano logico (sprite x8 escalado al dibujar)
