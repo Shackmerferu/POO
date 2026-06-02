@@ -1,19 +1,22 @@
 package py_poo.collision;
 
-import java.awt.Rectangle;
 import java.util.List;
 
 import py_poo.entities.ObjetoGrafico;
 
-public class CollisionManager { //detectar,responder a colision
-    private Rectangle colision;
-
-        public void verificarColisiones(List<ObjetoGrafico> entidades) {
+public class CollisionManager {
+    public void verificarColisiones(List<ObjetoGrafico> entidades) {
+        for (int i = 0; i < entidades.size(); i++) {
+            for (int j = i + 1; j < entidades.size(); j++) {
+                if (colisiona(entidades.get(i), entidades.get(j))) {
+                    entidades.get(i).desaparecer();
+                    entidades.get(j).desaparecer();
+                }
+            }
+        }
     }
 
     public boolean colisiona(ObjetoGrafico a, ObjetoGrafico b) {
-        return false;
+        return a.getBounds().intersects(b.getBounds());
     }
-
-
 }

@@ -1,9 +1,5 @@
 package py_poo;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
