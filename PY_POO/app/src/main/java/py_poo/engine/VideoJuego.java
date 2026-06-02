@@ -2,9 +2,10 @@ package py_poo.engine;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.Graphics;
+
 import py_poo.entities.ObjetoGrafico;
 import py_poo.interfaces.JuegoLoopable;
+import py_poo.loderunner.Nivel;
 import py_poo.ranking.RankingManager;
 
 public abstract class VideoJuego implements JuegoLoopable {
@@ -38,6 +39,7 @@ public abstract class VideoJuego implements JuegoLoopable {
         }
         switch (estado) {
             case MENU:
+                actualizarLogicaJuego(); // permite navegar menu y salir
                 break;
             case JUGANDO:
               actualizarLogicaJuego(); // logica del juego
@@ -45,7 +47,7 @@ public abstract class VideoJuego implements JuegoLoopable {
             case PAUSA:
                 break;
             case GAME_OVER:
-                finalizar(EstadoJuego.GAME_OVER, "Fin del juego");
+                actualizarLogicaJuego(); // permite reiniciar con Enter
                 break;
             case VICTORIA:
                 getResultado();
@@ -77,7 +79,6 @@ public abstract class VideoJuego implements JuegoLoopable {
         if (this.Entidades != null) {
             this.Entidades.clear();
         }
-
     }
 
     protected void pausa() {

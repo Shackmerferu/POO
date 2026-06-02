@@ -19,6 +19,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,6 +52,7 @@ import py_poo.engine.VideoJuego;
 import py_poo.loderunner.JuegoLodeRunner;
 import py_poo.pong.JuegoPong;
 import py_poo.spaceinvaders.JuegoSpaceInvaders;
+import py_poo.utils.CargadorRecursos;
 
 
 public class Launcher extends JFrame {
@@ -122,18 +124,22 @@ public class Launcher extends JFrame {
     }
 
     static class GameEntry {
-        String name, icon;
+        String name, icon, coverPath;
         boolean fullscreen, sound = true, music = true;
         String skin = "original", speed = "media";
         int winPoints = 15;
+        BufferedImage cover;
 
-        GameEntry(String name, String icon) { this.name = name; this.icon = icon; }
+        GameEntry(String name, String icon, String coverPath) {
+            this.name = name; this.icon = icon; this.coverPath = coverPath;
+        }
         void resetConfig() {
             fullscreen = false; sound = true; music = true;
             skin = "original"; speed = "media"; winPoints = 15;
         }
     }
 
+    private final CargadorRecursos recursos = new CargadorRecursos();
     private final List<GameEntry> games = new ArrayList<>();
     private String player;
     private int focused;
@@ -152,9 +158,9 @@ public class Launcher extends JFrame {
         setMinimumSize(new Dimension(700, 500));
         setLocationRelativeTo(null);
         games.addAll(Arrays.asList(
-            new GameEntry("Pong", "🏓"),
-            new GameEntry("Space Invaders", "👾"),
-            new GameEntry("Lode Runner", "🏃")
+            new GameEntry("Pong", "🏓", "imagenes/Portada Pong.png"),
+            new GameEntry("Space Invaders", "👾", "imagenes/Portada Space.png"),
+            new GameEntry("Lode Runner", "🏃", "imagenes/Portada Lode_Runner.png")
         ));
         JPanel root = darkPanel(new BorderLayout());
         root.add(buildTopBar(), BorderLayout.NORTH);
@@ -278,6 +284,10 @@ public class Launcher extends JFrame {
         int W = 140, H = 180, ARC = 14;
         boolean[] hov = {false};
 
+        if (g.cover == null && g.coverPath != null) {
+            g.cover = recursos.cargarImagen(g.coverPath);
+        }
+
         JPanel card = new JPanel() {
             @Override protected void paintComponent(Graphics g0) {
                 Graphics2D gr = aa(g0);
@@ -290,10 +300,23 @@ public class Launcher extends JFrame {
                     gr.setColor(C_BORDER); gr.setStroke(new BasicStroke(0.8f));
                 }
                 gr.draw(round(1, 1, W-2, H-2, ARC));
-                gr.setFont(F_ICON);
-                FontMetrics fm = gr.getFontMetrics();
-                gr.setColor(new Color(255,255,255, sel ? 230 : 170));
-                gr.drawString(g.icon, (W - fm.stringWidth(g.icon)) / 2, H/2 + fm.getAscent()/2 - 6);
+
+                if (g.cover != null) {
+                    int pad = 8;
+                    int maxW = W - pad * 2;
+                    int maxH = H - pad * 2;
+                    double scale = Math.min((double) maxW / g.cover.getWidth(), (double) maxH / g.cover.getHeight());
+                    int drawW = (int) (g.cover.getWidth() * scale);
+                    int drawH = (int) (g.cover.getHeight() * scale);
+                    int drawX = (W - drawW) / 2;
+                    int drawY = (H - drawH) / 2;
+                    gr.drawImage(g.cover, drawX, drawY, drawW, drawH, null);
+                } else {
+                    gr.setFont(F_ICON);
+                    FontMetrics fm = gr.getFontMetrics();
+                    gr.setColor(new Color(255,255,255, sel ? 230 : 170));
+                    gr.drawString(g.icon, (W - fm.stringWidth(g.icon)) / 2, H/2 + fm.getAscent()/2 - 6);
+                }
                 gr.dispose();
             }
             @Override public Dimension getPreferredSize() { return new Dimension(W, H); }
@@ -544,7 +567,11 @@ public class Launcher extends JFrame {
                 case "Lode Runner" -> "🏃";
                 default -> "🎮";
             };
-            games.add(new GameEntry(name, icon));
+            String coverPath = switch (name) {
+                case "Pong" -> "imagenes/Portada Pong.png";
+                default -> null;
+            };
+            games.add(new GameEntry(name, icon, coverPath));
             focused = games.size() - 1;
             rebuildCarousel();
             scrollToFocused();
@@ -712,7 +739,7 @@ public class Launcher extends JFrame {
 
         new Thread(() -> {
             try {
-               
+                
                 gl.run(Constantes.FPS); 
             } catch (Exception ex) {
                 ex.printStackTrace();

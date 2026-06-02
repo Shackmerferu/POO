@@ -1,13 +1,14 @@
 package py_poo.core;
 
 import java.awt.Graphics2D;
+
 import com.entropyinteractive.Keyboard;
 import com.entropyinteractive.Mouse;
 import com.entropyinteractive.MouseWheel;
 
 import py_poo.interfaces.JuegoLoopable;
 
-public class GameLoop extends com.entropyinteractive.JGame {
+public class GameLoop extends com.entropyinteractive.Game {
     private static GameLoop instancia;
     private JuegoLoopable videojuego;
     private static double deltaTime;
@@ -77,7 +78,7 @@ public class GameLoop extends com.entropyinteractive.JGame {
     }
     
 public void run(int fps) {
-    super.run(fps); 
+    super.run(1.0 / fps); // convierte FPS a segundos por frame (0.016 para 60)
 }
 /*
     public void run() {
