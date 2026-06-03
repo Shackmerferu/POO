@@ -2,9 +2,12 @@ package py_poo.engine;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.Graphics;
+
+import py_poo.core.GameLoop;
 import py_poo.entities.ObjetoGrafico;
+import py_poo.input.InputManager;
 import py_poo.interfaces.JuegoLoopable;
+import py_poo.loderunner.Nivel;
 import py_poo.ranking.RankingManager;
 
 public abstract class VideoJuego implements JuegoLoopable {
@@ -21,7 +24,11 @@ public abstract class VideoJuego implements JuegoLoopable {
     private String Resultado;
     protected RankingManager rankingManager = new RankingManager();
     protected String nombreJugadorPrincipal;
-
+    protected InputManager input;
+    protected boolean soundEnabled = true;
+    private boolean lastCtrlState;
+    private boolean lastBackslashState;
+    private boolean lastPauseState;
 
     public void iniciar() {
         this.Activo = true;
@@ -36,22 +43,52 @@ public abstract class VideoJuego implements JuegoLoopable {
         if (!Activo) {
             return;
         }
+        manejarControlesGlobales();
         switch (estado) {
             case MENU:
+                actualizarLogicaJuego();
                 break;
             case JUGANDO:
-              actualizarLogicaJuego(); // logica del juego
+                actualizarLogicaJuego();
                 break;
             case PAUSA:
                 break;
             case GAME_OVER:
-                finalizar(EstadoJuego.GAME_OVER, "Fin del juego");
+                actualizarLogicaJuego();
                 break;
             case VICTORIA:
                 getResultado();
                 break;
-
         }
+    }
+
+    private void manejarControlesGlobales() {
+        if (input == null) return;
+
+        boolean pNow = input.isPPressed();
+        if (pNow && !lastPauseState && (estado == EstadoJuego.JUGANDO || estado == EstadoJuego.PAUSA)) {
+            pausa();
+        }
+        lastPauseState = pNow;
+
+        if (input.isEscapePressed()) {
+            if (estado == EstadoJuego.JUGANDO || estado == EstadoJuego.PAUSA) {
+                reiniciar();
+            }
+        }
+
+        boolean ctrlNow = input.isCtrlPressed();
+        if (ctrlNow && !lastCtrlState) {
+            soundEnabled = !soundEnabled;
+            System.out.println("Sonido: " + (soundEnabled ? "ON" : "OFF"));
+        }
+        lastCtrlState = ctrlNow;
+
+        boolean backslashNow = input.isBackslashPressed();
+        if (backslashNow && !lastBackslashState) {
+            GameLoop.toggleFullscreenStatic();
+        }
+        lastBackslashState = backslashNow;
     }
 
     public void finalizar() {
@@ -77,7 +114,6 @@ public abstract class VideoJuego implements JuegoLoopable {
         if (this.Entidades != null) {
             this.Entidades.clear();
         }
-
     }
 
     protected void pausa() {
@@ -86,8 +122,7 @@ public abstract class VideoJuego implements JuegoLoopable {
         if (this.estado == EstadoJuego.JUGANDO) {
             this.estado = EstadoJuego.PAUSA;
             System.out.println("JUEGO EN PAUSA");
-        }
-        if (this.estado == EstadoJuego.PAUSA) {
+        } else if (this.estado == EstadoJuego.PAUSA) {
             this.estado = EstadoJuego.JUGANDO;
             System.out.println("JUEGO REANUDADO");
         }

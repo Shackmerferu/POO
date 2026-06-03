@@ -4,86 +4,152 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 
+import py_poo.config.KeyBindings;
 import py_poo.core.Constantes;
 import py_poo.input.InputManager;
-import py_poo.input.MouseManager;
-import py_poo.ui.Boton;
 import py_poo.ui.MenuPrincipal;
 
 public class MenuPong extends MenuPrincipal {
-    private Boton botonJugar;
-    private Boton botonSalir;
     private InputManager input;
-    private MouseManager mouse;
+    private int seleccion;
+    private boolean configMode;
+    private int configSelected;
+    private int configActionIndex = -1;
+    private long lastConfigKeyTime;
 
-    public MenuPong(InputManager input, MouseManager mouse) {
+    public MenuPong(InputManager input, Object mouse) {
+        super("Pong", "Menú Principal", Color.BLACK, "Jugar", "Salir");
         this.input = input;
-        this.mouse = mouse;
-        int centerX = Constantes.WIDTH / 2 - 100;
-        int centerY = Constantes.HEIGHT / 2 - 50;
-        botonJugar = new Boton("Jugar", centerX, centerY, 200, 50, () -> {
-            botonJugar.click();
-            System.out.println("Iniciar juego...");
-        });
-        botonSalir = new Boton("Salir", centerX, centerY + 70, 200, 50, () -> {
-            botonSalir.click();
-            // Acción al hacer clic en "Salir"
-            System.out.println("Salir del juego...");
-            System.exit(0);
-        });
+        this.seleccion = 0;
     }
 
-    @Override
-    public void actualizar() {
-        if (input.isUpPressed()) {
-            botonJugar.setSeleccionado(true);
-            botonSalir.setSeleccionado(false);
-        } else if (input.isDownPressed()) {
-            botonJugar.setSeleccionado(false);
-            botonSalir.setSeleccionado(true);
+    public int getSeleccion() {
+        return seleccion;
+    }
+
+    public void setSeleccion(int seleccion) {
+        this.seleccion = seleccion;
+    }
+
+    public boolean isConfigMode() {
+        return configMode;
+    }
+
+    public void setConfigMode(boolean configMode) {
+        this.configMode = configMode;
+        configSelected = 0;
+        configActionIndex = -1;
+        lastConfigKeyTime = System.currentTimeMillis();
+    }
+
+    public void actualizarConfig() {
+        long now = System.currentTimeMillis();
+
+        if (configActionIndex >= 0) {
+            if (now - lastConfigKeyTime < 120) return;
+            for (int code = 0; code < 256; code++) {
+                if (input.isKeyPressed(code)) {
+                    KeyBindings.set(KeyBindings.getActionNames()[configActionIndex], code);
+                    lastConfigKeyTime = now;
+                    configActionIndex = -1;
+                    break;
+                }
+            }
+            return;
         }
 
+        if (input.isMenuUpPressed() || input.isWPressed()) {
+            configSelected = Math.max(0, configSelected - 1);
+        }
+        if (input.isMenuDownPressed() || input.isSPressed()) {
+            String[] actions = KeyBindings.getActionNames();
+            configSelected = Math.min(actions.length, configSelected + 1);
+        }
         if (input.isEnterPressed()) {
-            if (botonJugar.contains(mouse.getX(), mouse.getY())) {
-                botonJugar.click();
-            } else if (botonSalir.contains(mouse.getX(), mouse.getY())) {
-                botonSalir.click();
+            String[] actions = KeyBindings.getActionNames();
+            if (configSelected == actions.length) {
+                configMode = false;
+            } else {
+                configActionIndex = configSelected;
+                lastConfigKeyTime = now;
             }
         }
     }
 
-    public void renderizar(Graphics g) {
+    public void dibujarConfig(Graphics g) {
+        g.setColor(new Color(0, 0, 0, 200));
+        g.fillRect(0, 0, 800, 600);
+
+        g.setFont(new Font("Consolas", Font.BOLD, 28));
+        g.setColor(Color.CYAN);
+        g.drawString("CONFIGURAR TECLAS", 220, 60);
+
+        String[] actions = KeyBindings.getActionNames();
+        g.setFont(new Font("Consolas", Font.PLAIN, 16));
+        for (int i = 0; i < actions.length; i++) {
+            int y = 110 + i * 35;
+            if (i == configSelected) {
+                g.setColor(Color.YELLOW);
+                g.drawString("> ", 180, y);
+            } else {
+                g.setColor(Color.WHITE);
+            }
+            String label = actions[i].replace("_", " ");
+            String key = KeyBindings.keyName(KeyBindings.get(actions[i]));
+
+            if (configActionIndex == i) {
+                g.setColor(Color.GREEN);
+                g.drawString(label + ": [ PRESIONA UNA TECLA ]", 210, y);
+            } else {
+                g.drawString(label + ": " + key, 210, y);
+            }
+        }
+
+        int y = 110 + actions.length * 35;
+        if (configSelected == actions.length) {
+            g.setColor(Color.YELLOW);
+            g.drawString("> ", 180, y);
+        } else {
+            g.setColor(Color.WHITE);
+        }
+        g.drawString("VOLVER", 210, y);
+
+        g.setFont(new Font("Consolas", Font.PLAIN, 12));
+        g.setColor(Color.GRAY);
+        g.drawString("Flechas: mover  |  Enter: seleccionar / cambiar  |  Esc: salir", 180, 580);
+    }
+
+    public void actualizar() {
+    }
+
+    public void dibujar(Graphics g) {
+        if (isConfigMode()) {
+            dibujarConfig(g);
+            return;
+        }
+
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
 
-        Font fuenteTitulo = g.getFont().deriveFont(Font.BOLD, 48f);
-        g.setFont(fuenteTitulo);
-        g.setColor(Color.WHITE);
-        String titulo = "PONG";
-        int textWidth = g.getFontMetrics().stringWidth(titulo);
-        g.drawString(titulo, (Constantes.WIDTH - textWidth) / 2, 150);
+        g.setFont(new Font("Consolas", Font.BOLD, 45));
+        g.setColor(Color.GREEN);
+        g.drawString("ARCADE PONG", 260, 200);
 
-        botonJugar.renderizar(g);
-        botonSalir.renderizar(g);
+        String[] opciones = {"1 JUGADOR (VS IA)", "2 JUGADORES", "CONFIG", "SALIR"};
+        g.setFont(new Font("Consolas", Font.PLAIN, 20));
+        for (int i = 0; i < opciones.length; i++) {
+            if (i == seleccion) {
+                g.setColor(Color.YELLOW);
+                g.drawString("> " + opciones[i], 280, 310 + i * 35);
+            } else {
+                g.setColor(Color.WHITE);
+                g.drawString("  " + opciones[i], 280, 310 + i * 35);
+            }
+        }
+
+        g.setFont(new Font("Consolas", Font.PLAIN, 14));
+        g.setColor(Color.GRAY);
+        g.drawString("W/S o Flechas para mover | ENTER para seleccionar", 205, 420);
+        g.drawString("Controles: W/S (J1)  |  Flechas Arriba/Abajo (J2)", 205, 440);
     }
-//Revisar todo esto, es para dejarlo funcional.
-   public void dibujar(java.awt.Graphics g) {
-    // 1. Pintamos el fondo negro para el menú del Pong
-    g.setColor(java.awt.Color.BLACK);
-    g.fillRect(0, 0, 800, 600); // Ajustalo a la resolución de tu pantalla (800x600)
-
-    // 2. Configuramos el título principal
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.BOLD, 45));
-    g.setColor(java.awt.Color.GREEN); // Verde retro / cyberpunk
-    g.drawString("ARCADE PONG", 260, 200);
-
-    // 3. Configuramos los textos de instrucciones
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 18));
-    g.setColor(java.awt.Color.WHITE);
-    g.drawString("PRESIONA 'ENTER' PARA COMENZAR", 240, 340);
-    
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 14));
-    g.setColor(java.awt.Color.GRAY);
-    g.drawString("Controles: W/S (J1)  |  Flechas Arriba/Abajo (J2)", 205, 400);
-}
 }

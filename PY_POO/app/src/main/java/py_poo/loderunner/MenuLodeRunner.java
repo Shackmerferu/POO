@@ -18,6 +18,7 @@ public class MenuLodeRunner extends MenuPrincipal {
     private MouseManager mouse;
 
     public MenuLodeRunner(InputManager input, MouseManager mouse) {
+        super("Lode Runner - Menú Principal", "LODE RUNNER", java.awt.Color.GREEN, "J1: W / S", "J2: Flechas");
         this.input = input;
         this.mouse = mouse;
         int centerX = Constantes.WIDTH / 2 - 100;
@@ -34,7 +35,6 @@ public class MenuLodeRunner extends MenuPrincipal {
         });
     }
 
-    @Override
     public void actualizar() {
         if (input.isUpPressed()) {
             botonJugar.setSeleccionado(true);

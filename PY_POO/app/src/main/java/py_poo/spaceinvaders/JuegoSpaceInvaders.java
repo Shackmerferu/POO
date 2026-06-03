@@ -4,35 +4,63 @@ import java.awt.Graphics;
 
 import py_poo.engine.EstadoJuego;
 import py_poo.engine.VideoJuego;
+import py_poo.entities.ObjetoGrafico;
 import py_poo.input.InputManager;
-import py_poo.pong.MenuPong;
 
 public class JuegoSpaceInvaders extends VideoJuego {
     private InputManager input;
     private MenuSpaceInvaders menu;
-    
+    private NaveJugador navecita;
     @Override
     public void iniciar() {
-        super.iniciar(); 
+        super.iniciar();
         
-     
-        this.input = new InputManager(); 
+        this.input = new InputManager();
         
-   
-        this.menu = new MenuSpaceInvaders(input, null); 
+        this.menu = new MenuSpaceInvaders(this.input, this);
         
+        this.menu.setVisible(true);
         
         this.estado = EstadoJuego.MENU;
     }
+    
     @Override
     protected void actualizarLogicaJuego() {
     if (this.estado == EstadoJuego.MENU) {
-            if (input.isEnterPressed()) {
-                crearPartida(); 
-            }
-            return; 
+    menu.actualizar(); 
+    if (input.isEnterPressed()) {
+        int op = menu.getSeleccion();
+        if (op == 0) {
+            crearPartida(); 
+        } else if (op == 1) {
+            System.out.println("Opciones... (por hacer)");
+        } else if (op == 2) {
+            System.exit(0); 
         }
-     //Si estamos jugando, acá va la física de la pelota y las paletas:   
+    }
+    return;
+    }   
+    if (this.estado == EstadoJuego.JUGANDO){
+        if (navecita!= null){
+            if(input.isLeftPressed()){
+                navecita.setX(navecita.getX()-5);
+            }
+            if(input.isRightPressed()){
+                navecita.setX(navecita.getX()+5);
+            }
+            if(input.isSpacePressed()){
+                navecita.Disparar();
+            }
+        }
+    }
+    for(int i=Entidades.size()-1; i>=0; i--){
+        ObjetoGrafico entidad = Entidades.get(i);
+        entidad.actualizar();
+        if (entidad.isParaEliminar()) {
+                    Entidades.remove(i);
+                }
+    }
+       
  }
     
     public void pause(){
@@ -40,17 +68,25 @@ public class JuegoSpaceInvaders extends VideoJuego {
     }
     @Override
     public void renderizar(Graphics g){
-        super.renderizar(g);
-        if (this.estado == EstadoJuego.MENU && menu != null) {
-            menu.dibujar(g); 
+      
+        if (this.estado == EstadoJuego.MENU) {
+            if (menu != null) {
+               
+                ((MenuSpaceInvaders) menu).dibujar(g); 
+            }
+        } 
+        
+        else if (this.estado == EstadoJuego.JUGANDO) {
+            super.renderizar(g); 
         }
     }
    
 
     @Override
     protected void crearPartida() {
-        
-        throw new UnsupportedOperationException("Unimplemented method 'crearPartida'");
+        this.navecita= new NaveJugador(380,500);
+        Entidades.add(navecita);
+        this.estado = EstadoJuego.JUGANDO;
     }
 
     @Override
