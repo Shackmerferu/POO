@@ -16,9 +16,9 @@ public class JuegoSpaceInvaders extends VideoJuego {
         super.iniciar(); 
         
      
-        this.input = new InputManager(); 
-        
-   
+        this.input = new InputManager();
+        super.input = this.input;
+    
         this.menu = new MenuSpaceInvaders(input, null); 
         
         

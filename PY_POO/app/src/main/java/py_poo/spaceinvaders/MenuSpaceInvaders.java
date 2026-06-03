@@ -16,6 +16,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     private MouseManager mouse;
 
     public MenuSpaceInvaders(InputManager input, MouseManager mouse) {
+        super(input);
         this.input = input;
         this.mouse = mouse;
         int centerX = Constantes.WIDTH / 2 - 100;
@@ -32,7 +33,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         });
     }
 
-    @Override
     public void actualizar() {
         if (input.isUpPressed()) {
             botonJugar.setSeleccionado(true);

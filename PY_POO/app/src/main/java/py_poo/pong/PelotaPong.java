@@ -34,17 +34,23 @@ public class PelotaPong extends ObjetoGrafico {
     }
 
     public void rebotarPaleta(Paleta p) {
-        dx = -dx;
-
         double centroPelota = getY() + getHeight() / 2.0;
         double centroPaleta = p.getY() + p.getHeight() / 2.0;
         double diferencia = centroPelota - centroPaleta;
-        double maxDesvio = p.getHeight() / 2.0;
-        double factorAngulo = diferencia / maxDesvio;
 
-        dy = factorAngulo * velocidadBase;
+        double alturaSegmento = p.getHeight() / 8.0;
+        int segmento = (int) ((diferencia + p.getHeight() / 2.0) / alturaSegmento);
+        if (segmento < 0) segmento = 0;
+        if (segmento > 7) segmento = 7;
 
-        // empujar la pelota fuera de la paleta para evitar rebotes multiples
+        double[] angulosGrados = {-80, -55, -35, -10, 10, 35, 55, 80};
+        double anguloRad = Math.toRadians(angulosGrados[segmento]);
+
+        double speed = Math.max(velocidadBase, Math.sqrt(dx * dx + dy * dy));
+        int direccion = dx > 0 ? -1 : 1;
+        dx = direccion * speed * Math.cos(anguloRad);
+        dy = speed * Math.sin(anguloRad);
+
         if (dx > 0) {
             setX(p.getX() + p.getWidth());
         } else {
@@ -84,13 +90,13 @@ public class PelotaPong extends ObjetoGrafico {
         setX(Constantes.WIDTH / 2.0 - getWidth() / 2.0);
         setY(Constantes.HEIGHT / 2.0 - getHeight() / 2.0);
         dx = Math.random() < 0.5 ? velocidadBase : -velocidadBase;
-
+        dy = 0;
     }
 
     public void reiniciar(boolean haciaLaDerecha) { // sirve hacia el lado del perdedor
         setX(Constantes.WIDTH / 2.0 - getWidth() / 2.0);
         setY(Constantes.HEIGHT / 2.0 - getHeight() / 2.0);
         dx = haciaLaDerecha ? velocidadBase : -velocidadBase;
-
+        dy = 0;
     }
 }

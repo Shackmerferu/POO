@@ -11,9 +11,9 @@ import py_poo.ui.MenuPrincipal;
 public class MenuPong extends MenuPrincipal {
     private InputManager input;
     private int seleccion;
-    private int delay = 150;
 
     public MenuPong(InputManager input, Object mouse) {
+        super(input);
         this.input = input;
         this.seleccion = 0;
     }
@@ -26,11 +26,15 @@ public class MenuPong extends MenuPrincipal {
         this.seleccion = seleccion;
     }
 
-    @Override
     public void actualizar() {
     }
 
     public void dibujar(Graphics g) {
+        if (isConfigMode()) {
+            dibujarConfig(g);
+            return;
+        }
+
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
 
@@ -38,7 +42,7 @@ public class MenuPong extends MenuPrincipal {
         g.setColor(Color.GREEN);
         g.drawString("ARCADE PONG", 260, 200);
 
-        String[] opciones = {"1 JUGADOR (VS IA)", "2 JUGADORES", "SALIR"}; // opcion 2 = salir al Launcher
+        String[] opciones = {"1 JUGADOR (VS IA)", "2 JUGADORES", "CONFIG", "SALIR"};
         g.setFont(new Font("Consolas", Font.PLAIN, 20));
         for (int i = 0; i < opciones.length; i++) {
             if (i == seleccion) {
