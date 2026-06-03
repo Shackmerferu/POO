@@ -732,6 +732,8 @@ public class Launcher extends JFrame {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
+        vj.setNombreJuego(g.name);
+        vj.setNombreJugador(player);
         if (vj instanceof JuegoPong) {
             ((JuegoPong) vj).setPuntosMax(g.winPoints); // pasa los puntos del config al juego
         }

@@ -104,7 +104,7 @@ public abstract class VideoJuego implements JuegoLoopable {
             for (int i = 0; i < Jugador.size(); i++) {
                 String nombre=Jugador.get(i).getNombre();
                 int puntos= i< Puntuacion.size() ? Puntuacion.get(i):0;
-                rankingManager.agregarPuntaje(nombre,this.Nombre,puntos);
+                rankingManager.agregarPuntaje(nombre,this.Nombre,getNivelActual(),puntos);
             }
         }
 
@@ -208,17 +208,27 @@ public abstract class VideoJuego implements JuegoLoopable {
         }
     }
 
-        public void sumarPunto( int id, int Puntaje){
-            Puntuacion.set(id, Puntuacion.get(id) + Puntaje);
-        }
+    public void sumarPunto( int id, int Puntaje){
+        Puntuacion.set(id, Puntuacion.get(id) + Puntaje);
+    }
 
-        public void resetPuntaje() {
-            Puntuacion.clear();
-        }
+    public void resetPuntaje() {
+        Puntuacion.clear();
+    }
 
     public void setNombreJugador(String nombre) {
         this.nombreJugadorPrincipal = nombre;
     }
+
+    public void setNombreJuego(String nombre) {
+        this.Nombre = nombre;
     }
 
+    public String getNombreJuego() {
+        return Nombre;
+    }
 
+    protected int getNivelActual() {
+        return NivelActual != null ? NivelActual.getNumero() : 1;
+    }
+}
