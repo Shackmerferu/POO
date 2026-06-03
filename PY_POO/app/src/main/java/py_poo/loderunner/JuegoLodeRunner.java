@@ -8,7 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import py_poo.config.KeyBindings;
 import py_poo.core.Constantes;
+import py_poo.input.InputManager;
+import py_poo.ui.MenuPrincipal;
 import py_poo.engine.EstadoJuego;
 import py_poo.engine.VideoJuego;
 import py_poo.entities.Agujero;
@@ -16,15 +19,15 @@ import py_poo.entities.Barra;
 import py_poo.entities.Escalera;
 import py_poo.entities.Ladrillo;
 import py_poo.entities.Moneda;
-import py_poo.input.InputManager;
+import py_poo.entities.Personaje;
 
 public class JuegoLodeRunner extends VideoJuego {
 
     private InputManager input;
     private MenuLodeRunner menu;
 
-    private Recolector heroe;
-    private List<Guardia> guardias;
+    private Personaje heroe;
+    private List<Personaje> guardias;
     private List<Nivel> niveles;
     private int nivelIndex;
 
@@ -60,25 +63,40 @@ public class JuegoLodeRunner extends VideoJuego {
 
     @Override
     protected void actualizarLogicaJuego() {
-        if (input == null) return;
+        if (this.estado == EstadoJuego.MENU) {
+            if (menu.isConfigMode()) {
+                menu.actualizarConfig();
+                return;
+            }
 
-        switch (estado) {
-            case MENU:
-                actualizarMenu();
-                break;
-            case JUGANDO:
-                actualizarJuego();
-                break;
-            case PAUSA:
-                break;
-            case GAME_OVER:
-                actualizarGameOver();
-                break;
-            case VICTORIA:
-                break;
+            if (input.isMenuUpPressed() || input.isWPressed()) {
+                menu.setSeleccion(Math.max(0, menu.getSeleccion() - 1));
+            }
+            if (input.isMenuDownPressed() || input.isSPressed()) {
+                menu.setSeleccion(Math.min(2, menu.getSeleccion() + 1));
+            }
+            if (input.isEnterPressed()) {
+                if (menu.getSeleccion() == 2) {
+                    GameLoop.terminarJuego(); // vuelve al Launcher
+                    return;
+                }
+                if (menu.getSeleccion() == 1) {
+                    menu.setConfigMode(true);
+                    return;
+                }
+                crearPartida();
+            }
+            return;
         }
-    }
+        if (estado == EstadoJuego.JUGANDO) {
+            actualizarJuego();
+        
+        }
+        if (estado == EstadoJuego.GAME_OVER || estado == EstadoJuego.VICTORIA) {
+            actualizarGameOver();
+        }
 
+    }
     private void actualizarMenu() {
         if (input.isEnterPressed() && !enTransicion) {
             enTransicion = true;
@@ -203,6 +221,7 @@ public class JuegoLodeRunner extends VideoJuego {
         actualizarCamara();
     }
 
+    
     
 
     @Override

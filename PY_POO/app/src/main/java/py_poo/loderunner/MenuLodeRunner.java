@@ -17,7 +17,7 @@ public class MenuLodeRunner extends MenuPrincipal {
     private MouseManager mouse;
 
     public MenuLodeRunner(InputManager input, MouseManager mouse) {
-        super("Lode Runner - Men Principal", "LODE RUNNER", java.awt.Color.GREEN, "J1: W / S", "J2: Flechas");
+        super("Lode Runner - Menu Principal", "LODE RUNNER", java.awt.Color.GREEN, "J1: W / A / S / D / X", null);
         this.input = input;
         this.mouse = mouse;
     }
@@ -55,8 +55,8 @@ public class MenuLodeRunner extends MenuPrincipal {
         g.drawString("Controles:", Constantes.WIDTH / 2 - 60, 390);
         g.setColor(new Color(180, 180, 180));
         g.drawString("Flechas: Moverse", Constantes.WIDTH / 2 - 100, 420);
-        g.drawString("Z: Cavar izquierda   X: Cavar derecha", Constantes.WIDTH / 2 - 160, 445);
-        g.drawString("W/S: Subir/Bajar escaleras", Constantes.WIDTH / 2 - 140, 470);
+        g.drawString("X: Cavar", Constantes.WIDTH / 2 - 160, 445);
+        g.drawString("W/A/S/D: Moverse", Constantes.WIDTH / 2 - 140, 470);
         g.drawString("P: Pausa   ESC: Menu   Ctrl: Sonido", Constantes.WIDTH / 2 - 160, 495);
 
         g.setColor(new Color(100, 100, 100));
