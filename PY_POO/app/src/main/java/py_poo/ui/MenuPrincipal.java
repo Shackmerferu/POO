@@ -3,13 +3,11 @@ package py_poo.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-
-import py_poo.input.InputManager;
-import py_poo.input.MouseManager;
 
 public class MenuPrincipal extends JFrame{
     protected JLabel tituloLbl;

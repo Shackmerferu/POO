@@ -35,7 +35,6 @@ public class MenuLodeRunner extends MenuPrincipal {
         });
     }
 
-    @Override
     public void actualizar() {
         if (input.isUpPressed()) {
             botonJugar.setSeleccionado(true);

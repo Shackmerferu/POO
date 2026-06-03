@@ -42,6 +42,7 @@ public class JuegoPong extends VideoJuego {
     public void iniciar() {
         super.iniciar();
         this.input = new InputManager();
+        super.input = this.input;
         this.menu = new MenuPong(input, null);
         this.collisionManager = new CollisionManager();
         this.puntosJ1 = 0;
@@ -66,9 +67,9 @@ public class JuegoPong extends VideoJuego {
         if (this.estado == EstadoJuego.MENU && menu != null) {
             menu.dibujar(g);
         }
-        if (estado == EstadoJuego.JUGANDO || estado == EstadoJuego.GAME_OVER) {
+        if (estado == EstadoJuego.JUGANDO || estado == EstadoJuego.PAUSA || estado == EstadoJuego.GAME_OVER) {
             if (fondo != null) {
-                g.drawImage(fondo, 0, 0, Constantes.WIDTH, Constantes.HEIGHT, null); // fondo con red incluida
+                g.drawImage(fondo, 0, 0, Constantes.WIDTH, Constantes.HEIGHT, null);
             } else {
                 g.setColor(Color.BLACK);
                 g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
@@ -82,6 +83,15 @@ public class JuegoPong extends VideoJuego {
             g.setColor(Color.WHITE);
             g.drawString(String.valueOf(puntosJ1), Constantes.WIDTH / 4, 50);
             g.drawString(String.valueOf(puntosJ2), 3 * Constantes.WIDTH / 4, 50);
+
+            if (estado == EstadoJuego.PAUSA) {
+                g.setFont(new Font("Consolas", Font.BOLD, 48));
+                g.setColor(Color.YELLOW);
+                g.drawString("PAUSA", Constantes.WIDTH / 2 - 80, Constantes.HEIGHT / 2);
+                g.setFont(new Font("Consolas", Font.PLAIN, 20));
+                g.setColor(Color.GRAY);
+                g.drawString("P = reanudar  |  ESC = menu", Constantes.WIDTH / 2 - 160, Constantes.HEIGHT / 2 + 50);
+            }
 
             if (estado == EstadoJuego.GAME_OVER) {
                 g.setFont(new Font("Consolas", Font.BOLD, 48));
@@ -98,6 +108,10 @@ public class JuegoPong extends VideoJuego {
                 g.drawString("Presiona ENTER para volver al menu", Constantes.WIDTH / 2 - 160, Constantes.HEIGHT / 2 + 50);
             }
         }
+
+        g.setFont(new Font("Consolas", Font.PLAIN, 12));
+        g.setColor(new Color(255, 255, 255, 100));
+        g.drawString((soundEnabled ? "SONIDO:ON" : "SONIDO:OFF") + "  |  \\ = pantalla completa", 10, Constantes.HEIGHT - 10);
     }
 
     @Override
@@ -130,18 +144,27 @@ public class JuegoPong extends VideoJuego {
     @Override
     protected void actualizarLogicaJuego() {
         if (this.estado == EstadoJuego.MENU) {
-            if (input.isUpPressed() || input.isWPressed()) {
+            if (menu.isConfigMode()) {
+                menu.actualizarConfig();
+                return;
+            }
+
+            if (input.isMenuUpPressed() || input.isWPressed()) {
                 menu.setSeleccion(Math.max(0, menu.getSeleccion() - 1));
             }
-            if (input.isDownPressed() || input.isSPressed()) {
-                menu.setSeleccion(Math.min(2, menu.getSeleccion() + 1));
+            if (input.isMenuDownPressed() || input.isSPressed()) {
+                menu.setSeleccion(Math.min(3, menu.getSeleccion() + 1));
             }
             if (input.isEnterPressed()) {
-                if (menu.getSeleccion() == 2) {
+                if (menu.getSeleccion() == 3) {
                     GameLoop.terminarJuego(); // vuelve al Launcher
                     return;
                 }
-                modoIA = (menu.getSeleccion() == 0); // opcion 0 = vs IA
+                if (menu.getSeleccion() == 2) {
+                    menu.setConfigMode(true);
+                    return;
+                }
+                modoIA = (menu.getSeleccion() == 0); // opcion 0 = vs IA, opcion 1 = 2 jugadores
                 crearPartida();
             }
             return;
@@ -149,7 +172,7 @@ public class JuegoPong extends VideoJuego {
 
         if (this.estado == EstadoJuego.GAME_OVER) {
             if (input.isEnterPressed()) {
-                GameLoop.terminarJuego();
+                this.estado = EstadoJuego.MENU;
             }
             return;
         }
@@ -174,11 +197,15 @@ public class JuegoPong extends VideoJuego {
 
                 if (pelota.salioIzquierda()) {
                     puntosJ2++;
+                    paleta1.ResetearPOS();
+                    paleta2.ResetearPOS();
                     pelota.reiniciar(false); // sirve hacia la izquierda (perdedor)
                 }
                 if (pelota.salioDerecha()) {
                     puntosJ1++;
                     if (modoIA && ia != null) ia.incrementarDificultad(); // IA mas rapida con cada punto
+                    paleta1.ResetearPOS();
+                    paleta2.ResetearPOS();
                     pelota.reiniciar(true); // sirve hacia la derecha (perdedor)
                 }
 

@@ -20,20 +20,21 @@ public class IA_Pong {
 
     public void setDificultad(int dificultad) {
         this.dificultad = dificultad;
-        velocidad = 3; // arranca igual que el jugador y luego aumenta con el puntaje
         switch (dificultad) {
-            case 1: margenError = 30; margenMinimo = 15; break; // facil
-            case 2: margenError = 15; margenMinimo = 3;  break; // medio
-            case 3: margenError = 5;  margenMinimo = 1;  break; // dificil
-            default: margenError = 15; margenMinimo = 3;
+            case 1: velocidad = 1.5; margenError = 50; margenMinimo = 20; break;
+            case 2: velocidad = 2.5; margenError = 30; margenMinimo = 10; break;
+            case 3: velocidad = 3.5; margenError = 10; margenMinimo = 3;  break;
+            default: velocidad = 2.5; margenError = 30; margenMinimo = 10;
         }
     }
 
-    public void incrementarDificultad() { // se vuelve mas precisa y rapida por cada punto
+    public void incrementarDificultad() {
         puntosRonda++;
-        margenError = Math.max(margenMinimo, margenError - 1); // reduce margen de error
-        if (velocidad < 6.5 && puntosRonda % 2 == 0) {
-            velocidad += 0.5; // aumenta velocidad hasta 6.5
+        if (puntosRonda % 4 == 0) {
+            margenError = Math.max(margenMinimo, margenError - 1);
+        }
+        if (puntosRonda % 5 == 0 && velocidad < 4.0) {
+            velocidad += 0.2;
         }
     }
 
