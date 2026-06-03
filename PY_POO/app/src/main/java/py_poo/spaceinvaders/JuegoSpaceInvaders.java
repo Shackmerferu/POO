@@ -6,7 +6,6 @@ import py_poo.engine.EstadoJuego;
 import py_poo.engine.VideoJuego;
 import py_poo.entities.ObjetoGrafico;
 import py_poo.input.InputManager;
-import py_poo.pong.MenuPong;
 
 public class JuegoSpaceInvaders extends VideoJuego {
     private InputManager input;

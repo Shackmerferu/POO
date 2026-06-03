@@ -1,13 +1,12 @@
 package py_poo.core;
 
+import java.awt.Canvas;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.DisplayMode;
 import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Window;
 
 import com.entropyinteractive.Keyboard;
 import com.entropyinteractive.Mouse;
@@ -58,7 +57,7 @@ public class GameLoop extends com.entropyinteractive.Game {
 
     public void toggleFullscreen() {
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        Window window = null;
+        Frame window = null;
         for (Frame f : Frame.getFrames()) {
             if (f.isVisible() && f.getWidth() > 100 && f.getHeight() > 100) {
                 window = f;
@@ -68,27 +67,21 @@ public class GameLoop extends com.entropyinteractive.Game {
         if (window == null) return;
         if (isFullscreen) {
             gd.setFullScreenWindow(null);
-            window.setSize(Constantes.WIDTH, Constantes.HEIGHT);
+            for (Component c : window.getComponents()) {
+                if (c instanceof Canvas) {
+                    c.setSize(Constantes.WIDTH, Constantes.HEIGHT);
+                    c.setPreferredSize(new Dimension(Constantes.WIDTH, Constantes.HEIGHT));
+                }
+            }
+            window.pack();
+            window.setLocationRelativeTo(null);
             window.setVisible(true);
             window.toFront();
             isFullscreen = false;
         } else {
-            DisplayMode dm = gd.getDisplayMode();
             gd.setFullScreenWindow(window);
-            resizeCanvas(window, dm.getWidth(), dm.getHeight());
             isFullscreen = true;
         }
-    }
-
-    private void resizeCanvas(Window window, int w, int h) {
-        for (Component c : ((Frame) window).getComponents()) {
-            if (c instanceof java.awt.Canvas) {
-                c.setSize(w, h);
-                c.setPreferredSize(new Dimension(w, h));
-            }
-        }
-        window.invalidate();
-        window.validate();
     }
 
     public static void toggleFullscreenStatic() {
@@ -119,17 +112,9 @@ public class GameLoop extends com.entropyinteractive.Game {
     @Override
     public void gameDraw(Graphics2D g) {
         if (videojuego != null) {
-            if (isFullscreen) {
-                double sx = (double) getWidth() / Constantes.WIDTH;
-                double sy = (double) getHeight() / Constantes.HEIGHT;
-                double s = Math.min(sx, sy);
-                g.translate(
-                    (int) ((getWidth() - Constantes.WIDTH * s) / 2),
-                    (int) ((getHeight() - Constantes.HEIGHT * s) / 2)
-                );
-                g.scale(s, s);
-                g.setClip(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
-            }
+            double sx = (double) getWidth() / Constantes.WIDTH;
+            double sy = (double) getHeight() / Constantes.HEIGHT;
+            g.scale(sx, sy);
             videojuego.renderizar(g);
         }
     }
