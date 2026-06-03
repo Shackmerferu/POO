@@ -12,6 +12,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
     private InputManager input;
     private MenuSpaceInvaders menu;
     private NaveJugador navecita;
+    private long ultimoDisparo = 0;
     @Override
     public void iniciar() {
         super.iniciar();
@@ -54,13 +55,15 @@ public class JuegoSpaceInvaders extends VideoJuego {
             }
         }
     }
-    for(int i=Entidades.size()-1; i>=0; i--){
-        ObjetoGrafico entidad = Entidades.get(i);
-        entidad.actualizar();
-        if (entidad.isParaEliminar()) {
-                    Entidades.remove(i);
+    if (input.isSpacePressed()) {
+                long tiempoActual = System.currentTimeMillis();
+                
+                if (tiempoActual - ultimoDisparo > 500) { 
+                    Laser nuevoDisparo = navecita.Disparar();
+                    Entidades.add(nuevoDisparo);
+                    ultimoDisparo = tiempoActual;
                 }
-    }
+            }
        
  }
     

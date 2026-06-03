@@ -1,15 +1,17 @@
 package py_poo.spaceinvaders;
 
 import py_poo.entities.Personaje;
-import py_poo.interfaces.Armado;
 
-public abstract class Enemigo extends Personaje implements Armado {
-    public void moverEnFormacion() {
+public class Enemigo extends Personaje {
+    protected int puntosxKill;
+
+    public Enemigo(int X, int Y) {
+        super();
+        this.setDimension(new java.awt.Dimension(30, 30));
+        this.setPunto(new java.awt.Point(X, Y));
     }
-
-    @Override
-    public void Disparar() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'Disparar'");
+    
+    public int getPuntos() {
+        return puntosxKill;
     }
 }

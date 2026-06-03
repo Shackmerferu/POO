@@ -66,25 +66,24 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         }
     }
 
-    // Igual al de Pong, dibuja directamente sobre el motor
     public void dibujar(Graphics g) {
-        // 1. Fondo negro espacial
+       
         g.setColor(Color.BLACK);
-        // Si no tenés Constantes.WIDTH, podés usar getWidth() y getHeight()
+       
         g.fillRect(0, 0, 800, 600); 
 
-        // 2. Título principal
+      
         g.setFont(new Font("Consolas", Font.BOLD, 45));
         g.setColor(Color.CYAN); 
         g.drawString("SPACE INVADERS", 220, 200); 
 
-        // 3. Opciones del menú (Índices: 0, 1, 2)
+        
         String[] opciones = {"INICIAR PARTIDA", "OPCIONES", "SALIR AL LAUNCHER"};
         g.setFont(new Font("Consolas", Font.PLAIN, 20));
         
         for (int i = 0; i < opciones.length; i++) {
             if (i == seleccion) {
-                // Opción resaltada con la flechita
+                
                 g.setColor(Color.YELLOW);
                 g.drawString("> " + opciones[i], 280, 310 + i * 35);
             } else {
@@ -93,7 +92,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             }
         }
 
-        // 4. Controles al pie
+       
         g.setFont(new Font("Consolas", Font.PLAIN, 14));
         g.setColor(Color.GRAY);
         g.drawString("Flechas Arriba/Abajo para mover | ENTER para seleccionar", 185, 420);
