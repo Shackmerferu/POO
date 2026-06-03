@@ -113,6 +113,10 @@ public abstract class ObjetoGrafico {
         }
         return new Rectangle((int) getX(), (int) getY(), getWidth(), getHeight());
     }
+    public Point getPunto() {
+        return punto;
+    }
+
     public boolean isParaEliminar() {
         return paraEliminar;
     }

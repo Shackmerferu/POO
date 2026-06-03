@@ -1,6 +1,5 @@
 package py_poo.loderunner;
 
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -18,21 +17,9 @@ public class MenuLodeRunner extends MenuPrincipal {
     private MouseManager mouse;
 
     public MenuLodeRunner(InputManager input, MouseManager mouse) {
-        super("Lode Runner - Menú Principal", "LODE RUNNER", java.awt.Color.GREEN, "J1: W / S", "J2: Flechas");
+        super("Lode Runner - Men Principal", "LODE RUNNER", java.awt.Color.GREEN, "J1: W / S", "J2: Flechas");
         this.input = input;
         this.mouse = mouse;
-        int centerX = Constantes.WIDTH / 2 - 100;
-        int centerY = Constantes.HEIGHT / 2 - 50;
-        botonJugar = new Boton("Jugar", centerX, centerY, 200, 50, () -> {
-            botonJugar.click();
-            System.out.println("Iniciar juego...");
-        });
-        botonSalir = new Boton("Salir", centerX, centerY + 70, 200, 50, () -> {
-            botonSalir.click();
-            // Acción al hacer clic en "Salir"
-            System.out.println("Salir del juego...");
-            System.exit(0);
-        });
     }
 
     public void actualizar() {
@@ -43,49 +30,37 @@ public class MenuLodeRunner extends MenuPrincipal {
             botonJugar.setSeleccionado(false);
             botonSalir.setSeleccionado(true);
         }
-
-        if (input.isEnterPressed()) {
-            if (botonJugar.contains(mouse.getX(), mouse.getY())) {
-                botonJugar.click();
-            } else if (botonSalir.contains(mouse.getX(), mouse.getY())) {
-                botonSalir.click();
-            }
-        }
     }
 
-    public void renderizar(Graphics g) {
-        g.setColor(Color.BLACK);
+    public void renderizar(Graphics g) {}
+
+    public void dibujar(java.awt.Graphics g) {
+        g.setColor(new Color(25, 27, 34));
         g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
 
-        Font fuenteTitulo = g.getFont().deriveFont(Font.BOLD, 48f);
-        g.setFont(fuenteTitulo);
-        g.setColor(Color.WHITE);
-        String titulo = "LODE RUNNER";
-        int textWidth = g.getFontMetrics().stringWidth(titulo);
-        g.drawString(titulo, (Constantes.WIDTH - textWidth) / 2, 150);
+        g.setFont(new Font("Consolas", Font.BOLD, 45));
+        g.setColor(new Color(255, 210, 60));
+        g.drawString("LODE RUNNER", Constantes.WIDTH / 2 - 200, 160);
 
-        botonJugar.renderizar(g);
-        botonSalir.renderizar(g);
+        g.setFont(new Font("Consolas", Font.PLAIN, 16));
+        g.setColor(new Color(200, 200, 200));
+        g.drawString("Recolecta todo el oro y escapa por la puerta!", 160, 220);
+
+        g.setFont(new Font("Consolas", Font.BOLD, 22));
+        g.setColor(new Color(255, 210, 60));
+        g.drawString("PRESIONA ENTER PARA JUGAR", Constantes.WIDTH / 2 - 160, 320);
+
+        g.setFont(new Font("Consolas", Font.PLAIN, 14));
+        g.setColor(new Color(230, 140, 60));
+        g.drawString("Controles:", Constantes.WIDTH / 2 - 60, 390);
+        g.setColor(new Color(180, 180, 180));
+        g.drawString("Flechas: Moverse", Constantes.WIDTH / 2 - 100, 420);
+        g.drawString("Z: Cavar izquierda   X: Cavar derecha", Constantes.WIDTH / 2 - 160, 445);
+        g.drawString("W/S: Subir/Bajar escaleras", Constantes.WIDTH / 2 - 140, 470);
+        g.drawString("P: Pausa   ESC: Menu   Ctrl: Sonido", Constantes.WIDTH / 2 - 160, 495);
+
+        g.setColor(new Color(100, 100, 100));
+        g.setFont(new Font("Consolas", Font.PLAIN, 12));
+        g.drawString("v1.0 - Programacion Orientada a Objetos", Constantes.WIDTH / 2 - 160, 560);
     }
-//Revisar todo esto, es para dejarlo funcional.
-   public void dibujar(java.awt.Graphics g) {
-    // 1. Fondo gris oscuro (tipo piedra de mina / cueva)
-    g.setColor(new java.awt.Color(25, 27, 34)); 
-    g.fillRect(0, 0, 800, 600); 
-
-    // 2. Título principal en Amarillo Oro brillante
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.BOLD, 45));
-    g.setColor(new java.awt.Color(255, 210, 60)); // Color oro
-    g.drawString("LODE RUNNER", 265, 200);
-
-    // 3. Texto de instrucción en un Blanco Hueso para que no sature
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 18));
-    g.setColor(new java.awt.Color(240, 240, 240));
-    g.drawString("PRESIONA 'ENTER' PARA HACER GUITA LOCO", 200, 340);
-    
-    // 4. Instrucciones de los controles en un tono Ámbar/Naranja suave
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 14));
-    g.setColor(new java.awt.Color(230, 140, 60));
-    g.drawString("Controles: Flechas (Moverse)  |  Z / X (Cavar Izq / Der)", 185, 410);
-}
 }

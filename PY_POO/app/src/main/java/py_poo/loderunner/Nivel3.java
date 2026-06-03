@@ -1,22 +1,27 @@
 package py_poo.loderunner;
 
-public class Nivel3 {
-    String[] nivel3 = {
-    "XXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-    "X O    BBBBBBBBB      O    X",
-    "X#######       ########    X",
-    "X      E   O   E       O   X",
-    "X BBBB E#######E BBBBBBBBB X",
-    "X    O E       E          GX",
-    "X######E  O O  E ##########X",
-    "X      EBBBBBBBE          X",
-    "X O    E       E    O      X",
-    "X####### ##### ####### ####X",
-    "X      E   O   E           X",
-    "X BBBB E#######E BBBBBBBB  X",
-    "X      E       E      O    X",
-    "X######E BBBBB E###########X",
-    "XR     E    A              X",
-    "XXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-};
+public class Nivel3 extends Nivel {
+
+    private static final String[] MAPA = {
+        "##########################X#",
+        "# $    --------      $    H#",
+        "#=======       ========   H#",
+        "#      H   $   H       $  H#",
+        "# ---- H=======H ---------H#",
+        "#    $ H       H       E  H#",
+        "#======H  $ $  H =========H#",
+        "#      H-------H          H#",
+        "# $    H       H    $     H#",
+        "#======= ===== ====== ==  H#",
+        "#      H   $   H       H   #",
+        "# ---- H=======H ----- H   #",
+        "#      H       H     $ H   #",
+        "#======H ----- H=========  #",
+        "#P     H    $  H        E  #",
+        "############################"
+    };
+
+    public Nivel3() {
+        super(3, MAPA);
+    }
 }
