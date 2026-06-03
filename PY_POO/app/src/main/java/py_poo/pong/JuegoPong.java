@@ -125,7 +125,7 @@ public class JuegoPong extends VideoJuego {
         puntosJ2 = 0;
         this.estado = EstadoJuego.JUGANDO;
         if (modoIA) {
-            ia = new IA_Pong(pelota, paleta2, 1);
+            ia = new IA_Pong(pelota, paleta2, 4);
         } else {
             ia = null;
         }
