@@ -18,6 +18,7 @@ public class MenuLodeRunner extends MenuPrincipal {
     private MouseManager mouse;
 
     public MenuLodeRunner(InputManager input, MouseManager mouse) {
+        super("Lode Runner - Menú Principal", "LODE RUNNER", java.awt.Color.GREEN, "J1: W / S", "J2: Flechas");
         super(input);
         this.input = input;
         this.mouse = mouse;

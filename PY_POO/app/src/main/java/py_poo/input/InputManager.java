@@ -84,5 +84,17 @@ public class InputManager {
             return true;
         }
         return false;
+    }    public boolean isLeftPressed() {
+        return isKeyPressed(37);
     }
+
+    public boolean isRightPressed() {
+        return isKeyPressed(39);
+    }
+
+    public boolean isSpacePressed() {
+        return isKeyPressed(32);
+    }
+
+
 }

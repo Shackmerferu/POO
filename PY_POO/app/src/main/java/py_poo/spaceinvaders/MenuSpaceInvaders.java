@@ -1,91 +1,101 @@
 package py_poo.spaceinvaders;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 
 import py_poo.core.Constantes;
 import py_poo.input.InputManager;
-import py_poo.input.MouseManager;
-import py_poo.ui.Boton;
 import py_poo.ui.MenuPrincipal;
+
 public class MenuSpaceInvaders extends MenuPrincipal {
     
-    private Boton botonJugar;
-    private Boton botonSalir;
     private InputManager input;
-    private MouseManager mouse;
+    private JuegoSpaceInvaders juego;
+    private int seleccion;
+    private int delay = 150;
+    private long ultimoTiempo;
 
-    public MenuSpaceInvaders(InputManager input, MouseManager mouse) {
-        super(input);
+    public MenuSpaceInvaders(InputManager input, JuegoSpaceInvaders juego) {
+        super("Space Invaders", "Menú Principal", Color.CYAN, "Moverse: ◄ / ►", "Disparo: ESPACIO");
         this.input = input;
-        this.mouse = mouse;
-        int centerX = Constantes.WIDTH / 2 - 100;
-        int centerY = Constantes.HEIGHT / 2 - 50;
-        botonJugar = new Boton("Jugar", centerX, centerY, 200, 50, () -> {
-            botonJugar.click();
-            System.out.println("Iniciar juego...");
-        });
-        botonSalir = new Boton("Salir", centerX, centerY + 70, 200, 50, () -> {
-            botonSalir.click();
-            // Acción al hacer clic en "Salir"
-            System.out.println("Salir del juego...");
-            System.exit(0);
-        });
+        this.juego = juego;
+        this.seleccion = 0;
+        this.ultimoTiempo = System.currentTimeMillis();
+
+        // APAGAMOS LA INTERFAZ NATIVA DE SWING (El cuadrado gris y las etiquetas)
+        // De esta forma dejamos el lienzo limpio para usar Graphics
+        if (this.tarjetaCentral != null) this.tarjetaCentral.setVisible(false);
+        if (this.tituloLbl != null) this.tituloLbl.setVisible(false);
+        if (this.ctrlJ1 != null) this.ctrlJ1.setVisible(false);
+        if (this.ctrlJ2 != null) this.ctrlJ2.setVisible(false);
+        this.setVisible(false);
     }
 
-    public void actualizar() {
-        if (input.isUpPressed()) {
-            botonJugar.setSeleccionado(true);
-            botonSalir.setSeleccionado(false);
-        } else if (input.isDownPressed()) {
-            botonJugar.setSeleccionado(false);
-            botonSalir.setSeleccionado(true);
-        }
+    public int getSeleccion() {
+        return seleccion;
+    }
 
-        if (input.isEnterPressed()) {
-            if (botonJugar.contains(mouse.getX(), mouse.getY())) {
-                botonJugar.click();
-            } else if (botonSalir.contains(mouse.getX(), mouse.getY())) {
-                botonSalir.click();
+    public void setSeleccion(int seleccion) {
+        this.seleccion = seleccion;
+    }
+    @Override
+    public void setVisible(boolean b) {
+       
+        super.setVisible(false); 
+        
+        this.dispose(); 
+    }
+    @Override
+    public void actualizar() {
+        // Lógica para mover el cursor con un pequeño 'delay' para que no vuele
+        long tiempoActual = System.currentTimeMillis();
+        if (tiempoActual - ultimoTiempo > delay) {
+            
+            if (input.isUpPressed()) {
+                seleccion--;
+                if (seleccion < 0) seleccion = 2; // Vuelve a la última opción
+                ultimoTiempo = tiempoActual;
+            }
+            
+            if (input.isDownPressed()) {
+                seleccion++;
+                if (seleccion > 2) seleccion = 0; // Vuelve a la primera opción
+                ultimoTiempo = tiempoActual;
             }
         }
     }
 
-    public void renderizar(Graphics g) {
+    // Igual al de Pong, dibuja directamente sobre el motor
+    public void dibujar(Graphics g) {
+        // 1. Fondo negro espacial
         g.setColor(Color.BLACK);
-        g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
+        // Si no tenés Constantes.WIDTH, podés usar getWidth() y getHeight()
+        g.fillRect(0, 0, 800, 600); 
 
-        Font fuenteTitulo = g.getFont().deriveFont(Font.BOLD, 48f);
-        g.setFont(fuenteTitulo);
-        g.setColor(Color.WHITE);
-        String titulo = "S P A C E   I N V A D E R S";
-        int textWidth = g.getFontMetrics().stringWidth(titulo);
-        g.drawString(titulo, (Constantes.WIDTH - textWidth) / 2, 150);
+        // 2. Título principal
+        g.setFont(new Font("Consolas", Font.BOLD, 45));
+        g.setColor(Color.CYAN); 
+        g.drawString("SPACE INVADERS", 220, 200); 
 
-        botonJugar.renderizar(g);
-        botonSalir.renderizar(g);
+        // 3. Opciones del menú (Índices: 0, 1, 2)
+        String[] opciones = {"INICIAR PARTIDA", "OPCIONES", "SALIR AL LAUNCHER"};
+        g.setFont(new Font("Consolas", Font.PLAIN, 20));
+        
+        for (int i = 0; i < opciones.length; i++) {
+            if (i == seleccion) {
+                // Opción resaltada con la flechita
+                g.setColor(Color.YELLOW);
+                g.drawString("> " + opciones[i], 280, 310 + i * 35);
+            } else {
+                g.setColor(Color.WHITE);
+                g.drawString("  " + opciones[i], 280, 310 + i * 35);
+            }
+        }
+
+        // 4. Controles al pie
+        g.setFont(new Font("Consolas", Font.PLAIN, 14));
+        g.setColor(Color.GRAY);
+        g.drawString("Flechas Arriba/Abajo para mover | ENTER para seleccionar", 185, 420);
     }
-//Revisar todo esto, es para dejarlo funcional.
-  public void dibujar(java.awt.Graphics g) {
-    // 1. Pintamos el fondo negro (el espacio exterior)
-    g.setColor(java.awt.Color.BLACK);
-    g.fillRect(0, 0, 800, 600); 
-
-    // 2. Configuramos el título principal con temática espacial
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.BOLD, 45));
-    g.setColor(java.awt.Color.GREEN); 
-    g.drawString("SPACE INVADERS", 240, 200);
-
-    // 3. Texto de instrucción principal
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 18));
-    g.setColor(java.awt.Color.WHITE);
-    g.drawString("PRESIONA 'ENTER' PARA DEFENDER LA TIERRA", 195, 340);
-    
-    // 4. Instrucciones de los controles para la nave
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 14));
-    g.setColor(java.awt.Color.GRAY);
-    g.drawString("Controles: Flechas Izq/Der (Moverse)  |  Espacio (Disparar)", 160, 400);
 }
-}
-
-

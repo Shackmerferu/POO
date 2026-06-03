@@ -1,6 +1,7 @@
 package py_poo.pong;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 
@@ -13,7 +14,7 @@ public class MenuPong extends MenuPrincipal {
     private int seleccion;
 
     public MenuPong(InputManager input, Object mouse) {
-        super(input);
+        super("Pong", "Menú Principal", Color.BLACK, "Jugar", "Salir");
         this.input = input;
         this.seleccion = 0;
     }

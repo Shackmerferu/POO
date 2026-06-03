@@ -14,7 +14,7 @@ public abstract class ObjetoGrafico {
     protected Dimension dimension;
     protected Point punto;
     protected Hitbox hitbox;
-
+    protected boolean paraEliminar = false;
     public ObjetoGrafico() {
         this.punto = new Point(0, 0);
     }
@@ -113,4 +113,11 @@ public abstract class ObjetoGrafico {
         }
         return new Rectangle((int) getX(), (int) getY(), getWidth(), getHeight());
     }
+    public boolean isParaEliminar() {
+        return paraEliminar;
+    }
+    public void marcarParaEliminar() {
+        this.paraEliminar = true;
+    }
+    public void actualizar() {}
 }
