@@ -12,7 +12,7 @@ public class App {
             e.printStackTrace();
         }
 
-        // Lanzar la aplicación
+     
         SwingUtilities.invokeLater(() -> {
             Launcher launcher = new Launcher();
             launcher.setVisible(true);

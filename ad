@@ -1,0 +1,12 @@
+[1mdiff --git a/TP5/src/VideoJuego.java b/TP5/src/VideoJuego.java[m
+[1mindex 4fbd9ea..381284a 100644[m
+[1m--- a/TP5/src/VideoJuego.java[m
+[1m+++ b/TP5/src/VideoJuego.java[m
+[36m@@ -14,6 +14,7 @@[m [mabstract class VideoJuego {[m
+         this.editorial=editorial;[m
+         this.fechaDeLanzamiento = LocalTime.now();[m
+         this.pegi=pegi;[m
+[32m+[m
+     }[m
+     public VideoJuego(String nombre , int precio,  String editorial,String pegi){[m
+         this(nombre, (double) precio, editorial, pegi);[m

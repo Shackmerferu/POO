@@ -1,5 +1,7 @@
 package py_poo.ranking;
 
+import py_poo.loderunner.Nivel;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,7 +20,7 @@ public class RankingManager {
     private final String dbUrl;
     private List<Integer> puntajes = new ArrayList<>();
 
-    public record RankingEntry(String jugador, String juego, int puntaje, String fecha) {}
+    public record RankingEntry(String jugador, String juego,int Nivel, int puntaje, String fecha) {}
 
     public RankingManager() {
         this(DEFAULT_DB_PATH);
@@ -34,13 +36,14 @@ public class RankingManager {
         throw new UnsupportedOperationException("Usar agregarPuntaje(jugador, juego, puntaje)");
     }
 
-    public void agregarPuntaje(String jugador, String juego, int puntaje) {
-        final String sql = "INSERT INTO ranking (jugador, juego, puntaje) VALUES (?, ?, ?)";
+    public void agregarPuntaje(String jugador, String juego,int nivel, int puntaje) {
+        final String sql = "INSERT INTO ranking (jugador, juego, nivel, puntaje) VALUES (?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(dbUrl);
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, jugador);
             ps.setString(2, juego);
-            ps.setInt(3, puntaje);
+            ps.setInt(3, nivel);
+            ps.setInt(4, puntaje);
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException("No se pudo guardar el puntaje", e);
@@ -62,7 +65,7 @@ public class RankingManager {
     public List<Integer> cargarPuntajesTop(String juego, int limite) {
         final String sql = (juego == null || juego.isBlank())
             ? "SELECT puntaje FROM ranking ORDER BY puntaje DESC, id ASC LIMIT ?"
-            : "SELECT puntaje FROM ranking WHERE juego = ? ORDER BY puntaje DESC, id ASC LIMIT ?";
+            : "SELECT puntaje FROM ranking WHERE juego LIKE ? ORDER BY puntaje DESC, id ASC LIMIT ?";
         List<Integer> top = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(dbUrl);
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -84,8 +87,8 @@ public class RankingManager {
 
     public List<RankingEntry> cargarDetalleTop(String juego, int limite) {
         final String sql = (juego == null || juego.isBlank())
-            ? "SELECT jugador, juego, puntaje, fecha FROM ranking ORDER BY puntaje DESC, id ASC LIMIT ?"
-            : "SELECT jugador, juego, puntaje, fecha FROM ranking WHERE juego = ? ORDER BY puntaje DESC, id ASC LIMIT ?";
+            ? "SELECT jugador, juego, nivel, puntaje, fecha FROM ranking ORDER BY puntaje DESC, id ASC LIMIT ?"
+            : "SELECT jugador, juego, nivel, puntaje, fecha FROM ranking WHERE juego LIKE ? ORDER BY puntaje DESC, id ASC LIMIT ?";
         List<RankingEntry> top = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(dbUrl);
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -99,7 +102,8 @@ public class RankingManager {
                     top.add(new RankingEntry(
                         rs.getString("jugador"),
                         rs.getString("juego"),
-                        rs.getInt("puntaje"),
+                            rs.getInt("nivel"),
+                            rs.getInt("puntaje"),
                         rs.getString("fecha")
                     ));
                 }
@@ -116,6 +120,7 @@ public class RankingManager {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 jugador TEXT NOT NULL,
                 juego TEXT NOT NULL,
+                 nivel   INTEGER NOT NULL DEFAULT 1,
                 puntaje INTEGER NOT NULL,
                 fecha TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
             )

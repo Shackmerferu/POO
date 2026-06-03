@@ -29,6 +29,7 @@ public class JuegoPong extends VideoJuego {
     private BufferedImage fondo; // fondo escalado a 800x600
     private boolean modoIA; // true = vs IA, false = 2 jugadores
     private IA_Pong ia; 
+    private boolean rankingRegistrado;
 
     public void setOpJuego(boolean opJuego) {
         this.OpJuego = opJuego;
@@ -47,6 +48,7 @@ public class JuegoPong extends VideoJuego {
         this.collisionManager = new CollisionManager();
         this.puntosJ1 = 0;
         this.puntosJ2 = 0;
+        this.rankingRegistrado = false;
         this.estado = EstadoJuego.MENU;
         CargadorRecursos cr = new CargadorRecursos();
         this.fondo = cr.cargarImagen("imagenes/Pong/Fondo Pong.png");
@@ -123,6 +125,7 @@ public class JuegoPong extends VideoJuego {
         pelota = new PelotaPong();
         puntosJ1 = 0;
         puntosJ2 = 0;
+        rankingRegistrado = false;
         this.estado = EstadoJuego.JUGANDO;
         if (modoIA) {
             ia = new IA_Pong(pelota, paleta2, 4);
@@ -211,11 +214,27 @@ public class JuegoPong extends VideoJuego {
 
                 if (puntosJ1 >= PUNTOS_MAX || puntosJ2 >= PUNTOS_MAX) {
                     estado = EstadoJuego.GAME_OVER;
+                    registrarRankingFinal();
 
                 }
             }
         }
     }
 
-}
+    private void registrarRankingFinal() {
+        if (rankingRegistrado) {
+            return;
+        }
+        if (nombreJugadorPrincipal == null || nombreJugadorPrincipal.isBlank()) {
+            return;
+        }
+        
+        String resultadoStr = (puntosJ1 >= PUNTOS_MAX) ? "(Ganó)" : "(Perdió)";
+        String modoStr = modoIA ? "vs IA" : "vs J2";
+        String nombreJuegoDetalle = "Pong " + modoStr + " [" + puntosJ1 + "-" + puntosJ2 + "] " + resultadoStr;
+        
+        rankingManager.agregarPuntaje(nombreJugadorPrincipal, nombreJuegoDetalle, getNivelActual(), puntosJ1);
+        rankingRegistrado = true;
+    }
 
+}
