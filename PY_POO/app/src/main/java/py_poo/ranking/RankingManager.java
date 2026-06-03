@@ -65,7 +65,7 @@ public class RankingManager {
     public List<Integer> cargarPuntajesTop(String juego, int limite) {
         final String sql = (juego == null || juego.isBlank())
             ? "SELECT puntaje FROM ranking ORDER BY puntaje DESC, id ASC LIMIT ?"
-            : "SELECT puntaje FROM ranking WHERE juego = ? ORDER BY puntaje DESC, id ASC LIMIT ?";
+            : "SELECT puntaje FROM ranking WHERE juego LIKE ? ORDER BY puntaje DESC, id ASC LIMIT ?";
         List<Integer> top = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(dbUrl);
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -88,7 +88,7 @@ public class RankingManager {
     public List<RankingEntry> cargarDetalleTop(String juego, int limite) {
         final String sql = (juego == null || juego.isBlank())
             ? "SELECT jugador, juego, nivel, puntaje, fecha FROM ranking ORDER BY puntaje DESC, id ASC LIMIT ?"
-            : "SELECT jugador, juego, nivel, puntaje, fecha FROM ranking WHERE juego = ? ORDER BY puntaje DESC, id ASC LIMIT ?";
+            : "SELECT jugador, juego, nivel, puntaje, fecha FROM ranking WHERE juego LIKE ? ORDER BY puntaje DESC, id ASC LIMIT ?";
         List<RankingEntry> top = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(dbUrl);
              PreparedStatement ps = conn.prepareStatement(sql)) {

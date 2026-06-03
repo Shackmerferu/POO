@@ -228,7 +228,12 @@ public class JuegoPong extends VideoJuego {
         if (nombreJugadorPrincipal == null || nombreJugadorPrincipal.isBlank()) {
             return;
         }
-        rankingManager.agregarPuntaje(nombreJugadorPrincipal, Nombre, getNivelActual(), puntosJ1);
+        
+        String resultadoStr = (puntosJ1 >= PUNTOS_MAX) ? "(Ganó)" : "(Perdió)";
+        String modoStr = modoIA ? "vs IA" : "vs J2";
+        String nombreJuegoDetalle = "Pong " + modoStr + " [" + puntosJ1 + "-" + puntosJ2 + "] " + resultadoStr;
+        
+        rankingManager.agregarPuntaje(nombreJugadorPrincipal, nombreJuegoDetalle, getNivelActual(), puntosJ1);
         rankingRegistrado = true;
     }
 

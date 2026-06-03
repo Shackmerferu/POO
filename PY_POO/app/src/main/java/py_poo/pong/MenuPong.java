@@ -27,7 +27,7 @@ public class MenuPong extends MenuPrincipal {
         this.input = input;
         this.seleccion = 0;
         this.rankingManager = new RankingManager();
-        this.topRanking = rankingManager.cargarDetalleTop("Pong", 10);
+        this.topRanking = rankingManager.cargarDetalleTop("Pong%", 10);
     }
 
     public int getSeleccion() {
@@ -172,7 +172,13 @@ public class MenuPong extends MenuPrincipal {
             int y = 220;
             for (int i = 0; i < topRanking.size(); i++) {
                 RankingEntry entry = topRanking.get(i);
-                String texto = String.format("%d. %s - %d pts", (i + 1), entry.jugador(), entry.puntaje());
+                
+                String detalle = entry.juego().replace("Pong", "").trim();
+                if (detalle.isEmpty()) {
+                    detalle = entry.puntaje() + " pts";
+                }
+                
+                String texto = String.format("%d. %s  %s", (i + 1), entry.jugador(), detalle);
                 g.drawString(texto, 450, y);
                 y += 20;
             }
