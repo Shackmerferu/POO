@@ -9,6 +9,7 @@ import py_poo.engine.VideoJuego;
 import py_poo.entities.ObjetoGrafico;
 import py_poo.input.InputManager;
 import py_poo.ui.MenuPrincipal;
+import py_poo.core.Constantes;
 public class JuegoSpaceInvaders extends VideoJuego {
     private InputManager input;
     private MenuSpaceInvaders menu;
@@ -17,8 +18,8 @@ public class JuegoSpaceInvaders extends VideoJuego {
     private int direccionflotaX = 2; 
     private int velocidadflotaY = 15;
     private long ultimoDisparo = 0;
-    
-    
+    private long ultimoMovimientoFlota = 0;
+    private NaveNodriza platoVolador = null;
     
     @Override
     public void iniciar() {
@@ -35,7 +36,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
     
    @Override
     protected void actualizarLogicaJuego() {
-        // 1. CONTROL DEL MENÚ
+        
         if (this.estado == EstadoJuego.MENU) {
             if (menu.isConfigMode()) {
                 menu.actualizarConfig();
@@ -68,8 +69,8 @@ public class JuegoSpaceInvaders extends VideoJuego {
             
            
             if (navecita != null) {
-                int anchoPantalla = 800; 
-                int limiteDerecho = anchoPantalla - navecita.getWidth(); 
+                
+                int limiteDerecho = Constantes.WIDTH - navecita.getWidth(); 
 
                 if (input.isLeftPressed() && navecita.getX() > 0) {
                     navecita.setX(navecita.getX() - 5);
@@ -88,13 +89,14 @@ public class JuegoSpaceInvaders extends VideoJuego {
                     ultimoDisparo = tiempoActual;
                 }
             }
-
+            long tiempoActualFlota = System.currentTimeMillis();
+            if(tiempoActualFlota - ultimoMovimientoFlota > 50){
+             
             
             boolean tocaronBorde = false;
-            int anchoPantalla = 800; 
-
+           
             for (Enemigo bicho : flotaE.values()) {
-                if (direccionflotaX > 0 && bicho.getX() + bicho.getWidth() >= anchoPantalla) {
+                if (direccionflotaX > 0 && bicho.getX() + bicho.getWidth() >= Constantes.WIDTH) {
                     tocaronBorde = true;
                     break;
                 }
@@ -113,11 +115,60 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 if (tocaronBorde) {
                     bicho.setY(bicho.getY() + velocidadflotaY); 
                 }
+            }  
+               ultimoMovimientoFlota = tiempoActualFlota;
+            }  
+            if (this.platoVolador == null) {
+            
+                if (Math.random() < 0.0002) { 
+                    this.platoVolador = new NaveNodriza();
+                    Entidades.add(this.platoVolador);
+                }
+            } else {
+              
+                if (this.platoVolador.isParaEliminar()) {
+                    this.platoVolador = null;
+                }
             }
+            for (Enemigo bicho : flotaE.values()) {
+            if(!bicho.isParaEliminar() && Math.random() < 0.0002) {
+                    int centroX = (int) bicho.getX() + (bicho.getWidth() / 2); 
+                    int origenY = (int) bicho.getY() + bicho.getHeight();
+                    Laser disparoEnemigo = new Laser(centroX, origenY, 5, "imagenes/Space Invaders/Projectiles/ProjectileA_1.png");
+                    Entidades.add(disparoEnemigo);  
+                }
+            }
+            for(int i=0; i<Entidades.size(); i++){
+              ObjetoGrafico entidad = Entidades.get(i);
+                if (entidad instanceof Laser){
+                    Laser laser = (Laser) entidad;
+                    if (laser.getVelocidad()<0 && !laser.isParaEliminar()){
+                            for(Enemigo bicho : flotaE.values()){
+                                if (!bicho.isParaEliminar() && laser.getBounds().intersects(bicho.getBounds())){
+                                    Entidades.add(new Murido((int)bicho.getX(), (int)bicho.getY(), 1));
+                                    bicho.marcarParaEliminar();
+                                    laser.marcarParaEliminar();
+                                    break;
+                                }
+                            }
+                    }else if(laser.getVelocidad()>0 && !laser.isParaEliminar()){
+                        if(laser.getBounds().intersects(navecita.getBounds())){
+                            Entidades.add(new Murido((int)navecita.getX(), (int)navecita.getY(), 2));
+                            laser.marcarParaEliminar();
+                            this.navecita=null;
+                            this.Resultado= "Te re moriste cumpa";
+                            this.estado= EstadoJuego.GAME_OVER;
+                            break;
+                        }
+                    }
+                } 
 
+                }
+
+            }
            
             if (flotaE != null) {
-                flotaE.values().removeIf(alien -> alien.isParaEliminar());
+                flotaE.values().removeIf(bicho -> bicho.isParaEliminar());
             }
 
            
@@ -128,9 +179,10 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 if (entidad.isParaEliminar()) {
                     Entidades.remove(i);
                 }
+                
             }
         } 
-    }
+    
     
     public void pause(){
         estado = EstadoJuego.PAUSA;
