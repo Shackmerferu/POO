@@ -10,6 +10,7 @@ import py_poo.entities.Ladrillo;
 import py_poo.entities.Moneda;
 import py_poo.entities.ObjetoGrafico;
 import py_poo.entities.ParticulaLadrillo;
+import py_poo.entities.Puerta;
 public class Nivel {
     public static final char VACIO = ' ';
     public static final char LADRILLO = '=';
@@ -39,6 +40,7 @@ public class Nivel {
     protected boolean escapeLadderActiva;
     protected int spawnRecolectorX;
     protected int spawnRecolectorY;
+    protected Puerta puertaSalida;
     protected List<int[]> spawnGuardias;
     protected int totalOro;
     public int tiempoLimite = 120;
@@ -167,7 +169,11 @@ public class Nivel {
                     case PUERTA:
                         escapeLadderX = x;
                         escapeLadderY = y;
-                        mapa[x][y] = VACIO;
+                        puertaSalida = null;
+                        Ladrillo liPuerta = new Ladrillo(x, y, tile_size, true);
+                        ladrillosIrrompibles.add(liPuerta);
+                        Entidades.add(liPuerta);
+                        mapa[x][y] = LADRILLO_IRROMPIBLE;
                         break;
                 }
             }
@@ -225,9 +231,15 @@ public class Nivel {
                     Entidades.remove(toRemove);
                 }
             }
-            Escalera es = new Escalera(escapeLadderX, yy, tile_size);
-            escaleras.add(es);
-            Entidades.add(es);
+            if (yy == escapeLadderY) {
+                puertaSalida = new Puerta(escapeLadderX, escapeLadderY, tile_size);
+                puertaSalida.mostrar();
+                Entidades.add(puertaSalida);
+            } else {
+                Escalera es = new Escalera(escapeLadderX, yy, tile_size);
+                escaleras.add(es);
+                Entidades.add(es);
+            }
         }
     }
 

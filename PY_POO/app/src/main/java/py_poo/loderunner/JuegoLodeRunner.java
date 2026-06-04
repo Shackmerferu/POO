@@ -17,8 +17,10 @@ import py_poo.engine.EstadoJuego;
 import py_poo.engine.Jugador;
 import py_poo.engine.VideoJuego;
 import py_poo.entities.Agujero;
+import py_poo.entities.Escalera;
 import py_poo.entities.Moneda;
 import py_poo.entities.ParticulaLadrillo;
+import py_poo.entities.Puerta;
 import py_poo.input.InputManager;
 import py_poo.utils.CargadorRecursos;
 
@@ -382,9 +384,18 @@ public class JuegoLodeRunner extends VideoJuego {
             for (ParticulaLadrillo p : nivelActual.particulas) {
                 if (!Entidades.contains(p)) Entidades.add(p);
             }
+            for (Escalera e : nivelActual.escaleras) {
+                if (!Entidades.contains(e)) Entidades.add(e);
+            }
+            Puerta puerta = nivelActual.puertaSalida;
+            if (puerta != null && !Entidades.contains(puerta)) {
+                Entidades.add(puerta);
+            }
             Entidades.removeIf(e ->
                 (e instanceof ParticulaLadrillo && !nivelActual.particulas.contains(e))
-                || (e instanceof Agujero && !nivelActual.agujeros.contains(e)));
+                || (e instanceof Agujero && !nivelActual.agujeros.contains(e))
+                || (e instanceof Escalera && !nivelActual.escaleras.contains(e))
+                || (e instanceof Puerta && e != nivelActual.puertaSalida));
 
             // Escalera de escape
             if (heroe.nivelCompleto() && !nivelActual.escapeLadderActiva) {
