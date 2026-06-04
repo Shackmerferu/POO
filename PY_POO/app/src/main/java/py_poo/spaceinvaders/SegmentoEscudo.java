@@ -20,8 +20,7 @@ public class SegmentoEscudo extends ObjetoGrafico {
         this.setPunto(new java.awt.Point(x, y));
         spritesEstado[0] = "imagenes/Space Invaders/Invaders/space__0008_ShieldFull.png"; // Sano
         spritesEstado[1] = "imagenes/Space Invaders/Invaders/space__0009_ShieldDamaged.png"; // Dañado
-        spritesEstado[2] = "imagenes/Space Invaders/Invaders/space__
-        
+        spritesEstado[2] = "imagenes/Space Invaders/Invaders/space__0010_ShieldDestroyed.png"; // Destruido 
         // ACÁ VAS A CARGAR TUS SPRITES EN EL ARREGLO
         // Ejemplo: spritesEstado[2] = "ruta/sano.png", spritesEstado[1] = "ruta/roto.png"
     }
