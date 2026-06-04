@@ -182,7 +182,6 @@ public abstract class VideoJuego implements JuegoLoopable {
     public void renderizar(java.awt.Graphics g) {
         for (ObjetoGrafico entidad : Entidades) {
             entidad.display(g);
-
         }
 
     }

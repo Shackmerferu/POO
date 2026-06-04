@@ -735,8 +735,9 @@ public class Launcher extends JFrame {
         vj.setNombreJuego(g.name);
         vj.setNombreJugador(player);
         if (vj instanceof JuegoPong) {
-            ((JuegoPong) vj).setPuntosMax(g.winPoints); // pasa los puntos del config al juego
+            ((JuegoPong) vj).setPuntosMax(g.winPoints);
         }
+        vj.setNombreJugador(player);
 
         Launcher.this.setVisible(false);
 

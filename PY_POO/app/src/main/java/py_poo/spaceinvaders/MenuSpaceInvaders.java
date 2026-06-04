@@ -10,8 +10,7 @@ import py_poo.input.InputManager;
 import py_poo.ui.MenuPrincipal;
 
 public class MenuSpaceInvaders extends MenuPrincipal {
-    
-    private InputManager input;
+
     private JuegoSpaceInvaders juego;
     private int seleccion;
     private int delay = 150;
@@ -42,8 +41,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         this.juego = juego;
         this.seleccion = 0;
         this.ultimoTiempo = System.currentTimeMillis();
-
-      
     }
 
     public int getSeleccion() {
@@ -53,13 +50,13 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     public void setSeleccion(int seleccion) {
         this.seleccion = seleccion;
     }
+
     @Override
     public void setVisible(boolean b) {
-       
-        super.setVisible(false); 
-        
-        this.dispose(); 
+        super.setVisible(false);
+        this.dispose();
     }
+
     @Override
     public void actualizar() {
     }
@@ -115,21 +112,17 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             return;           
         }
         g.setColor(Color.BLACK);
-       
-        g.fillRect(0, 0, 800, 600); 
+        g.fillRect(0, 0, 800, 600);
 
-      
         g.setFont(new Font("Consolas", Font.BOLD, 45));
-        g.setColor(Color.CYAN); 
-        g.drawString("SPACE INVADERS", 220, 200); 
+        g.setColor(Color.CYAN);
+        g.drawString("SPACE INVADERS", 220, 200);
 
-        
         String[] opciones = {"INICIAR PARTIDA", "OPCIONES", "SALIR AL LAUNCHER"};
         g.setFont(new Font("Consolas", Font.PLAIN, 20));
-        
+
         for (int i = 0; i < opciones.length; i++) {
             if (i == seleccion) {
-                
                 g.setColor(Color.YELLOW);
                 g.drawString("> " + opciones[i], 280, 310 + i * 35);
             } else {
@@ -138,7 +131,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             }
         }
 
-       
         g.setFont(new Font("Consolas", Font.PLAIN, 14));
         g.setColor(Color.GRAY);
         g.drawString("Flechas Arriba/Abajo para mover | ENTER para seleccionar", 185, 420);
