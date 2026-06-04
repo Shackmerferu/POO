@@ -64,7 +64,7 @@ public class FXPlayer{
             // Configuramos los 3 niveles
             switch (nivel.toLowerCase()) {
                 case "bajo":
-                    gainControl.setValue(-20.0f); // Reduce mucho el volumen
+                    gainControl.setValue(-30.0f); // Reduce mucho el volumen
                     break;
                 case "medio":
                     gainControl.setValue(-10.0f); // Reduce la mitad del volumen
