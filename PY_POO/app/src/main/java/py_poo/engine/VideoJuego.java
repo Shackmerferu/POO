@@ -67,7 +67,7 @@ public abstract class VideoJuego implements JuegoLoopable {
                 actualizarLogicaJuego();
                 break;
             case PAUSA:
-                break;
+                actualizarLogicaJuego();
             case GAME_OVER:
                 actualizarLogicaJuego();
                 break;
