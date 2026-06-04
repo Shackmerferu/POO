@@ -26,6 +26,10 @@ public abstract class Nivel {
         return tile_size;
     }
 
+    public int getNumero() {
+        return Numero;
+    }
+
     public char getTile(int x, int y) {
         return mapa[x][y];
     }
