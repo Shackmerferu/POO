@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
+import py_poo.audio.FXPlayer;
 import py_poo.collision.CollisionManager;
 import py_poo.core.Constantes;
 import py_poo.core.GameLoop;
@@ -23,6 +24,7 @@ public class JuegoPong extends VideoJuego {
     private Paleta paleta2;
     private PelotaPong pelota;
     private CollisionManager collisionManager;
+    private FXPlayer fxPlayer;
     private int puntosJ1;
     private int puntosJ2;
     private int PUNTOS_MAX = 11; // configurable desde Launcher
@@ -46,6 +48,12 @@ public class JuegoPong extends VideoJuego {
         super.input = this.input;
         this.menu = new MenuPong(input, null);
         this.collisionManager = new CollisionManager();
+        this.fxPlayer = new FXPlayer();
+        this.fxPlayer.cargarSonido("rebote", "sonidos/paleta.wav");
+        this.fxPlayer.cargarSonido("punto", "sonidos/punto.wav");
+        this.fxPlayer.cargarSonido("inicio", "sonidos/Empieza.wav");
+        this.fxPlayer.cargarSonido("fondo", "sonidos/SoundTrack.wav");
+        this.fxPlayer.setVolumen("fondo", "bajo");
         this.puntosJ1 = 0;
         this.puntosJ2 = 0;
         this.rankingRegistrado = false;
@@ -132,6 +140,8 @@ public class JuegoPong extends VideoJuego {
         } else {
             ia = null;
         }
+        if (soundEnabled) fxPlayer.reproducir("inicio");
+        if (soundEnabled) fxPlayer.repetir("fondo");
     }
 
     @Override
@@ -159,7 +169,9 @@ public class JuegoPong extends VideoJuego {
                 menu.setSeleccion(Math.min(3, menu.getSeleccion() + 1));
             }
             if (input.isEnterPressed()) {
-                if (menu.getSeleccion() == 3) {
+                if (menu.getSeleccion() == 3)
+                {
+                    if (fxPlayer != null) fxPlayer.detener("fondo");
                     GameLoop.terminarJuego(); // vuelve al Launcher
                     return;
                 }
@@ -193,19 +205,23 @@ public class JuegoPong extends VideoJuego {
 
                 if (collisionManager.colisiona(pelota, paleta1)) {
                     pelota.rebotarPaleta(paleta1);
+                    if (soundEnabled) fxPlayer.reproducir("rebote");
                 }
                 if (collisionManager.colisiona(pelota, paleta2)) {
                     pelota.rebotarPaleta(paleta2);
+                    if (soundEnabled) fxPlayer.reproducir("rebote");
                 }
 
                 if (pelota.salioIzquierda()) {
                     puntosJ2++;
+                    if (soundEnabled) fxPlayer.reproducir("punto");
                     paleta1.ResetearPOS();
                     paleta2.ResetearPOS();
                     pelota.reiniciar(false); // sirve hacia la izquierda (perdedor)
                 }
                 if (pelota.salioDerecha()) {
                     puntosJ1++;
+                    if (soundEnabled) fxPlayer.reproducir("punto");
                     if (modoIA && ia != null) ia.incrementarDificultad(); // IA mas rapida con cada punto
                     paleta1.ResetearPOS();
                     paleta2.ResetearPOS();

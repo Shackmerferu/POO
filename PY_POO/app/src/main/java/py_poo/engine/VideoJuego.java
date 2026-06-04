@@ -22,7 +22,7 @@ public abstract class VideoJuego implements JuegoLoopable {
     private int ResY;
     protected boolean Fullscreen;
     protected List<Jugador> Jugador;
-    private String Resultado;
+    protected String Resultado;
     protected RankingManager rankingManager = new RankingManager();
     protected String nombreJugadorPrincipal;
     protected InputManager input;
