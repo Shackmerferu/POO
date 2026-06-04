@@ -21,6 +21,7 @@ public class MenuPong extends MenuPrincipal {
     private long lastConfigKeyTime;
     private RankingManager rankingManager;
     private List<RankingEntry> topRanking;
+   
 
     public MenuPong(InputManager input, Object mouse) {
         super("Pong", "Menú Principal", Color.BLACK, "Jugar", "Salir");
