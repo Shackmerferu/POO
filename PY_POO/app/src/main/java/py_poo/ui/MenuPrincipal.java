@@ -89,16 +89,50 @@ public class MenuPrincipal extends JFrame {
         }
         if (input.isMenuDownPressed() || input.isSPressed()) {
             String[] actions = KeyBindings.getActionNames();
-            configSelected = Math.min(actions.length, configSelected + 1);
+            configSelected = Math.min(actions.length + 3, configSelected + 1);
         }
         if (input.isEnterPressed()) {
             String[] actions = KeyBindings.getActionNames();
-            if (configSelected == actions.length) {
-                configMode = false;
-            } else {
+            if (configSelected < actions.length) {
                 configActionIndex = configSelected;
                 lastConfigKeyTime = now;
+            } else if (configSelected == actions.length) {
+                guardarConfiguracion();
+            } else if (configSelected == actions.length + 1) {
+                reiniciarDefaults();
+            } else if (configSelected == actions.length + 2) {
+                guardarConfiguracion();
+                configMode = false;
             }
+        }
+    }
+
+    private void guardarConfiguracion() {
+    }
+
+    private void reiniciarDefaults() {
+        for (String accion : KeyBindings.getActionNames()) {
+            int defaultKey = obtenerDefault(accion);
+            KeyBindings.set(accion, defaultKey);
+        }
+    }
+
+    private int obtenerDefault(String accion) {
+        switch (accion) {
+            case "J1_UP": return 87;
+            case "J1_DOWN": return 83;
+            case "UP": return 38;
+            case "DOWN": return 40;
+            case "LEFT": return 37;
+            case "RIGHT": return 39;
+            case "DIG": return 32;
+            case "PAUSE": return 80;
+            case "SOUND": return 17;
+            case "SOUND_FX": return 81;
+            case "MUSIC": return 77;
+            case "FULLSCREEN": return 48;
+            case "RESET": return 27;
+            default: return -1;
         }
     }
 
@@ -131,14 +165,19 @@ public class MenuPrincipal extends JFrame {
             }
         }
 
-        int y = 110 + actions.length * 35;
-        if (configSelected == actions.length) {
-            g.setColor(Color.YELLOW);
-            g.drawString("> ", 180, y);
-        } else {
-            g.setColor(Color.WHITE);
+        int base = 110 + actions.length * 35;
+        String[] opciones = {"GUARDAR", "REINICIAR VALORES", "VOLVER"};
+        for (int i = 0; i < opciones.length; i++) {
+            int y = base + i * 35;
+            int idx = actions.length + i;
+            if (idx == configSelected) {
+                g.setColor(Color.YELLOW);
+                g.drawString("> ", 180, y);
+            } else {
+                g.setColor(Color.WHITE);
+            }
+            g.drawString(opciones[i], 210, y);
         }
-        g.drawString("VOLVER", 210, y);
 
         g.setFont(new Font("Consolas", Font.PLAIN, 12));
         g.setColor(Color.GRAY);
