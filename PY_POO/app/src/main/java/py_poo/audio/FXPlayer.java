@@ -1,7 +1,6 @@
 package py_poo.audio;
+import javax.sound.sampled.FloatControl;
 
-
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,7 +17,12 @@ public class FXPlayer{
     }
     public void cargarSonido(String nombre, String ruta){
         try{
-            AudioInputStream audio = AudioSystem.getAudioInputStream(new File(ruta));
+            java.net.URL url = getClass().getClassLoader().getResource(ruta);
+            if (url == null) {
+                System.err.println("No se pudo encontrar el recurso de sonido: " + ruta);
+                return;
+            }
+            AudioInputStream audio = AudioSystem.getAudioInputStream(url);
 
             Clip clip = AudioSystem.getClip();
             
@@ -49,6 +53,31 @@ public class FXPlayer{
             clip.stop();
         }
     }
+
+    public void setVolumen(String nombre, String nivel) {
+        Clip clip = sonido.get(nombre);
+
+        if (clip != null) {
+            // Buscamos el control de volumen de ese clip
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+
+            // Configuramos los 3 niveles
+            switch (nivel.toLowerCase()) {
+                case "bajo":
+                    gainControl.setValue(-20.0f); // Reduce mucho el volumen
+                    break;
+                case "medio":
+                    gainControl.setValue(-10.0f); // Reduce la mitad del volumen
+                    break;
+                case "fuerte":
+                default:
+                    gainControl.setValue(0.0f);   // Volumen normal/máximo del archivo
+                    break;
+            }
+        }
+    }
+
+
     public void mutear(){}
     public void repetir(String nombre) {
 
