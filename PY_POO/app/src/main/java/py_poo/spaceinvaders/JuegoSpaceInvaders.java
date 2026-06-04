@@ -20,6 +20,12 @@ public class JuegoSpaceInvaders extends VideoJuego {
     private long ultimoDisparo = 0;
     private long ultimoMovimientoFlota = 0;
     private NaveNodriza platoVolador = null;
+    private int nivelDeFlota = 0;
+    private NivelSpaceInvaders nivel = new NivelSpaceInvaders();
+
+
+
+
     
     @Override
     public void iniciar() {
@@ -90,7 +96,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 }
             }
             long tiempoActualFlota = System.currentTimeMillis();
-            if(tiempoActualFlota - ultimoMovimientoFlota > 50){
+            if(tiempoActualFlota - ultimoMovimientoFlota > 35){
              
             
             boolean tocaronBorde = false;
@@ -120,7 +126,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
             }  
             if (this.platoVolador == null) {
             
-                if (Math.random() < 0.0002) { 
+                if (Math.random() < 0.002) { 
                     this.platoVolador = new NaveNodriza();
                     Entidades.add(this.platoVolador);
                 }
@@ -143,6 +149,12 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 if (entidad instanceof Laser){
                     Laser laser = (Laser) entidad;
                     if (laser.getVelocidad()<0 && !laser.isParaEliminar()){
+                        if (platoVolador != null && !platoVolador.isParaEliminar() && laser.getBounds().intersects(platoVolador.getBounds())) {
+                                Entidades.add(new Murido((int)platoVolador.getX(), (int)platoVolador.getY(), 1));
+                                platoVolador.marcarParaEliminar();
+                                laser.marcarParaEliminar();
+                                platoVolador = null; 
+                            }
                             for(Enemigo bicho : flotaE.values()){
                                 if (!bicho.isParaEliminar() && laser.getBounds().intersects(bicho.getBounds())){
                                     Entidades.add(new Murido((int)bicho.getX(), (int)bicho.getY(), 1));
@@ -155,20 +167,30 @@ public class JuegoSpaceInvaders extends VideoJuego {
                         if(laser.getBounds().intersects(navecita.getBounds())){
                             Entidades.add(new Murido((int)navecita.getX(), (int)navecita.getY(), 2));
                             laser.marcarParaEliminar();
+                            navecita.recibirDanio(2);
+                            if(navecita.getVidas()>0){
+                                navecita.setX(380);
+                                navecita.setY(500);
+                            }else{
                             this.navecita=null;
                             this.Resultado= "Te re moriste cumpa";
                             this.estado= EstadoJuego.GAME_OVER;
+                            }
                             break;
                         }
                     }
                 } 
 
-                }
-
             }
+        }
            
             if (flotaE != null) {
                 flotaE.values().removeIf(bicho -> bicho.isParaEliminar());
+                if(flotaE.isEmpty()){
+                    navecita.agregarVida(1);
+                    this.nivelDeFlota++; 
+                    nivel.generarOleadas(this.flotaE, Entidades, this.nivelDeFlota);
+                }
             }
 
            
@@ -205,35 +227,15 @@ public class JuegoSpaceInvaders extends VideoJuego {
 
     @Override
     protected void crearPartida() {
-        this.navecita= new NaveJugador(380,500);
+       this.navecita = new NaveJugador(380, 500);
         Entidades.add(navecita);
-       this.flotaE = new HashMap<>(); 
         
-        int filas = 4;
-        int columnas = 10;
+        this.nivelDeFlota = 0;
+        this.flotaE = new HashMap<>(); 
         
-        for (int i = 0; i < filas; i++) {
-            for (int j = 0; j < columnas; j++) {
-                int posX = 50 + (j * 50); 
-                int posY = 50 + (i * 40);
-                
-                Enemigo bicho = null; 
-                if (i == 0) {
-                    bicho = new EnemigoA(posX, posY); 
-                } else if (i == 1 || i == 2) {
-                    bicho = new EnemigoB(posX, posY); 
-                } else {
-                    bicho = new EnemigoC(posX, posY); 
-                }
-              
-                String clave = i + "," + j; 
-                
-              
-                flotaE.put(clave, bicho);
-                Entidades.add(bicho);
-            }
-        }
        
+        nivel.generarOleadas(this.flotaE, Entidades, this.nivelDeFlota);
+        
         this.estado = EstadoJuego.JUGANDO;
     }
 

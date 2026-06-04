@@ -11,8 +11,10 @@ public class NaveJugador extends Personaje implements Armado {
         this.setSprite("imagenes/Space Invaders/Invaders/space__0006_Player.png");
         this.setDimension(dimension = new java.awt.Dimension(40, 30));
         this.setPunto(punto = new java.awt.Point(X, Y));
+        this.vidas= 3;
     }
     
+      
    
     @Override
     public Laser Disparar() {

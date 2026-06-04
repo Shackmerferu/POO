@@ -7,7 +7,7 @@ import py_poo.core.Constantes;
 public class NaveNodriza extends ObjetoGrafico {
 
     private static Random random = new Random();
-    private int velocidad=3;
+    private int velocidad=2;
     public NaveNodriza() {
         super();
         this.setSprite("imagenes/Space Invaders/Invaders/space__0007_UFO.png");
