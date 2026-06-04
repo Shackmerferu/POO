@@ -21,14 +21,14 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     private long lastConfigKeyTime;
     private boolean pantallaCompleta = false;
     private boolean sonidoActivado = true;
-    private int skinNave = 0;       
-    private int skinInvasores = 0;  
+    private int skinNave = 0;
+    private int skinInvasores = 0;
     private int skinProyectiles = 0;
-    private int pistaMusical = 0;   
+    private int pistaMusical = 0;
     private int velocidad = 1;
     private final String[] opcionesConfig = {
-        "Modo Pantalla", "Sonido General", "Skin Nave", "Skin Invasores", 
-        "Skin Proyectiles", "Pista Musical", "Velocidad Invasores", 
+        "Modo Pantalla", "Sonido General", "Skin Nave", "Skin Invasores",
+        "Skin Proyectiles", "Pista Musical", "Velocidad Invasores",
         "Configurar Teclas", "RESET VALORES", "VOLVER"
     };
 
@@ -65,21 +65,20 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         g.fillRect(0, 0, 800, 600);
 
         g.setFont(new Font("Consolas", Font.BOLD, 28));
-        g.setColor(Color.CYAN); 
+        g.setColor(Color.CYAN);
         g.drawString("CONFIGURACIÓN", 280, 60);
 
         g.setFont(new Font("Consolas", Font.PLAIN, 18));
         for (int i = 0; i < opcionesConfig.length; i++) {
             int y = 110 + i * 40;
-            
+
             if (i == configSelected) {
                 g.setColor(Color.YELLOW);
                 g.drawString("> ", 150, y);
             } else {
                 g.setColor(Color.WHITE);
             }
-            
-            
+
             String extra = "";
             if (i == 0) extra = pantallaCompleta ? " [PANTALLA COMPLETA]" : " [VENTANA]";
             else if (i == 1) extra = sonidoActivado ? " [ACTIVADO]" : " [DESACTIVADO]";
@@ -93,7 +92,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
                 else extra = " [RÁPIDA]";
             }
 
-           
             if (i == 7 && configActionIndex >= 0) {
                 g.setColor(Color.GREEN);
                 g.drawString(opcionesConfig[i] + ": [ PRESIONA UNA TECLA ]", 180, y);
@@ -106,6 +104,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         g.setColor(Color.GRAY);
         g.drawString("Flechas: mover  |  Enter: cambiar/seleccionar  |  Esc: volver", 180, 560);
     }
+
     public void dibujar(Graphics g) {
        if (isConfigMode()) {
             dibujarConfig(g); 

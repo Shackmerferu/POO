@@ -17,6 +17,9 @@ public class KeyBindings {
         bindings.put("SOUND", 17);
         bindings.put("FULLSCREEN", 48);
         bindings.put("RESET", 27);
+        bindings.put("DIG", 32);         // Space
+        bindings.put("SOUND_FX", 81);    // Q
+        bindings.put("MUSIC", 77);       // M
     }
 
     public static int get(String action) {
@@ -37,7 +40,9 @@ public class KeyBindings {
             case 38: return "Up";
             case 39: return "Right";
             case 40: return "Down";
+            case 77: return "M";
             case 80: return "P";
+            case 81: return "Q";
             case 83: return "S";
             case 87: return "W";
             case 48: return "0";
@@ -51,8 +56,8 @@ public class KeyBindings {
     public static String[] getActionNames() {
         return new String[]{
             "J1_UP", "J1_DOWN",
-            "UP", "DOWN", "LEFT", "RIGHT",
-            "PAUSE", "SOUND", "FULLSCREEN", "RESET"
+            "UP", "DOWN", "LEFT", "RIGHT","DIG",
+            "PAUSE", "SOUND", "SOUND_FX", "MUSIC", "FULLSCREEN", "RESET"
         };
     }
 }

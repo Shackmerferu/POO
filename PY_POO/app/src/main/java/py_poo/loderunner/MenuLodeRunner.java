@@ -7,7 +7,6 @@ import java.util.List;
 
 import py_poo.core.Constantes;
 import py_poo.input.InputManager;
-import py_poo.input.MouseManager;
 import py_poo.ranking.RankingManager;
 import py_poo.ranking.RankingManager.RankingEntry;
 import py_poo.ui.MenuPrincipal;
@@ -17,10 +16,12 @@ public class MenuLodeRunner extends MenuPrincipal {
     private RankingManager rankingManager;
     private List<RankingEntry> topRanking;
 
-    public MenuLodeRunner(InputManager input, MouseManager mouse) {
-        super("Lode Runner - Menu Principal", "LODE RUNNER", java.awt.Color.GREEN, "J1: W / A / S / D / X", null);
+    public MenuLodeRunner(InputManager input, Object mouse) {
+        super("Lode Runner - Menu Principal", "LODE RUNNER", Color.GREEN, "Jugar", "Salir");
         this.input = input;
         this.seleccion = 0;
+        this.rankingManager = new RankingManager();
+        this.topRanking = rankingManager.cargarDetalleTop("Lode%", 10);
     }
 
     public int getSeleccion() {
@@ -31,42 +32,51 @@ public class MenuLodeRunner extends MenuPrincipal {
         this.seleccion = seleccion;
     }
 
+    public void recargarRanking() {
+        this.topRanking = rankingManager.cargarDetalleTop("Lode%", 10);
+    }
+
     public void actualizar() {
     }
 
-    public void renderizar(Graphics g) {}
-
-    public void dibujar(java.awt.Graphics g) {
+    public void dibujar(Graphics g) {
         if (isConfigMode()) {
             dibujarConfig(g);
             return;
         }
-        
+
         g.setColor(new Color(25, 27, 34));
         g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
 
         g.setFont(new Font("Consolas", Font.BOLD, 45));
         g.setColor(new Color(255, 210, 60));
-        g.drawString("LODE RUNNER", Constantes.WIDTH / 2 - 200, 160);
+        g.drawString("LODE RUNNER", Constantes.WIDTH / 2 - 200, 100);
 
-        g.setFont(new Font("Consolas", Font.PLAIN, 16));
-        g.setColor(new Color(200, 200, 200));
-        g.drawString("Recolecta todo el oro y escapa por la puerta!", 160, 220);
-
-        g.setFont(new Font("Consolas", Font.BOLD, 22));
-        g.setColor(new Color(255, 210, 60));
-        g.drawString("PRESIONA ENTER PARA JUGAR", Constantes.WIDTH / 2 - 160, 320);
+        String[] opciones = {"JUGAR", "CONFIG", "SALIR"};
+        g.setFont(new Font("Consolas", Font.PLAIN, 20));
+        for (int i = 0; i < opciones.length; i++) {
+            if (i == seleccion) {
+                g.setColor(Color.YELLOW);
+                g.drawString("> " + opciones[i], 100, 200 + i * 35);
+            } else {
+                g.setColor(Color.WHITE);
+                g.drawString("  " + opciones[i], 100, 200 + i * 35);
+            }
+        }
 
         g.setFont(new Font("Consolas", Font.PLAIN, 14));
-        g.setColor(new Color(230, 140, 60));
-        g.drawString("Controles:", Constantes.WIDTH / 2 - 60, 390);
-        g.setColor(new Color(180, 180, 180));
-        g.drawString("Flechas: Moverse", Constantes.WIDTH / 2 - 100, 420);
-        g.drawString("X: Cavar", Constantes.WIDTH / 2 - 160, 445);
-        g.drawString("W/A/S/D: Moverse", Constantes.WIDTH / 2 - 140, 470);
-        g.drawString("P: Pausa   ESC: Menu   Ctrl: Sonido", Constantes.WIDTH / 2 - 160, 495);
+        g.setColor(Color.GRAY);
+        g.drawString("W/S o Flechas para mover | ENTER para seleccionar", 100, 420);
 
-// Dibujar Ranking Top 10
+        g.setFont(new Font("Consolas", Font.PLAIN, 12));
+        g.setColor(new Color(230, 140, 60));
+        g.drawString("Controles:", 100, 450);
+        g.setColor(new Color(180, 180, 180));
+        g.drawString("Flechas: Moverse", 100, 470);
+        g.drawString("X: Cavar", 100, 485);
+        g.drawString("W/A/S/D: Moverse", 100, 500);
+        g.drawString("P: Pausa   ESC: Menu   Ctrl: Sonido", 100, 515);
+
         g.setFont(new Font("Consolas", Font.BOLD, 22));
         g.setColor(Color.CYAN);
         g.drawString("--- TOP 10 RANKING ---", 450, 180);
@@ -80,19 +90,10 @@ public class MenuLodeRunner extends MenuPrincipal {
             for (int i = 0; i < topRanking.size(); i++) {
                 RankingEntry entry = topRanking.get(i);
 
-                String detalle = entry.juego().replace("Pong", "").trim();
-                if (detalle.isEmpty()) {
-                    detalle = entry.puntaje() + " pts";
-                }
-
-                String texto = String.format("%d. %s  %s", (i + 1), entry.jugador(), detalle);
+                String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
                 g.drawString(texto, 450, y);
                 y += 20;
             }
         }
-
-        g.setColor(new Color(100, 100, 100));
-        g.setFont(new Font("Consolas", Font.PLAIN, 12));
-        g.drawString("v1.0 - Programacion Orientada a Objetos", Constantes.WIDTH / 2 - 160, 560);
     }
 }

@@ -20,7 +20,7 @@ public class IA_Guardia {
         this.rand = new Random();
         this.direccionPreferida = rand.nextBoolean() ? 1 : -1;
         this.contadorCambio = 0;
-        this.estado = Comportamiento.VAGAR;
+        this.estado = Comportamiento.PERSEGUIR;
     }
 
     public int calcularMovimiento(int guardiaX, int guardiaY, int heroeX, int heroeY,
@@ -41,9 +41,15 @@ public class IA_Guardia {
                 return 0;
 
             case PERSEGUIR:
-                return calcularPersecucion(guardiaX, guardiaY, heroeX, heroeY,
-                                           puedeIzq, puedeDer, puedeSubir, puedeBajar,
-                                           enEscalera, enBarra);
+                if (rand.nextBoolean()) {
+                    return calcularPersecucion(guardiaX, guardiaY, heroeX, heroeY,
+                                               puedeIzq, puedeDer, puedeSubir, puedeBajar,
+                                               enEscalera, enBarra);
+                } else {
+                    return calcularVagar(guardiaX, guardiaY, heroeX, heroeY,
+                                         puedeIzq, puedeDer, puedeSubir, puedeBajar,
+                                         enEscalera, enBarra);
+                }
 
             case VAGAR:
             default:
@@ -105,7 +111,7 @@ public class IA_Guardia {
     }
 
     public void reaparecer() {
-        estado = Comportamiento.VAGAR;
+        estado = Comportamiento.PERSEGUIR;
         tiempoAtrapado = 0;
     }
 

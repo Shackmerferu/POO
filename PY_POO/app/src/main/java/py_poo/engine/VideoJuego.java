@@ -3,6 +3,7 @@ package py_poo.engine;
 import java.util.ArrayList;
 import java.util.List;
 
+import py_poo.config.ConfigManager;
 import py_poo.core.GameLoop;
 import py_poo.entities.ObjetoGrafico;
 import py_poo.input.InputManager;
@@ -26,9 +27,14 @@ public abstract class VideoJuego implements JuegoLoopable {
     protected String nombreJugadorPrincipal;
     protected InputManager input;
     protected boolean soundEnabled = true;
-    private boolean lastCtrlState;
+    protected boolean soundFxEnabled = true;
+    protected boolean musicEnabled = true;
+    protected ConfigManager configManager = new ConfigManager();
+    protected Camara camara;
     private boolean lastBackslashState;
     private boolean lastPauseState;
+    private boolean lastQState;
+    private boolean lastMState;
 
     public void iniciar() {
         this.Activo = true;
@@ -37,6 +43,15 @@ public abstract class VideoJuego implements JuegoLoopable {
         this.Puntuacion = new ArrayList<>();
         this.Jugador = new ArrayList<>();
         iniciapuntaje(null, null);
+
+        this.camara = new Camara();
+        configManager.cargar();
+        this.soundEnabled = configManager.isSoundEnabled();
+        this.soundFxEnabled = configManager.isSoundFxEnabled();
+        this.musicEnabled = configManager.isMusicEnabled();
+        if (configManager.isFullscreen() && !GameLoop.isFullscreen()) {
+            GameLoop.toggleFullscreenStatic();
+        }
     }
 
     public void actualizar() {
@@ -77,16 +92,25 @@ public abstract class VideoJuego implements JuegoLoopable {
             }
         }
 
-        boolean ctrlNow = input.isCtrlPressed();
-        if (ctrlNow && !lastCtrlState) {
-            soundEnabled = !soundEnabled;
-            System.out.println("Sonido: " + (soundEnabled ? "ON" : "OFF"));
+        boolean qNow = input.isQPressed();
+        if (qNow && !lastQState) {
+            soundFxEnabled = !soundFxEnabled;
+            System.out.println("Efectos de sonido: " + (soundFxEnabled ? "ON" : "OFF"));
         }
-        lastCtrlState = ctrlNow;
+        lastQState = qNow;
+
+        boolean mNow = input.isMPressed();
+        if (mNow && !lastMState) {
+            musicEnabled = !musicEnabled;
+            System.out.println("Música: " + (musicEnabled ? "ON" : "OFF"));
+        }
+        lastMState = mNow;
 
         boolean backslashNow = input.isBackslashPressed();
         if (backslashNow && !lastBackslashState) {
             GameLoop.toggleFullscreenStatic();
+            configManager.setFullscreen(GameLoop.isFullscreen());
+            configManager.guardar();
         }
         lastBackslashState = backslashNow;
     }
@@ -180,10 +204,16 @@ public abstract class VideoJuego implements JuegoLoopable {
     }
 
     public void renderizar(java.awt.Graphics g) {
+        boolean usarCamara = camara != null && (estado == EstadoJuego.JUGANDO || estado == EstadoJuego.PAUSA || estado == EstadoJuego.GAME_OVER);
+        if (usarCamara) {
+            g.translate(-camara.getX(), -camara.getY());
+        }
         for (ObjetoGrafico entidad : Entidades) {
             entidad.display(g);
         }
-
+        if (usarCamara) {
+            g.translate(camara.getX(), camara.getY());
+        }
     }
 
     public abstract String getGanador();

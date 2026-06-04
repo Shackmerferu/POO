@@ -9,6 +9,8 @@ import py_poo.entities.Escalera;
 import py_poo.entities.Ladrillo;
 import py_poo.entities.Moneda;
 import py_poo.entities.ObjetoGrafico;
+import py_poo.entities.ParticulaLadrillo;
+import py_poo.entities.Puerta;
 public class Nivel {
     public static final char VACIO = ' ';
     public static final char LADRILLO = '=';
@@ -32,13 +34,16 @@ public class Nivel {
     protected List<Barra> barras;
     protected List<Moneda> monedas;
     protected List<Agujero> agujeros;
+    protected List<ParticulaLadrillo> particulas;
     protected int escapeLadderX = -1;
     protected int escapeLadderY = -1;
     protected boolean escapeLadderActiva;
     protected int spawnRecolectorX;
     protected int spawnRecolectorY;
+    protected Puerta puertaSalida;
     protected List<int[]> spawnGuardias;
     protected int totalOro;
+    public int tiempoLimite = 120;
 
     public Nivel() {
         this(0, null);
@@ -54,6 +59,7 @@ public class Nivel {
         this.barras = new ArrayList<>();
         this.monedas = new ArrayList<>();
         this.agujeros = new ArrayList<>();
+        this.particulas = new ArrayList<>();
         this.spawnGuardias = new ArrayList<>();
         this.totalOro = 0;
     }
@@ -116,6 +122,7 @@ public class Nivel {
         barras.clear();
         monedas.clear();
         agujeros.clear();
+        particulas.clear();
         totalOro = 0;
 
         for (int y = 0; y < filas; y++) {
@@ -162,7 +169,11 @@ public class Nivel {
                     case PUERTA:
                         escapeLadderX = x;
                         escapeLadderY = y;
-                        mapa[x][y] = VACIO;
+                        puertaSalida = null;
+                        Ladrillo liPuerta = new Ladrillo(x, y, tile_size, true);
+                        ladrillosIrrompibles.add(liPuerta);
+                        Entidades.add(liPuerta);
+                        mapa[x][y] = LADRILLO_IRROMPIBLE;
                         break;
                 }
             }
@@ -171,14 +182,31 @@ public class Nivel {
 
     public void actualizar() {
         for (Ladrillo l : ladrillos) l.actualizar();
+        for (Ladrillo l : ladrillosIrrompibles) l.actualizar();
         for (Escalera e : escaleras) e.actualizar();
         for (Moneda m : monedas) m.actualizar();
         List<Agujero> aEliminar = new ArrayList<>();
         for (Agujero a : agujeros) {
             a.actualizar();
-            if (!a.isAbierto()) aEliminar.add(a);
+            if (!a.isAbierto()) {
+                Ladrillo l = a.getLadrilloAsociado();
+                if (l != null) {
+                    l.iniciarRegen();
+                    int lx = (int)(l.getX() / tile_size);
+                    int ly = (int)(l.getY() / tile_size);
+                    setTile(lx, ly, LADRILLO);
+                }
+                aEliminar.add(a);
+            }
         }
         agujeros.removeAll(aEliminar);
+        List<ParticulaLadrillo> pEliminar = new ArrayList<>();
+        for (ParticulaLadrillo p : particulas) {
+            p.actualizar();
+            if (!p.isActivo()) pEliminar.add(p);
+        }
+        particulas.removeAll(pEliminar);
+        Entidades.removeAll(pEliminar);
     }
 
     public void renderizar() {}
@@ -203,9 +231,15 @@ public class Nivel {
                     Entidades.remove(toRemove);
                 }
             }
-            Escalera es = new Escalera(escapeLadderX, yy, tile_size);
-            escaleras.add(es);
-            Entidades.add(es);
+            if (yy == escapeLadderY) {
+                puertaSalida = new Puerta(escapeLadderX, escapeLadderY, tile_size);
+                puertaSalida.mostrar();
+                Entidades.add(puertaSalida);
+            } else {
+                Escalera es = new Escalera(escapeLadderX, yy, tile_size);
+                escaleras.add(es);
+                Entidades.add(es);
+            }
         }
     }
 
@@ -226,26 +260,26 @@ public class Nivel {
     }
 
     public boolean cavarEn(int tileX, int tileY) {
-        if (esLadrilloCavable(tileX, tileY)) {
-            setTile(tileX, tileY, VACIO);
-            Ladrillo aEliminar = null;
-            for (Ladrillo l : ladrillos) {
-                int lx = (int)(l.getX() / tile_size);
-                int ly = (int)(l.getY() / tile_size);
-                if (lx == tileX && ly == tileY) {
-                    l.romper();
-                    aEliminar = l;
-                    break;
-                }
+        if (!esLadrilloCavable(tileX, tileY)) return false;
+        Ladrillo ladrillo = null;
+        for (Ladrillo l : ladrillos) {
+            int lx = (int)(l.getX() / tile_size);
+            int ly = (int)(l.getY() / tile_size);
+            if (lx == tileX && ly == tileY) {
+                if (l.getEstado() != Ladrillo.Estado.NORMAL) return false;
+                ladrillo = l;
+                break;
             }
-            if (aEliminar != null) {
-                ladrillos.remove(aEliminar);
-                Entidades.remove(aEliminar);
-            }
-            Agujero agujero = new Agujero(tileX * tile_size, tileY * tile_size);
-            agujeros.add(agujero);
-            return true;
         }
-        return false;
+        if (ladrillo == null) return false;
+        setTile(tileX, tileY, VACIO);
+        ladrillo.iniciarBreaking();
+        if (tileY > 0) {
+            ParticulaLadrillo p = new ParticulaLadrillo(tileX * tile_size, (tileY - 1) * tile_size, tile_size);
+            particulas.add(p);
+        }
+        Agujero agujero = new Agujero(tileX * tile_size, tileY * tile_size, ladrillo);
+        agujeros.add(agujero);
+        return true;
     }
 }

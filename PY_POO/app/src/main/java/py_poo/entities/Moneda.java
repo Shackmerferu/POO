@@ -30,15 +30,11 @@ public class Moneda extends Bloque {
 
     private void cargarAnimacion() {
         CargadorRecursos cr = new CargadorRecursos();
-        List<Sprite> frames = new ArrayList<>();
-        BufferedImage img1 = cr.cargarImagen(RUTA_ORO_1);
-        BufferedImage img2 = cr.cargarImagen(RUTA_ORO_2);
-        BufferedImage img3 = cr.cargarImagen(RUTA_ORO_3);
-        if (img1 != null) frames.add(new Sprite(img1));
-        if (img2 != null) frames.add(new Sprite(img2));
-        if (img3 != null) frames.add(new Sprite(img3));
-        if (!frames.isEmpty()) {
-            animacion = new Animacion(frames, 250);
+        BufferedImage img = cr.cargarImagen(RUTA_ORO_1);
+        if (img != null) {
+            List<Sprite> frames = new ArrayList<>();
+            frames.add(new Sprite(img));
+            animacion = new Animacion(frames, 500);
         }
     }
 
@@ -56,9 +52,6 @@ public class Moneda extends Bloque {
     }
 
     public void actualizar() {
-        if (animacion != null) {
-            animacion.actualizar();
-        }
     }
 
     @Override
