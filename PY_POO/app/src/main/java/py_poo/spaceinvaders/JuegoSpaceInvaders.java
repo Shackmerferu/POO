@@ -17,7 +17,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
     private HashMap<String, Enemigo> flotaE;
     private int direccionflotaX = 2; 
     private int velocidadflotaY = 15;
-    private long ultimoDisparo = 0;
+    private Laser disparo = null;
     private long ultimoMovimientoFlota = 0;
     private NaveNodriza platoVolador = null;
     private int nivelDeFlota = 0;
@@ -53,19 +53,25 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 menu.setSeleccion(Math.max(0, menu.getSeleccion() - 1));
             }
             if (input.isMenuDownPressed() || input.isSPressed()) {
-                menu.setSeleccion(Math.min(3, menu.getSeleccion() + 1));
+                menu.setSeleccion(Math.min(2, menu.getSeleccion() + 1));
             }
             if (input.isEnterPressed()) {
-                if (menu.getSeleccion() == 3) {
-                    GameLoop.terminarJuego(); 
-                    return;
-                }
-                if (menu.getSeleccion() == 2) {
+              
+               int opcionActual = menu.getSeleccion();
+                
+                if (opcionActual == 0) {
+                    
+                    crearPartida();
+                    this.estado = EstadoJuego.JUGANDO; 
+                } 
+                else if (opcionActual == 1) {
+                   
                     menu.setConfigMode(true);
-                    return;
+                } 
+                else if (opcionActual == 2) {
+                  
+                    GameLoop.terminarJuego();
                 }
-            
-                crearPartida();
             }
             return;
         }
@@ -88,11 +94,9 @@ public class JuegoSpaceInvaders extends VideoJuego {
 
             
             if (input.isSpacePressed()) {
-                long tiempoActual = System.currentTimeMillis();
-                if (tiempoActual - ultimoDisparo > 400) { 
-                    Laser nuevoDisparo = navecita.Disparar();
-                    Entidades.add(nuevoDisparo);
-                    ultimoDisparo = tiempoActual;
+               if (disparo == null || disparo.isParaEliminar()) { 
+                    disparo = navecita.Disparar();
+                    Entidades.add(disparo);
                 }
             }
             long tiempoActualFlota = System.currentTimeMillis();
@@ -121,6 +125,12 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 if (tocaronBorde) {
                     bicho.setY(bicho.getY() + velocidadflotaY); 
                 }
+                if (navecita != null && bicho.getY() + bicho.getHeight() >= navecita.getY()) {
+                            this.navecita = null;
+                            this.Resultado = "¡Invasión alienígena! Game Over.";
+                            this.estado = EstadoJuego.GAME_OVER;
+                            break; 
+                        }
             }  
                ultimoMovimientoFlota = tiempoActualFlota;
             }  
@@ -167,14 +177,14 @@ public class JuegoSpaceInvaders extends VideoJuego {
                         if(laser.getBounds().intersects(navecita.getBounds())){
                             Entidades.add(new Murido((int)navecita.getX(), (int)navecita.getY(), 2));
                             laser.marcarParaEliminar();
-                            navecita.recibirDanio(2);
+                            navecita.recibirDanio(1);
                             if(navecita.getVidas()>0){
                                 navecita.setX(380);
                                 navecita.setY(500);
                             }else{
                             this.navecita=null;
                             this.Resultado= "Te re moriste cumpa";
-                            this.estado= EstadoJuego.GAME_OVER;
+                            this.estado= EstadoJuego.MENU;
                             }
                             break;
                         }
@@ -182,8 +192,9 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 } 
 
             }
-        }
-           
+        
+            
+
             if (flotaE != null) {
                 flotaE.values().removeIf(bicho -> bicho.isParaEliminar());
                 if(flotaE.isEmpty()){
@@ -203,9 +214,10 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 }
                 
             }
+
         } 
     
-    
+    }
     public void pause(){
         estado = EstadoJuego.PAUSA;
     }
@@ -217,17 +229,24 @@ public class JuegoSpaceInvaders extends VideoJuego {
                
                 ((MenuSpaceInvaders) menu).dibujar(g); 
             }
-        } 
-        
-        else if (this.estado == EstadoJuego.JUGANDO) {
+        } else if (this.estado == EstadoJuego.JUGANDO) {
             super.renderizar(g); 
+            if (navecita != null) {
+                g.setColor(java.awt.Color.WHITE);
+                g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
+                
+                
+                g.drawString("Vidas x " + navecita.getVidas(), 20, 580);
+            }
         }
     }
    
 
     @Override
     protected void crearPartida() {
-       this.navecita = new NaveJugador(380, 500);
+        this.Entidades.clear();
+        this.disparo = null;
+        this.navecita = new NaveJugador(380, 500);
         Entidades.add(navecita);
         
         this.nivelDeFlota = 0;
