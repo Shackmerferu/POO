@@ -4,12 +4,16 @@ import py_poo.entities.Bala;
 
 public class Laser extends Bala {
    private int velocidad; 
-    public Laser(int X , int  Y, int velocidad, String string ){
+    public Laser(int X , int  Y, int velocidad, String sprite ){
         super();
-        this.setSprite("imagenes/Space Invaders/Projectiles/Projectile_Player.png");
+        this.setSprite(sprite);
         this.setDimension(new java.awt.Dimension(5, 15));
         this.setPunto(new java.awt.Point(X, Y));
         this.velocidad = velocidad;
+    }
+    
+    public int getVelocidad() {
+        return velocidad;
     }
     
     public void Mover() {

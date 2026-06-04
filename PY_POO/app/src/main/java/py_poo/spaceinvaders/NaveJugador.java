@@ -17,7 +17,7 @@ public class NaveJugador extends Personaje implements Armado {
     @Override
     public Laser Disparar() {
         
-     int centroX = (int) this.getX() + (this.getWidth() / 2) - 8; ; 
-     return new Laser(centroX, (int) this.getY(),-5 ,  "imagenes/Space Invaders/Projectiles/Projectile_Player.png");
+     int centroX = (int) this.getX() + (this.getWidth() / 2) - 8;  
+     return new Laser(centroX, (int) this.getY(), -5 ,  "imagenes/Space Invaders/Projectiles/Projectile_Player.png");
     }
 }
