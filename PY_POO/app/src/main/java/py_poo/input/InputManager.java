@@ -64,6 +64,18 @@ public class InputManager {
         return isKeyPressed(KeyBindings.get("RESET"));
     }
 
+    public boolean isQPressed() {
+        return isKeyPressed(KeyBindings.get("SOUND_FX"));
+    }
+
+    public boolean isMPressed() {
+        return isKeyPressed(KeyBindings.get("MUSIC"));
+    }
+
+    public boolean isDigPressed() {
+        return isKeyPressed(KeyBindings.get("DIG"));
+    }
+
     public boolean isSpacePressed() {
         return isKeyPressed(32);
     }

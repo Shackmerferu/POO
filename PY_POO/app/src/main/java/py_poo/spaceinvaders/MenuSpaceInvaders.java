@@ -10,8 +10,7 @@ import py_poo.input.InputManager;
 import py_poo.ui.MenuPrincipal;
 
 public class MenuSpaceInvaders extends MenuPrincipal {
-    
-    private InputManager input;
+
     private JuegoSpaceInvaders juego;
     private int seleccion;
     private int delay = 150;
@@ -22,14 +21,14 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     private long lastConfigKeyTime;
     private boolean pantallaCompleta = false;
     private boolean sonidoActivado = true;
-    private int skinNave = 0;       
-    private int skinInvasores = 0;  
+    private int skinNave = 0;
+    private int skinInvasores = 0;
     private int skinProyectiles = 0;
-    private int pistaMusical = 0;   
+    private int pistaMusical = 0;
     private int velocidad = 1;
     private final String[] opcionesConfig = {
-        "Modo Pantalla", "Sonido General", "Skin Nave", "Skin Invasores", 
-        "Skin Proyectiles", "Pista Musical", "Velocidad Invasores", 
+        "Modo Pantalla", "Sonido General", "Skin Nave", "Skin Invasores",
+        "Skin Proyectiles", "Pista Musical", "Velocidad Invasores",
         "Configurar Teclas", "RESET VALORES", "VOLVER"
     };
 
@@ -42,8 +41,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         this.juego = juego;
         this.seleccion = 0;
         this.ultimoTiempo = System.currentTimeMillis();
-
-      
     }
 
     public int getSeleccion() {
@@ -53,13 +50,13 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     public void setSeleccion(int seleccion) {
         this.seleccion = seleccion;
     }
+
     @Override
     public void setVisible(boolean b) {
-       
-        super.setVisible(false); 
-        
-        this.dispose(); 
+        super.setVisible(false);
+        this.dispose();
     }
+
     @Override
     public void actualizar() {
     }
@@ -68,21 +65,20 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         g.fillRect(0, 0, 800, 600);
 
         g.setFont(new Font("Consolas", Font.BOLD, 28));
-        g.setColor(Color.CYAN); 
+        g.setColor(Color.CYAN);
         g.drawString("CONFIGURACIÓN", 280, 60);
 
         g.setFont(new Font("Consolas", Font.PLAIN, 18));
         for (int i = 0; i < opcionesConfig.length; i++) {
             int y = 110 + i * 40;
-            
+
             if (i == configSelected) {
                 g.setColor(Color.YELLOW);
                 g.drawString("> ", 150, y);
             } else {
                 g.setColor(Color.WHITE);
             }
-            
-            
+
             String extra = "";
             if (i == 0) extra = pantallaCompleta ? " [PANTALLA COMPLETA]" : " [VENTANA]";
             else if (i == 1) extra = sonidoActivado ? " [ACTIVADO]" : " [DESACTIVADO]";
@@ -96,7 +92,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
                 else extra = " [RÁPIDA]";
             }
 
-           
             if (i == 7 && configActionIndex >= 0) {
                 g.setColor(Color.GREEN);
                 g.drawString(opcionesConfig[i] + ": [ PRESIONA UNA TECLA ]", 180, y);
@@ -109,27 +104,24 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         g.setColor(Color.GRAY);
         g.drawString("Flechas: mover  |  Enter: cambiar/seleccionar  |  Esc: volver", 180, 560);
     }
+
     public void dibujar(Graphics g) {
        if (isConfigMode()) {
             dibujarConfig(g); 
             return;           
         }
         g.setColor(Color.BLACK);
-       
-        g.fillRect(0, 0, 800, 600); 
+        g.fillRect(0, 0, 800, 600);
 
-      
         g.setFont(new Font("Consolas", Font.BOLD, 45));
-        g.setColor(Color.CYAN); 
-        g.drawString("SPACE INVADERS", 220, 200); 
+        g.setColor(Color.CYAN);
+        g.drawString("SPACE INVADERS", 220, 200);
 
-        
         String[] opciones = {"INICIAR PARTIDA", "OPCIONES", "SALIR AL LAUNCHER"};
         g.setFont(new Font("Consolas", Font.PLAIN, 20));
-        
+
         for (int i = 0; i < opciones.length; i++) {
             if (i == seleccion) {
-                
                 g.setColor(Color.YELLOW);
                 g.drawString("> " + opciones[i], 280, 310 + i * 35);
             } else {
@@ -138,7 +130,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             }
         }
 
-       
         g.setFont(new Font("Consolas", Font.PLAIN, 14));
         g.setColor(Color.GRAY);
         g.drawString("Flechas Arriba/Abajo para mover | ENTER para seleccionar", 185, 420);

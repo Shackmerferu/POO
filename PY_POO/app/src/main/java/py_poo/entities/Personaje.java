@@ -10,11 +10,17 @@ public abstract class Personaje extends ObjetoGrafico {
         return this.vidas;
     }
     public void recibirDanio(int cantidad) {
+  
         this.vidas -= cantidad;
     }
 
-    public void agregarVida(int cantidad){
-        this.vidas+=cantidad;
+   
+
+    public void setVidas(int vidas) {
+        this.vidas = vidas;
     }
 
+    public void agregarVida(int cantidad) {
+        this.vidas += cantidad;
+    }
 }

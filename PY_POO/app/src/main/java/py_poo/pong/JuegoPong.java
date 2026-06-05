@@ -150,7 +150,7 @@ public class JuegoPong extends VideoJuego {
         this.estado = EstadoJuego.JUGANDO;
         //elige jugar con el bot
         if (modoIA) {
-            ia = new IA_Pong(pelota, paleta2, 1);
+            ia = new IA_Pong(pelota, paleta2, 4);
         } else {
             ia = null;
         }
