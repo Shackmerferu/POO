@@ -40,7 +40,7 @@ public class MenuPong extends MenuPrincipal {
         this.topRanking = rankingManager.cargarDetalleTop("Pong%", 10);
     }
 
-    // --- GETTERS Y SETTERS BÁSICOS
+    //  GETTERS Y SETTERS BÁSICOS
     public int getSeleccion() {
         return seleccion;
     }
