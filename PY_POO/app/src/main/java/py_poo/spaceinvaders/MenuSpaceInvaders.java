@@ -3,10 +3,13 @@ package py_poo.spaceinvaders;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.util.List;
 
 import py_poo.config.KeyBindings;
 import py_poo.core.Constantes;
 import py_poo.input.InputManager;
+import py_poo.ranking.RankingManager;
+import py_poo.ranking.RankingManager.RankingEntry;
 import py_poo.ui.MenuPrincipal;
 
 public class MenuSpaceInvaders extends MenuPrincipal {
@@ -32,8 +35,9 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         "Configurar Teclas", "RESET VALORES", "VOLVER"
     };
 
-
-
+    // Atributos integrados para la gestión de mejores puntajes
+    private RankingManager rankingManager;
+    private List<RankingEntry> topRanking;
 
     public MenuSpaceInvaders(InputManager input, JuegoSpaceInvaders juego) {
         super("Space Invaders", "Menú Principal", Color.CYAN, "Moverse: ◄ / ►", "Disparo: ESPACIO");
@@ -41,6 +45,10 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         this.juego = juego;
         this.seleccion = 0;
         this.ultimoTiempo = System.currentTimeMillis();
+        
+        // Inicializamos el gestor de ranking para Space Invaders
+        this.rankingManager = new RankingManager();
+        this.topRanking = rankingManager.cargarDetalleTop("Space%", 10);
     }
 
     public int getSeleccion() {
@@ -49,6 +57,10 @@ public class MenuSpaceInvaders extends MenuPrincipal {
 
     public void setSeleccion(int seleccion) {
         this.seleccion = seleccion;
+    }
+
+    public void recargarRanking() {
+        this.topRanking = rankingManager.cargarDetalleTop("Space%", 10);
     }
 
     @Override
@@ -60,6 +72,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     @Override
     public void actualizar() {
     }
+
     public void dibujarConfig(Graphics g) {
         g.setColor(new Color(0, 0, 0, 200));
         g.fillRect(0, 0, 800, 600);
@@ -110,29 +123,68 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             dibujarConfig(g); 
             return;           
         }
+        
+        // Fondo Negro de la ventana
         g.setColor(Color.BLACK);
-        g.fillRect(0, 0, 800, 600);
+        g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
 
+        // TÍTULO DEL JUEGO (Alineado a la izquierda para mantener la simetría)
         g.setFont(new Font("Consolas", Font.BOLD, 45));
         g.setColor(Color.CYAN);
-        g.drawString("SPACE INVADERS", 220, 200);
+        g.drawString("SPACE INVADERS", 100, 100);
 
+        // ========================================================
+        // COLUMNA IZQUIERDA: OPCIONES DEL MENÚ
+        // ========================================================
         String[] opciones = {"INICIAR PARTIDA", "OPCIONES", "SALIR AL LAUNCHER"};
         g.setFont(new Font("Consolas", Font.PLAIN, 20));
 
         for (int i = 0; i < opciones.length; i++) {
             if (i == seleccion) {
                 g.setColor(Color.YELLOW);
-                g.drawString("> " + opciones[i], 280, 310 + i * 35);
+                g.drawString("> " + opciones[i], 100, 200 + i * 35);
             } else {
                 g.setColor(Color.WHITE);
-                g.drawString("  " + opciones[i], 280, 310 + i * 35);
+                g.drawString("  " + opciones[i], 100, 200 + i * 35);
             }
         }
 
+        // TEXTO DE AYUDA Y CONTROLES (Abajo a la izquierda)
         g.setFont(new Font("Consolas", Font.PLAIN, 14));
         g.setColor(Color.GRAY);
-        g.drawString("Flechas Arriba/Abajo para mover | ENTER para seleccionar", 185, 420);
+        g.drawString("Flechas Arriba/Abajo para mover | ENTER para seleccionar", 100, 420);
+
+        g.setFont(new Font("Consolas", Font.PLAIN, 12));
+        g.setColor(new Color(230, 140, 60));
+        g.drawString("Controles:", 100, 450);
+        g.setColor(new Color(180, 180, 180));
+        g.drawString("Moverse: ◄ / ► o Flechas", 100, 470);
+        g.drawString("Disparo: ESPACIO", 100, 485);
+        g.drawString("P: Pausa Local", 100, 500);
+        g.drawString("Esc: Volver al Menú", 100, 515);
+
+        // ========================================================
+        // COLUMNA DERECHA: TOP 10 RANKING
+        // ========================================================
+        g.setFont(new Font("Consolas", Font.BOLD, 22));
+        g.setColor(Color.CYAN);
+        g.drawString("--- TOP 10 RANKING ---", 450, 180);
+
+        g.setFont(new Font("Consolas", Font.PLAIN, 14));
+        g.setColor(Color.WHITE);
+        if (topRanking == null || topRanking.isEmpty()) {
+            g.drawString("Aún no hay puntajes.", 450, 220);
+        } else {
+            int y = 220;
+            for (int i = 0; i < topRanking.size(); i++) {
+                RankingEntry entry = topRanking.get(i);
+
+                // Formateamos la entrada idéntico a Lode Runner
+                String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
+                g.drawString(texto, 450, y);
+                y += 20;
+            }
+        }
     }
 
     public void setConfigMode(boolean configMode) {
@@ -141,15 +193,14 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         configActionIndex = -1;
         lastConfigKeyTime = System.currentTimeMillis();
     }
+
     public void actualizarConfig() {
        long now = System.currentTimeMillis();
 
-       
         if (configActionIndex >= 0) {
             if (now - lastConfigKeyTime < 120) return;
             for (int code = 0; code < 256; code++) {
                 if (input.isKeyPressed(code)) {
-                  
                     KeyBindings.set(KeyBindings.getActionNames()[configActionIndex], code);
                     lastConfigKeyTime = now;
                     configActionIndex = -1; 
@@ -159,7 +210,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             return;
         }
 
-        
         if (now - lastConfigKeyTime > delay) {
             if (input.isUpPressed() || input.isWPressed()) {
                 configSelected--;
@@ -173,7 +223,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             }
         }
 
-        
         if (input.isEnterPressed() && (now - lastConfigKeyTime > 150)) {
             lastConfigKeyTime = now;
             switch(configSelected) {
@@ -185,7 +234,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
                 case 5: pistaMusical = (pistaMusical + 1) % 2; break;
                 case 6: velocidad = (velocidad + 1) % 3; break; 
                 case 7: 
-                    
                     configActionIndex = 0; 
                     break; 
                 case 8: 
@@ -201,10 +249,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         }
     }
 
-    
     public boolean isConfigMode() {
         return configMode;
     }
-
-   
 }
