@@ -126,7 +126,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 }
             }
             long tiempoActualFlota = System.currentTimeMillis();
-            if(tiempoActualFlota - ultimoMovimientoFlota > 35){
+            if(tiempoActualFlota - ultimoMovimientoFlota > 50){
              
             
             boolean tocaronBorde = false;
@@ -154,11 +154,14 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 if (navecita != null && bicho.getY() + bicho.getHeight() >= navecita.getY()) {
                             this.navecita = null;
                             this.Resultado = "No compa, nos entraron los bichos, Corre Wachin";
+                            if(puntaje>5000){
+                                this.Resultado = "¡Vivir solo cuesta vida!";
+                            }
                             this.estado = EstadoJuego.GAME_OVER;
                             registrarRankingFinal();
                             break; 
                         }
-            }  
+            }   
                ultimoMovimientoFlota = tiempoActualFlota;
             }  
             if (this.platoVolador == null) {
@@ -218,6 +221,9 @@ public class JuegoSpaceInvaders extends VideoJuego {
                             }else{
                                 this.navecita=null;
                                 this.Resultado= "Te re moriste cumpa";
+                                if(puntaje>5000){
+                                    this.Resultado = "¡El futuro llego hace rato!";
+                                }
                                 this.estado= EstadoJuego.GAME_OVER;
                                 registrarRankingFinal();
                             }
@@ -302,19 +308,24 @@ public class JuegoSpaceInvaders extends VideoJuego {
             
             g.setColor(java.awt.Color.RED);
             g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 50));
-            g.drawString("Fin del Juego", 240, 180);
+            int anchoTitulo = g.getFontMetrics().stringWidth("Fin del Juego");
+            g.drawString("Fin del Juego", (Constantes.WIDTH - anchoTitulo) / 2, 130);
             
             g.setColor(java.awt.Color.WHITE);
             g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 26));
-            g.drawString(this.Resultado, 180, 260);
+            int anchoResultado = g.getFontMetrics().stringWidth(this.Resultado);
+            g.drawString(this.Resultado, (Constantes.WIDTH - anchoResultado) / 2, 240);
             
             g.setColor(java.awt.Color.YELLOW);
             g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24));
-            g.drawString("Tu puntaje fue de: " + puntaje, 270, 330);
+            int anchoPuntaje = g.getFontMetrics().stringWidth("Puntaje Final: " + puntaje);
+            g.drawString("Puntaje Final: " + puntaje, (Constantes.WIDTH - anchoPuntaje) / 2, 340);
 
             g.setColor(java.awt.Color.LIGHT_GRAY);
             g.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 18));
-            g.drawString("Presiona ENTER para volver al menú", 215, 450);
+            int anchoSalir = g.getFontMetrics().stringWidth("Presiona ENTER para volver al menú");
+            g.drawString("Presiona ENTER para volver al menú", (Constantes.WIDTH - anchoSalir) / 2, 400);
+            
         }
     }
    
