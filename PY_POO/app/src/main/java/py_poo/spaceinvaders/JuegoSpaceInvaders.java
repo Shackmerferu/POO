@@ -50,13 +50,15 @@ public class JuegoSpaceInvaders extends VideoJuego {
         
         // Mantenemos estrictamente tu método cargarSonidoRecurso y unificamos los apodos
         this.fxPlayer.cargarSonidoRecurso("Laser", "sonidos/SpaceInvader/Laser.wav");
+        this.fxPlayer.cargarSonidoRecurso("LaserFlota", "sonidos/SpaceInvader/LaserFlota.wav");
         this.fxPlayer.cargarSonidoRecurso("ExplosionNaves", "sonidos/SpaceInvader/ExplosionNaves.wav");
+        this.fxPlayer.cargarSonidoRecurso("ExplosionFlota", "sonidos/SpaceInvader/ExplosionFlota.wav");
         this.fxPlayer.cargarSonidoRecurso("PlatoVolador", "sonidos/SpaceInvader/PlatoVolador.wav");
         this.fxPlayer.cargarSonidoRecurso("GameOver", "sonidos/SpaceInvader/GameOver.wav");
         this.fxPlayer.cargarSonidoRecurso("CancionSpaceInvaders", "sonidos/SpaceInvader/CancionSpaceInvaders.wav");
         
         // El control de volumen ahora usa el nombre exacto con el que se cargó
-        this.fxPlayer.setVolumen("CancionSpaceInvaders", "bajo");
+        this.fxPlayer.setVolumen("CancionSpaceInvaders", "medio");
         this.menu = new MenuSpaceInvaders(this.input, this);
         
         this.menu.setVisible(true);
@@ -181,6 +183,9 @@ public class JuegoSpaceInvaders extends VideoJuego {
                     int centroX = (int) bicho.getX() + (bicho.getWidth() / 2); 
                     int origenY = (int) bicho.getY() + bicho.getHeight();
                     Laser disparoEnemigo = new Laser(centroX, origenY, 4, "imagenes/Space Invaders/Projectiles/ProjectileA_1.png");
+                    if (this.menu.isSonidoActivado()) {
+                        this.fxPlayer.reproducir("LaserFlota");
+                    }
                     Entidades.add(disparoEnemigo);  
                 }
             }
@@ -203,7 +208,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
                                 Entidades.add(new Murido((int)bicho.getX(), (int)bicho.getY(), 1));
                                 bicho.marcarParaEliminar();
                                 if (this.menu.isSonidoActivado()) {
-                                     this.fxPlayer.reproducir("ExplosionNaves");
+                                     this.fxPlayer.reproducir("ExplosionFlota");
                                 }
                                 if (bicho instanceof EnemigoA) puntaje += 30;
                                 else if (bicho instanceof EnemigoB) puntaje += 20;
