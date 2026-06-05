@@ -10,6 +10,7 @@ import py_poo.entities.ObjetoGrafico;
 import py_poo.input.InputManager;
 import py_poo.ui.MenuPrincipal;
 import py_poo.core.Constantes;
+
 public class JuegoSpaceInvaders extends VideoJuego {
     private InputManager input;
     private MenuSpaceInvaders menu;
@@ -21,6 +22,8 @@ public class JuegoSpaceInvaders extends VideoJuego {
     private long ultimoMovimientoFlota = 0;
     private NaveNodriza platoVolador = null;
     private int nivelDeFlota = 0;
+    private int puntaje=0;
+    private SegmentoEscudo SegmentoEscudo = null;
     private NivelSpaceInvaders nivel = new NivelSpaceInvaders();
 
 
@@ -74,11 +77,16 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 }
             }
             return;
-        }
-
-      
-        if (this.estado == EstadoJuego.JUGANDO) {
-            
+        }else if (this.estado == EstadoJuego.PAUSA) {
+            if (input.isEnterPressed()) { 
+             this.estado = EstadoJuego.JUGANDO;
+             }
+             return; 
+        }else if (this.estado == EstadoJuego.JUGANDO) {
+            if (input.isPPressed()) {
+            this.estado = EstadoJuego.PAUSA;
+            return;
+            }
            
             if (navecita != null) {
                 
@@ -127,7 +135,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 }
                 if (navecita != null && bicho.getY() + bicho.getHeight() >= navecita.getY()) {
                             this.navecita = null;
-                            this.Resultado = "¡Invasión alienígena! Game Over.";
+                            this.Resultado = "No compa, nos entraron los bichos, Corre Wachin";
                             this.estado = EstadoJuego.GAME_OVER;
                             break; 
                         }
@@ -158,10 +166,13 @@ public class JuegoSpaceInvaders extends VideoJuego {
               ObjetoGrafico entidad = Entidades.get(i);
                 if (entidad instanceof Laser){
                     Laser laser = (Laser) entidad;
+                    
+                    
                     if (laser.getVelocidad()<0 && !laser.isParaEliminar()){
                         if (platoVolador != null && !platoVolador.isParaEliminar() && laser.getBounds().intersects(platoVolador.getBounds())) {
                                 Entidades.add(new Murido((int)platoVolador.getX(), (int)platoVolador.getY(), 1));
                                 platoVolador.marcarParaEliminar();
+                                this.puntaje += this.platoVolador.puntaje();
                                 laser.marcarParaEliminar();
                                 platoVolador = null; 
                             }
@@ -169,12 +180,16 @@ public class JuegoSpaceInvaders extends VideoJuego {
                                 if (!bicho.isParaEliminar() && laser.getBounds().intersects(bicho.getBounds())){
                                     Entidades.add(new Murido((int)bicho.getX(), (int)bicho.getY(), 1));
                                     bicho.marcarParaEliminar();
+                                    if(bicho instanceof EnemigoA) puntaje+=30;
+                                    else if(bicho instanceof EnemigoB) puntaje+=20;
+                                    else if(bicho instanceof EnemigoC) puntaje+=10;
                                     laser.marcarParaEliminar();
                                     break;
                                 }
                             }
+                   
                     }else if(laser.getVelocidad()>0 && !laser.isParaEliminar()){
-                        if(laser.getBounds().intersects(navecita.getBounds())){
+                        if(navecita != null && laser.getBounds().intersects(navecita.getBounds())){
                             Entidades.add(new Murido((int)navecita.getX(), (int)navecita.getY(), 2));
                             laser.marcarParaEliminar();
                             navecita.recibirDanio(1);
@@ -182,19 +197,31 @@ public class JuegoSpaceInvaders extends VideoJuego {
                                 navecita.setX(380);
                                 navecita.setY(500);
                             }else{
-                            this.navecita=null;
-                            this.Resultado= "Te re moriste cumpa";
-                            this.estado= EstadoJuego.MENU;
+                                this.navecita=null;
+                                this.Resultado= "Te re moriste cumpa";
+                                this.estado= EstadoJuego.GAME_OVER;
                             }
                             break;
                         }
                     }
-                } 
-
+                    
+                  
+                    if (!laser.isParaEliminar()) {
+                        for(int a=0 ; a<Entidades.size(); a++){
+                            ObjetoGrafico posibleSegmento = Entidades.get(a);
+                            if (posibleSegmento instanceof SegmentoEscudo) {
+                                SegmentoEscudo seg = (SegmentoEscudo) posibleSegmento;
+                                if (!seg.isParaEliminar() && laser.getBounds().intersects(seg.getBounds())) {
+                                    seg.recibirDanio();
+                                    laser.marcarParaEliminar();
+                                    break; 
+                                }
+                            }
+                        }
+                    }
             }
+        }
         
-            
-
             if (flotaE != null) {
                 flotaE.values().removeIf(bicho -> bicho.isParaEliminar());
                 if(flotaE.isEmpty()){
@@ -204,20 +231,22 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 }
             }
 
-           
-            for (int i = Entidades.size() - 1; i >= 0; i--) {
-                ObjetoGrafico entidad = Entidades.get(i);
-                entidad.actualizar();                                     
+            
+            for (int a = Entidades.size() - 1; a >= 0; a--) {
+                ObjetoGrafico entidadLimpieza = Entidades.get(a);
+                entidadLimpieza.actualizar();                                     
                 
-                if (entidad.isParaEliminar()) {
-                    Entidades.remove(i);
+                if (entidadLimpieza.isParaEliminar()) {
+                    Entidades.remove(a); 
                 }
-                
             }
 
-        } 
-    
-    }
+        }else if (this.estado == EstadoJuego.GAME_OVER) {
+                if (input.isEnterPressed()) {
+                    this.estado = EstadoJuego.MENU;
+                }
+        }
+}
     public void pause(){
         estado = EstadoJuego.PAUSA;
     }
@@ -234,10 +263,35 @@ public class JuegoSpaceInvaders extends VideoJuego {
             if (navecita != null) {
                 g.setColor(java.awt.Color.WHITE);
                 g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
-                
-                
+                g.drawString("Puntaje: " + puntaje, 630, 580);
                 g.drawString("Vidas x " + navecita.getVidas(), 20, 580);
             }
+            
+        }if(this.estado == EstadoJuego.PAUSA){
+            g.setColor(new java.awt.Color(0, 0, 0, 150));
+            g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
+            g.setColor(java.awt.Color.WHITE);
+            g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 40));
+            g.drawString("PAUSA", 350, 300);
+        }if(this.estado == EstadoJuego.GAME_OVER){
+            g.setColor(new java.awt.Color(0, 0, 0, 150));
+            g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
+            
+            g.setColor(java.awt.Color.RED);
+            g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 50));
+            g.drawString("Fin del Juego", 240, 180);
+            
+            g.setColor(java.awt.Color.WHITE);
+            g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 26));
+            g.drawString(this.Resultado, 180, 260);
+            
+            g.setColor(java.awt.Color.YELLOW);
+            g.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 24));
+            g.drawString("Tu puntaje fue de: " + puntaje, 270, 330);
+
+            g.setColor(java.awt.Color.LIGHT_GRAY);
+            g.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 18));
+            g.drawString("Presiona ENTER para volver al menú", 215, 450);
         }
     }
    
@@ -246,15 +300,22 @@ public class JuegoSpaceInvaders extends VideoJuego {
     protected void crearPartida() {
         this.Entidades.clear();
         this.disparo = null;
+        this.puntaje=0;
+        this.platoVolador = null;
         this.navecita = new NaveJugador(380, 500);
         Entidades.add(navecita);
         
         this.nivelDeFlota = 0;
         this.flotaE = new HashMap<>(); 
-        
-       
         nivel.generarOleadas(this.flotaE, Entidades, this.nivelDeFlota);
-        
+        Escudo e1 = new Escudo(150, 420);
+        Escudo e2 = new Escudo(320, 420);
+        Escudo e3 = new Escudo(490, 420);
+        Escudo e4 = new Escudo(660, 420);
+        for(SegmentoEscudo seg : e1.getSegmentos()) Entidades.add(seg);
+        for(SegmentoEscudo seg : e2.getSegmentos()) Entidades.add(seg);
+        for(SegmentoEscudo seg : e3.getSegmentos()) Entidades.add(seg);        
+        for(SegmentoEscudo seg : e4.getSegmentos()) Entidades.add(seg);
         this.estado = EstadoJuego.JUGANDO;
     }
 

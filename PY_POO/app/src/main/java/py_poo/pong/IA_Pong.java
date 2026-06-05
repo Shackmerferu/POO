@@ -21,19 +21,19 @@ public class IA_Pong {
     public void setDificultad(int dificultad) {
         this.dificultad = dificultad;
         switch (dificultad) {
-            case 1: velocidad = 1.5; margenError = 50; margenMinimo = 20; break;
-            case 2: velocidad = 2.5; margenError = 30; margenMinimo = 10; break;
-            case 3: velocidad = 3.5; margenError = 10; margenMinimo = 3;  break;
-            default: velocidad = 2.5; margenError = 30; margenMinimo = 10;
+            case 1: velocidad = 2.5; margenError = 50; margenMinimo = 20; break;
+            case 2: velocidad = 2.9; margenError = 30; margenMinimo = 10; break;
+            case 3: velocidad = 3.3; margenError = 10; margenMinimo = 3;  break;
+            default: velocidad = 2.5; margenError = 50; margenMinimo = 20;
         }
     }
 
     public void incrementarDificultad() {
         puntosRonda++;
-        if (puntosRonda % 4 == 0) {
+        if (puntosRonda % 1 == 0) {
             margenError = Math.max(margenMinimo, margenError - 1);
         }
-        if (puntosRonda % 5 == 0 && velocidad < 4.0) {
+        if (puntosRonda % 1 == 0 && velocidad < 4.5) {
             velocidad += 0.2;
         }
     }

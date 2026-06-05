@@ -1,91 +1,104 @@
 package py_poo.loderunner;
 
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.util.List;
 
 import py_poo.core.Constantes;
 import py_poo.input.InputManager;
-import py_poo.input.MouseManager;
-import py_poo.ui.Boton;
+import py_poo.ranking.RankingManager;
+import py_poo.ranking.RankingManager.RankingEntry;
 import py_poo.ui.MenuPrincipal;
 
 public class MenuLodeRunner extends MenuPrincipal {
-    private Boton botonJugar;
-    private Boton botonSalir;
-    private InputManager input;
-    private MouseManager mouse;
+    private int seleccion;
+    private RankingManager rankingManager;
+    private List<RankingEntry> topRanking;
 
-    public MenuLodeRunner(InputManager input, MouseManager mouse) {
-        super("Lode Runner - Menú Principal", "LODE RUNNER", java.awt.Color.GREEN, "J1: W / S", "J2: Flechas");
+    public MenuLodeRunner(InputManager input, Object mouse) {
+        super("Lode Runner - Menu Principal", "LODE RUNNER", Color.GREEN, "Jugar", "Salir");
         this.input = input;
-        this.mouse = mouse;
-        int centerX = Constantes.WIDTH / 2 - 100;
-        int centerY = Constantes.HEIGHT / 2 - 50;
-        botonJugar = new Boton("Jugar", centerX, centerY, 200, 50, () -> {
-            botonJugar.click();
-            System.out.println("Iniciar juego...");
-        });
-        botonSalir = new Boton("Salir", centerX, centerY + 70, 200, 50, () -> {
-            botonSalir.click();
-            // Acción al hacer clic en "Salir"
-            System.out.println("Salir del juego...");
-            System.exit(0);
-        });
+        this.seleccion = 0;
+        this.rankingManager = new RankingManager();
+        this.topRanking = rankingManager.cargarDetalleTop("Lode%", 10);
+    }
+
+    public int getSeleccion() {
+        return seleccion;
+    }
+
+    public void setSeleccion(int seleccion) {
+        this.seleccion = seleccion;
+    }
+
+    public void recargarRanking() {
+        this.topRanking = rankingManager.cargarDetalleTop("Lode%", 10);
+    }
+
+    @Override
+    protected String[] getConfigActions() {
+        return new String[]{"UP", "DOWN", "LEFT", "RIGHT", "DIG", "MUSIC", "FULLSCREEN", "RESET"};
     }
 
     public void actualizar() {
-        if (input.isUpPressed()) {
-            botonJugar.setSeleccionado(true);
-            botonSalir.setSeleccionado(false);
-        } else if (input.isDownPressed()) {
-            botonJugar.setSeleccionado(false);
-            botonSalir.setSeleccionado(true);
+    }
+
+    public void dibujar(Graphics g) {
+        if (isConfigMode()) {
+            dibujarConfig(g);
+            return;
         }
 
-        if (input.isEnterPressed()) {
-            if (botonJugar.contains(mouse.getX(), mouse.getY())) {
-                botonJugar.click();
-            } else if (botonSalir.contains(mouse.getX(), mouse.getY())) {
-                botonSalir.click();
+        g.setColor(new Color(25, 27, 34));
+        g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
+
+        g.setFont(new Font("Consolas", Font.BOLD, 45));
+        g.setColor(new Color(255, 210, 60));
+        g.drawString("LODE RUNNER", Constantes.WIDTH / 2 - 200, 100);
+
+        String[] opciones = {"JUGAR", "CONFIG", "SALIR"};
+        g.setFont(new Font("Consolas", Font.PLAIN, 20));
+        for (int i = 0; i < opciones.length; i++) {
+            if (i == seleccion) {
+                g.setColor(Color.YELLOW);
+                g.drawString("> " + opciones[i], 100, 200 + i * 35);
+            } else {
+                g.setColor(Color.WHITE);
+                g.drawString("  " + opciones[i], 100, 200 + i * 35);
+            }
+        }
+
+        g.setFont(new Font("Consolas", Font.PLAIN, 14));
+        g.setColor(Color.GRAY);
+        g.drawString("W/S o Flechas para mover | ENTER para seleccionar", 100, 420);
+
+        g.setFont(new Font("Consolas", Font.PLAIN, 12));
+        g.setColor(new Color(230, 140, 60));
+        g.drawString("Controles:", 100, 450);
+        g.setColor(new Color(180, 180, 180));
+        g.drawString("Flechas: Moverse", 100, 470);
+        g.drawString("X: Cavar", 100, 485);
+        g.drawString("W/A/S/D: Moverse", 100, 500);
+        g.drawString("P: Pausa   ESC: Menu   Ctrl: Sonido", 100, 515);
+
+        g.setFont(new Font("Consolas", Font.BOLD, 22));
+        g.setColor(Color.CYAN);
+        g.drawString("--- TOP 10 RANKING ---", 450, 180);
+
+        g.setFont(new Font("Consolas", Font.PLAIN, 14));
+        g.setColor(Color.WHITE);
+        if (topRanking == null || topRanking.isEmpty()) {
+            g.drawString("Aún no hay puntajes.", 450, 220);
+        } else {
+            int y = 220;
+            for (int i = 0; i < topRanking.size(); i++) {
+                RankingEntry entry = topRanking.get(i);
+
+                String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
+                g.drawString(texto, 450, y);
+                y += 20;
             }
         }
     }
-
-    public void renderizar(Graphics g) {
-        g.setColor(Color.BLACK);
-        g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
-
-        Font fuenteTitulo = g.getFont().deriveFont(Font.BOLD, 48f);
-        g.setFont(fuenteTitulo);
-        g.setColor(Color.WHITE);
-        String titulo = "LODE RUNNER";
-        int textWidth = g.getFontMetrics().stringWidth(titulo);
-        g.drawString(titulo, (Constantes.WIDTH - textWidth) / 2, 150);
-
-        botonJugar.renderizar(g);
-        botonSalir.renderizar(g);
-    }
-//Revisar todo esto, es para dejarlo funcional.
-   public void dibujar(java.awt.Graphics g) {
-    // 1. Fondo gris oscuro (tipo piedra de mina / cueva)
-    g.setColor(new java.awt.Color(25, 27, 34)); 
-    g.fillRect(0, 0, 800, 600); 
-
-    // 2. Título principal en Amarillo Oro brillante
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.BOLD, 45));
-    g.setColor(new java.awt.Color(255, 210, 60)); // Color oro
-    g.drawString("LODE RUNNER", 265, 200);
-
-    // 3. Texto de instrucción en un Blanco Hueso para que no sature
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 18));
-    g.setColor(new java.awt.Color(240, 240, 240));
-    g.drawString("PRESIONA 'ENTER' PARA HACER GUITA LOCO", 200, 340);
-    
-    // 4. Instrucciones de los controles en un tono Ámbar/Naranja suave
-    g.setFont(new java.awt.Font("Consolas", java.awt.Font.PLAIN, 14));
-    g.setColor(new java.awt.Color(230, 140, 60));
-    g.drawString("Controles: Flechas (Moverse)  |  Z / X (Cavar Izq / Der)", 185, 410);
-}
 }
