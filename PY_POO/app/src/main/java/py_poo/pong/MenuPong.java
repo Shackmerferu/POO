@@ -14,7 +14,7 @@ import py_poo.ui.MenuPrincipal;
 
 public class MenuPong extends MenuPrincipal {
 
-    // --- VARIABLES DEL MENÚ ---
+    // VARIABLES DEL MENÚ
     private InputManager input;         // Lee el teclado
     private int seleccion;              // Guarda en qué opción del menú principal estamos parados
 
@@ -28,7 +28,7 @@ public class MenuPong extends MenuPrincipal {
     private RankingManager rankingManager;      // El gestor de SQLite
     private List<RankingEntry> topRanking;      // Lista temporal que guarda el Top 10 para dibujarlo en pantalla
 
-    // --- CONSTRUCTOR ---
+    //  CONSTRUCTOR
     public MenuPong(InputManager input, Object mouse) {
         super("Pong", "Menú Principal", Color.BLACK, "Jugar", "Salir"); // Configuración heredada de MenuPrincipal
         this.input = input;
@@ -40,7 +40,7 @@ public class MenuPong extends MenuPrincipal {
         this.topRanking = rankingManager.cargarDetalleTop("Pong%", 10);
     }
 
-    // --- GETTERS Y SETTERS BÁSICOS ---
+    // --- GETTERS Y SETTERS BÁSICOS
     public int getSeleccion() {
         return seleccion;
     }
@@ -61,13 +61,12 @@ public class MenuPong extends MenuPrincipal {
         lastConfigKeyTime = System.currentTimeMillis(); // Guarda la hora exacta en la que entramos
     }
 
-    // --- LÓGICA DE CONFIGURACIÓN DE TECLAS ---
+    //  CONFIGURACIÓN DE TECLAS
     public void actualizarConfig() {
         long now = System.currentTimeMillis();
 
         // 1. Si el jugador seleccionó una acción y estamos esperando que presione la tecla nueva:
         if (configActionIndex >= 0) {
-            // "Debounce": Espera 120 milisegundos antes de leer para que no tome la tecla "Enter"
             // con la que acabamos de elegir la opción.
             if (now - lastConfigKeyTime < 120) return;
 
@@ -84,7 +83,7 @@ public class MenuPong extends MenuPrincipal {
             return;
         }
 
-        // 2. Si NO estamos esperando una tecla, navegamos arriba/abajo por el menú de config
+        // 2. Si no esta esperando una tecla, puede ir arriba o abajo en el menu
         if (input.isMenuUpPressed() || input.isWPressed()) {
             configSelected = Math.max(0, configSelected - 1); // Sube pero no pasa del 0
         }
@@ -107,7 +106,7 @@ public class MenuPong extends MenuPrincipal {
         }
     }
 
-    // --- DIBUJAR PANTALLA DE CONFIGURACIÓN ---
+    // DIBUJA LA PANTALLA DE CONFIGURACIÓN
     public void dibujarConfig(Graphics g) {
         // Dibuja un fondo semitransparente oscuro
         g.setColor(new Color(0, 0, 0, 200));
@@ -133,7 +132,7 @@ public class MenuPong extends MenuPrincipal {
                 g.setColor(Color.WHITE);
             }
 
-            // Reemplaza guiones bajos por espacios para que se lea mejor (ej: "MOVER_ARRIBA" -> "MOVER ARRIBA")
+            // Reemplaza guiones bajos por espacios para que se lea mejor
             String label = actions[i].replace("_", " ");
             String key = KeyBindings.keyName(KeyBindings.get(actions[i]));
 
@@ -162,7 +161,7 @@ public class MenuPong extends MenuPrincipal {
         g.drawString("Flechas: mover  |  Enter: seleccionar / cambiar  |  Esc: salir", 180, 580);
     }
 
-    // Método vacío por obligación de herencia
+
     public void actualizar() {
     }
 
@@ -175,7 +174,7 @@ public class MenuPong extends MenuPrincipal {
             return;
         }
 
-        // Fondo negro normal
+        // Fondo
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
 
@@ -184,7 +183,7 @@ public class MenuPong extends MenuPrincipal {
         g.setColor(Color.GREEN);
         g.drawString("ARCADE PONG", 260, 100);
 
-        // Lista de opciones a la izquierda
+        // Lista de opciones
         String[] opciones = {"1 JUGADOR (VS IA)", "2 JUGADORES", "CONFIG", "SALIR"};
         g.setFont(new Font("Consolas", Font.PLAIN, 20));
         for (int i = 0; i < opciones.length; i++) {
@@ -197,13 +196,13 @@ public class MenuPong extends MenuPrincipal {
             }
         }
 
-        // Textos de ayuda abajo
+        // Textos de los controles
         g.setFont(new Font("Consolas", Font.PLAIN, 14));
         g.setColor(Color.GRAY);
         g.drawString("W/S o Flechas para mover | ENTER para seleccionar", 100, 420);
         g.drawString("Controles: W/S (J1)  |  Flechas Arriba/Abajo (J2)", 100, 440);
 
-        // --- DIBUJAR RANKING (MITAD DERECHA) ---
+        // dibuja el ranking
         g.setFont(new Font("Consolas", Font.BOLD, 22));
         g.setColor(Color.CYAN);
         g.drawString("--- TOP 10 RANKING ---", 450, 180);
@@ -220,7 +219,7 @@ public class MenuPong extends MenuPrincipal {
             for (int i = 0; i < topRanking.size(); i++) {
                 RankingEntry entry = topRanking.get(i);
 
-                // Limpia la palabra "Pong" para no ser redundante, dejando solo "vs IA [11-5] (Ganó)"
+                // Limpia la palabra Pong, dejando solo "vs IA [11-5] (Ganó)"
                 String detalle = entry.juego().replace("Pong", "").trim();
 
                 // Por si el detalle quedó vacío por algún motivo, muestra los puntos crudos
@@ -228,7 +227,7 @@ public class MenuPong extends MenuPrincipal {
                     detalle = entry.puntaje() + " pts";
                 }
 
-                // Arma el texto final: "1. German  vs IA [11-5] (Ganó)"
+                // Arma ranking con este formato : "1. German  vs IA [11-5] (Ganó)"
                 String texto = String.format("%d. %s  %s", (i + 1), entry.jugador(), detalle);
                 g.drawString(texto, 450, y);
                 y += 20; // Baja 20 píxeles para el siguiente renglón
