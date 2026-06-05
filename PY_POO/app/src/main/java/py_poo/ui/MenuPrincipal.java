@@ -24,6 +24,11 @@ public class MenuPrincipal extends JFrame {
     protected int configSelected;
     protected int configActionIndex = -1;
     protected long lastConfigKeyTime;
+    protected String[] configActions;
+
+    protected String[] getConfigActions() {
+        return KeyBindings.getActionNames();
+    }
 
     public MenuPrincipal(String tituloVentana, String tituloJuego, Color c1, String ctrJ1, String ctrJ2) {
         super(tituloVentana);
@@ -62,6 +67,7 @@ public class MenuPrincipal extends JFrame {
 
     public void setConfigMode(boolean configMode) {
         this.configMode = configMode;
+        this.configActions = getConfigActions();
         configSelected = 0;
         configActionIndex = -1;
         lastConfigKeyTime = System.currentTimeMillis();
@@ -75,7 +81,7 @@ public class MenuPrincipal extends JFrame {
             if (now - lastConfigKeyTime < 120) return;
             for (int code = 0; code < 256; code++) {
                 if (input.isKeyPressed(code)) {
-                    KeyBindings.set(KeyBindings.getActionNames()[configActionIndex], code);
+                    KeyBindings.set(configActions[configActionIndex], code);
                     lastConfigKeyTime = now;
                     configActionIndex = -1;
                     break;
@@ -88,20 +94,15 @@ public class MenuPrincipal extends JFrame {
             configSelected = Math.max(0, configSelected - 1);
         }
         if (input.isMenuDownPressed() || input.isSPressed()) {
-            String[] actions = KeyBindings.getActionNames();
-            configSelected = Math.min(actions.length + 3, configSelected + 1);
+            configSelected = Math.min(configActions.length + 1, configSelected + 1);
         }
         if (input.isEnterPressed()) {
-            String[] actions = KeyBindings.getActionNames();
-            if (configSelected < actions.length) {
+            if (configSelected < configActions.length) {
                 configActionIndex = configSelected;
                 lastConfigKeyTime = now;
-            } else if (configSelected == actions.length) {
-                guardarConfiguracion();
-            } else if (configSelected == actions.length + 1) {
+            } else if (configSelected == configActions.length) {
                 reiniciarDefaults();
-            } else if (configSelected == actions.length + 2) {
-                guardarConfiguracion();
+            } else if (configSelected == configActions.length + 1) {
                 configMode = false;
             }
         }
@@ -144,9 +145,8 @@ public class MenuPrincipal extends JFrame {
         g.setColor(Color.CYAN);
         g.drawString("CONFIGURAR TECLAS", 220, 60);
 
-        String[] actions = KeyBindings.getActionNames();
         g.setFont(new Font("Consolas", Font.PLAIN, 16));
-        for (int i = 0; i < actions.length; i++) {
+        for (int i = 0; i < configActions.length; i++) {
             int y = 110 + i * 35;
             if (i == configSelected) {
                 g.setColor(Color.YELLOW);
@@ -154,8 +154,8 @@ public class MenuPrincipal extends JFrame {
             } else {
                 g.setColor(Color.WHITE);
             }
-            String label = actions[i].replace("_", " ");
-            String key = KeyBindings.keyName(KeyBindings.get(actions[i]));
+            String label = configActions[i].replace("_", " ");
+            String key = KeyBindings.keyName(KeyBindings.get(configActions[i]));
 
             if (configActionIndex == i) {
                 g.setColor(Color.GREEN);
@@ -165,11 +165,11 @@ public class MenuPrincipal extends JFrame {
             }
         }
 
-        int base = 110 + actions.length * 35;
-        String[] opciones = {"GUARDAR", "REINICIAR VALORES", "VOLVER"};
+        int base = 110 + configActions.length * 35;
+        String[] opciones = {"REINICIAR VALORES", "VOLVER"};
         for (int i = 0; i < opciones.length; i++) {
             int y = base + i * 35;
-            int idx = actions.length + i;
+            int idx = configActions.length + i;
             if (idx == configSelected) {
                 g.setColor(Color.YELLOW);
                 g.drawString("> ", 180, y);
