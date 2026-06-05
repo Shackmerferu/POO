@@ -247,4 +247,8 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     public boolean isConfigMode() {
         return configMode;
     }
+
+    public boolean isSonidoActivado() {
+        return this.sonidoActivado;
+    }
 }
