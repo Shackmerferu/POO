@@ -26,13 +26,13 @@ public class Escudo extends ObjetoGrafico {
             "08_space__0008_ShieldFull.png"
         };
         
-       segmentos[0] = new SegmentoEscudo(X, Y, sanos[0], "1.png");
+        segmentos[0] = new SegmentoEscudo(X, Y, sanos[0], "1.png");
         segmentos[1] = new SegmentoEscudo(X + 20, Y, sanos[1], "2.png");
         segmentos[2] = new SegmentoEscudo(X + 40, Y, sanos[2], "3.png");
         
      
         segmentos[3] = new SegmentoEscudo(X, Y + 10, sanos[3], "4.png");
-        segmentos[4] = new SegmentoEscudo(X + 20, Y + 10, sanos[4], "5.png"); // Centro roto
+        segmentos[4] = new SegmentoEscudo(X + 20, Y + 10, sanos[4], "5.png"); 
         segmentos[5] = new SegmentoEscudo(X + 40, Y + 10, sanos[5], "6.png");
         
        

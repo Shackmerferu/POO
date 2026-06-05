@@ -8,6 +8,7 @@ import py_poo.engine.EstadoJuego;
 import py_poo.engine.VideoJuego;
 import py_poo.entities.ObjetoGrafico;
 import py_poo.input.InputManager;
+import py_poo.ranking.RankingManager;
 import py_poo.ui.MenuPrincipal;
 import py_poo.core.Constantes;
 
@@ -25,7 +26,20 @@ public class JuegoSpaceInvaders extends VideoJuego {
     private int puntaje=0;
     private SegmentoEscudo SegmentoEscudo = null;
     private NivelSpaceInvaders nivel = new NivelSpaceInvaders();
+    private RankingManager rankingManager;
+    private boolean rankingRegistrado;
 
+
+    private void registrarRankingFinal() {
+        if (rankingRegistrado) {
+        return;
+        }
+        String jugador = (nombreJugadorPrincipal != null && !nombreJugadorPrincipal.isBlank()) ? nombreJugadorPrincipal : "Toni";
+    
+        rankingManager.agregarPuntaje(jugador, "Space Invaders", (this.nivelDeFlota + 1), this.puntaje);
+    
+        rankingRegistrado = true;
+}
 
 
 
@@ -40,6 +54,10 @@ public class JuegoSpaceInvaders extends VideoJuego {
         
         this.menu.setVisible(true);
         
+        this.rankingManager = new RankingManager();
+        
+        this.rankingRegistrado = false;
+
         this.estado = EstadoJuego.MENU;
     }
     
@@ -137,6 +155,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
                             this.navecita = null;
                             this.Resultado = "No compa, nos entraron los bichos, Corre Wachin";
                             this.estado = EstadoJuego.GAME_OVER;
+                            registrarRankingFinal();
                             break; 
                         }
             }  
@@ -144,7 +163,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
             }  
             if (this.platoVolador == null) {
             
-                if (Math.random() < 0.002) { 
+                if (Math.random() < 0.0002) { 
                     this.platoVolador = new NaveNodriza();
                     Entidades.add(this.platoVolador);
                 }
@@ -155,10 +174,10 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 }
             }
             for (Enemigo bicho : flotaE.values()) {
-            if(!bicho.isParaEliminar() && Math.random() < 0.0002) {
+            if(!bicho.isParaEliminar() && Math.random() < 0.0001) {
                     int centroX = (int) bicho.getX() + (bicho.getWidth() / 2); 
                     int origenY = (int) bicho.getY() + bicho.getHeight();
-                    Laser disparoEnemigo = new Laser(centroX, origenY, 5, "imagenes/Space Invaders/Projectiles/ProjectileA_1.png");
+                    Laser disparoEnemigo = new Laser(centroX, origenY, 4, "imagenes/Space Invaders/Projectiles/ProjectileA_1.png");
                     Entidades.add(disparoEnemigo);  
                 }
             }
@@ -200,6 +219,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
                                 this.navecita=null;
                                 this.Resultado= "Te re moriste cumpa";
                                 this.estado= EstadoJuego.GAME_OVER;
+                                registrarRankingFinal();
                             }
                             break;
                         }
@@ -243,6 +263,9 @@ public class JuegoSpaceInvaders extends VideoJuego {
 
         }else if (this.estado == EstadoJuego.GAME_OVER) {
                 if (input.isEnterPressed()) {
+                    if (this.menu != null) {
+                         this.menu.recargarRanking(); 
+                    }
                     this.estado = EstadoJuego.MENU;
                 }
         }
@@ -304,7 +327,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
         this.platoVolador = null;
         this.navecita = new NaveJugador(380, 500);
         Entidades.add(navecita);
-        
+        this.rankingRegistrado = false;
         this.nivelDeFlota = 0;
         this.flotaE = new HashMap<>(); 
         nivel.generarOleadas(this.flotaE, Entidades, this.nivelDeFlota);
@@ -318,7 +341,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
         for(SegmentoEscudo seg : e4.getSegmentos()) Entidades.add(seg);
         this.estado = EstadoJuego.JUGANDO;
     }
-
+    
     @Override
     public String getGanador() {
         return Nombre;
