@@ -36,6 +36,11 @@ public class MenuLodeRunner extends MenuPrincipal {
         this.topRanking = rankingManager.cargarDetalleTop("Lode%", 10);
     }
 
+    @Override
+    protected String[] getConfigActions() {
+        return new String[]{"UP", "DOWN", "LEFT", "RIGHT", "DIG", "MUSIC", "FULLSCREEN", "RESET"};
+    }
+
     public void actualizar() {
     }
 
