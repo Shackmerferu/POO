@@ -11,42 +11,44 @@ import py_poo.input.InputManager;
 import py_poo.utils.CargadorRecursos;
 
 public class Recolector extends Personaje {
-    public static final int VELOCIDAD = 2;
-    public static final int VIDAS_INICIALES = 3;
+    public static final int VELOCIDAD = 2; // velocidad de movimiento del recolector
+    public static final int VIDAS_INICIALES = 3; // vidas con las que empieza
 
-    private int oroRecolectado;
-    private int nivelOroTotal;
-    private boolean enEscalera;
-    private boolean enBarra;
-    private boolean cayendo;
-    private boolean cavoEsteFrame;
-    private boolean enAire;
-    private int tileX, tileY;
-    private int tileSize;
-    private InputManager input;
-    private Nivel nivel;
+    private int oroRecolectado; // oro recolectado en el nivel actual
+    private int nivelOroTotal; // total de oro disponible en el nivel
+    private boolean enEscalera; // indica si está sobre una escalera
+    private boolean enBarra; // indica si está sobre una barra
+    private boolean cayendo; // indica si está cayendo
+    private boolean cavoEsteFrame; // true si cavó en este frame
+    private boolean enAire; // indica si está en el aire sin soporte
+    private int tileX, tileY; // tile de spawn del recolector
+    private int tileSize; // tamaño en píxeles de cada tile
+    private InputManager input; // gestor de entrada del jugador
+    private Nivel nivel; // nivel actual
 
-    private Animacion animParado;
-    private Animacion animCaminando;
-    private Animacion animEscalera;
-    private Animacion animBarra;
+    private Animacion animParado; // animación quieto
+    private Animacion animCaminando; // animación caminando
+    private Animacion animEscalera; // animación en escalera
+    private Animacion animBarra; // animación en barra
 
     // RUTAS DE IMAGENES DEL RECOLECTOR - CAMBIAR AQUI
     private static final String RUTA_PERSONAJE_1 = "imagenes/Lode Runner/personaje (1).png";
 
+    // constructor: crea recolector en tile y tamaño dados
     public Recolector(int tileX, int tileY, int tileSize) {
-        this.tileX = tileX;
+        this.tileX = tileX; // guarda tile de spawn
         this.tileY = tileY;
         this.tileSize = tileSize;
-        this.vidas = VIDAS_INICIALES;
-        this.direccion = 1;
-        this.oroRecolectado = 0;
+        this.vidas = VIDAS_INICIALES; // asigna vidas iniciales
+        this.direccion = 1; // mira a derecha por defecto
+        this.oroRecolectado = 0; // empieza sin oro
         this.dimension = new java.awt.Dimension(tileSize, tileSize);
-        this.cargarAnimaciones();
-        setX(tileX * tileSize);
+        this.cargarAnimaciones(); // carga sprites
+        setX(tileX * tileSize); // posición en píxeles
         setY(tileY * tileSize);
     }
 
+    // carga las imágenes de animación del recolector
     private void cargarAnimaciones() {
         CargadorRecursos cr = new CargadorRecursos();
         BufferedImage img1 = cr.cargarImagen(RUTA_PERSONAJE_1);
@@ -54,63 +56,70 @@ public class Recolector extends Personaje {
 
         if (img1 != null) {
             Sprite s1 = new Sprite(img1);
-            animParado = new Animacion(List.of(s1), 500);
-            animCaminando = new Animacion(List.of(s1), 150);
-            animEscalera = new Animacion(List.of(s1), 200);
-            animBarra = new Animacion(List.of(s1), 200);
+            animParado = new Animacion(List.of(s1), 500); // animación quieto
+            animCaminando = new Animacion(List.of(s1), 150); // animación caminando
+            animEscalera = new Animacion(List.of(s1), 200); // animación escalera
+            animBarra = new Animacion(List.of(s1), 200); // animación barra
         }
     }
 
+    // asigna el gestor de entrada para controlar el personaje
     public void setInputManager(InputManager input) {
         this.input = input;
     }
 
+    // asigna el nivel en el que está el recolector
     public void setNivel(Nivel nivel) {
         this.nivel = nivel;
     }
 
     @Override
+    // procesa la entrada del jugador y mueve al recolector
     public void mover() {
         if (input == null) return;
-        cavoEsteFrame = false;
+        if (estaEnAgujero()) return; // no se mueve si está en agujero
+        cavoEsteFrame = false; // reinicia flag de cavado
         if (!cayendo) {
-            if (input.isLeftPressed()) moverIzquierda();
-            if (input.isRightPressed()) moverDerecha();
-            if (input.isUpPressed()) moverArriba();
-            if (input.isDownPressed()) moverAbajo();
+            if (input.isLeftPressed()) moverIzquierda(); // mueve izquierda
+            if (input.isRightPressed()) moverDerecha(); // mueve derecha
+            if (input.isUpPressed()) moverArriba(); // mueve arriba
+            if (input.isDownPressed()) moverAbajo(); // mueve abajo
             if (input.isDigPressed()) {
-                if (direccion < 0) cavarIzquierda();
-                else cavarDerecha();
+                if (direccion < 0) cavarIzquierda(); // cava a izquierda
+                else cavarDerecha(); // cava a derecha
             }
         }
-        aplicarGravedad();
-        detectarPlataforma();
-        actualizar();
+        aplicarGravedad(); // aplica caída
+        detectarPlataforma(); // detecta escaleras/barras
+        actualizar(); // actualiza animaciones
     }
 
+    // aplica gravedad al recolector si no hay soporte
     private void aplicarGravedad() {
         if (nivel == null) return;
-        int txL = (int)getX() / tileSize;
-        int txR = (int)(getX() + tileSize - 1) / tileSize;
+        int txL = (int)getX() / tileSize; // tile izquierdo de pies
+        int txR = (int)(getX() + tileSize - 1) / tileSize; // tile derecho de pies
         int tyPies = (int)(getY() + tileSize) / tileSize;
 
         if (cayendo) {
-            setY(getY() + VELOCIDAD);
+            setY(getY() + VELOCIDAD); // cae
             if (tieneSoporte(txL, tyPies) || tieneSoporte(txR, tyPies)) {
-                setY(tyPies * tileSize - tileSize);
+                setY(tyPies * tileSize - tileSize); // aterriza
                 cayendo = false;
             }
         } else if (!enEscalera && !enBarra
             && !tieneSoporte(txL, tyPies)
             && !tieneSoporte(txR, tyPies)) {
-            cayendo = true;
+            cayendo = true; // empieza caída
         }
     }
 
+    // verifica si hay soporte en el tile dado
     private boolean tieneSoporte(int tx, int ty) {
         return nivel.esSolido(tx, ty) || nivel.esEscalera(tx, ty) || nivel.esBarra(tx, ty);
     }
 
+    // detecta escaleras, barras y estado de aire bajo el personaje
     private void detectarPlataforma() {
         if (nivel == null) return;
         int txL = (int)getX() / tileSize;
@@ -128,6 +137,7 @@ public class Recolector extends Personaje {
             && !tieneSoporte(txR, tyPies2);
     }
 
+    // actualiza las animaciones cada frame
     public void actualizar() {
         if (animParado != null) animParado.actualizar();
         if (animCaminando != null) animCaminando.actualizar();
@@ -135,81 +145,89 @@ public class Recolector extends Personaje {
         if (animBarra != null) animBarra.actualizar();
     }
 
+    // mueve al recolector a la izquierda
     public void moverIzquierda() {
         if (cayendo || nivel == null) return;
         double newX = getX() - VELOCIDAD;
         int tx = (int)newX / tileSize;
         int ty = enEscalera ? (int)(getY() + tileSize / 2) / tileSize
                 : (int)(getY() + tileSize - 1) / tileSize;
-        if (nivel.esSolido(tx, ty)) return;
-        direccion = -1;
+        if (nivel.esSolido(tx, ty)) return; // bloqueado
+        direccion = -1; // mira a izquierda
         setX(newX);
     }
 
+    // mueve al recolector a la derecha
     public void moverDerecha() {
         if (cayendo || nivel == null) return;
         double newX = getX() + VELOCIDAD;
         int tx = (int)(newX + tileSize - 1) / tileSize;
         int ty = enEscalera ? (int)(getY() + tileSize / 2) / tileSize
                 : (int)(getY() + tileSize - 1) / tileSize;
-        if (nivel.esSolido(tx, ty)) return;
-        direccion = 1;
+        if (nivel.esSolido(tx, ty)) return; // bloqueado
+        direccion = 1; // mira a derecha
         setX(newX);
     }
 
+    // mueve al recolector hacia arriba por escalera/barra
     public void moverArriba() {
         if (!enEscalera || cayendo || nivel == null) return;
         int tx = getTileX();
         double nuevaY = getY() - VELOCIDAD;
-        if (nivel.esSolido(tx, (int)nuevaY / tileSize)) return;
+        if (nivel.esSolido(tx, (int)nuevaY / tileSize)) return; // bloqueado arriba
         int tyPies = (int)(nuevaY + tileSize - 1) / tileSize;
         if (nivel.esEscalera(tx, tyPies) || nivel.esBarra(tx, tyPies)
             || nivel.esSolido(tx, tyPies)) {
             setY(nuevaY);
         } else if (nivel.esEscalera(tx, tyPies + 1) || nivel.esBarra(tx, tyPies + 1)) {
-            setY(tyPies * tileSize);
+            setY(tyPies * tileSize); // ajusta al escalón
         }
     }
 
+    // mueve al recolector hacia abajo por escalera
     public void moverAbajo() {
         if (cayendo || nivel == null) return;
         int tx = getTileX();
         int tyPies2 = (int)(getY() + tileSize) / tileSize;
         if (!enEscalera) {
             if (nivel.esEscalera(tx, tyPies2)) {
-                enEscalera = true;
+                enEscalera = true; // se agarra a escalera
                 setY(tyPies2 * tileSize - tileSize);
             }
             return;
         }
         double nuevaY = getY() + VELOCIDAD;
         int tyPies = (int)(nuevaY + tileSize - 1) / tileSize;
-        if (nivel.esSolido(tx, tyPies)) return;
+        if (nivel.esSolido(tx, tyPies)) return; // bloqueado abajo
         if (nivel.esEscalera(tx, tyPies) || nivel.esBarra(tx, tyPies)) {
             setY(nuevaY);
         }
     }
 
+    // cava un ladrillo a la izquierda del personaje
     public void cavarIzquierda() {
         if (enEscalera || enBarra || cayendo || nivel == null) return;
         int tyPies = (int)(getY() + tileSize) / tileSize;
         if (nivel.cavarEn(getTileX() - 1, tyPies)) {
-            cavoEsteFrame = true;
+            cavoEsteFrame = true; // marcó que cavó este frame
         }
     }
 
+    // cava un ladrillo a la derecha del personaje
     public void cavarDerecha() {
         if (enEscalera || enBarra || cayendo || nivel == null) return;
         int tyPies = (int)(getY() + tileSize) / tileSize;
         if (nivel.cavarEn(getTileX() + 1, tyPies)) {
-            cavoEsteFrame = true;
+            cavoEsteFrame = true; // marcó que cavó este frame
         }
     }
 
+    // incrementa el contador de oro recolectado
     public void recogerOro() {
         oroRecolectado++;
     }
 
+    // reinicia posición del recolector al spawn
     public void reiniciarPosicion() {
         setX(tileX * tileSize);
         setY(tileY * tileSize);
@@ -219,28 +237,33 @@ public class Recolector extends Personaje {
         enAire = false;
     }
 
+    // reduce una vida y reinicia posición
     public void perderVida() {
         vidas--;
         reiniciarPosicion();
     }
 
+    // retorna el oro recolectado en el nivel
     public int getOroRecolectado() {
         return oroRecolectado;
     }
 
+    // establece el total de oro disponible en el nivel
     public void setNivelOroTotal(int total) {
         this.nivelOroTotal = total;
     }
 
+    // retorna el total de oro del nivel
     public int getNivelOroTotal() {
         return nivelOroTotal;
     }
 
+    // true si recolectó todo el oro del nivel
     public boolean nivelCompleto() {
         return oroRecolectado >= nivelOroTotal;
     }
 
-    public boolean cavoEsteFrame() { return cavoEsteFrame; }
+    public boolean cavoEsteFrame() { return cavoEsteFrame; } // true si cavó este frame
     public boolean isEnEscalera() { return enEscalera; }
     public void setEnEscalera(boolean v) { this.enEscalera = v; }
     public boolean isEnBarra() { return enBarra; }
@@ -249,11 +272,20 @@ public class Recolector extends Personaje {
     public void setCayendo(boolean v) { this.cayendo = v; }
     public boolean isEnAire() { return enAire; }
     public void setEnAire(boolean v) { this.enAire = v; }
+    // verifica si el recolector está intersectando algún agujero
+    public boolean estaEnAgujero() {
+        if (nivel == null) return false;
+        for (py_poo.entities.Agujero a : nivel.agujeros) {
+            if (getBounds().intersects(a.getBounds())) return true;
+        }
+        return false;
+    }
 
-    public int getTileX() { return (int)((getX() + tileSize / 2) / tileSize); }
-    public int getTileY() { return (int)((getY() + tileSize / 2) / tileSize); }
+    public int getTileX() { return (int)((getX() + tileSize / 2) / tileSize); } // tile X actual
+    public int getTileY() { return (int)((getY() + tileSize / 2) / tileSize); } // tile Y actual
 
     @Override
+    // dibuja al recolector con la animación adecuada según su estado
     public void display(Graphics g) {
         Sprite s = null;
         if (enEscalera) s = animEscalera != null ? animEscalera.obtenerFrame() : null;
@@ -265,9 +297,9 @@ public class Recolector extends Personaje {
             int x = (int)getX();
             int y = (int)getY();
             if (direccion < 0) {
-                s.dibujar(g, x, y, tileSize, tileSize);
+                s.dibujar(g, x, y, tileSize, tileSize); // mirando izquierda
             } else {
-                g.drawImage(s.getImagen(), x + tileSize, y, -tileSize, tileSize, null);
+                g.drawImage(s.getImagen(), x + tileSize, y, -tileSize, tileSize, null); // invertido a derecha
             }
         } else if (sprite != null) {
             g.drawImage(sprite, (int)getX(), (int)getY(), tileSize, tileSize, null);

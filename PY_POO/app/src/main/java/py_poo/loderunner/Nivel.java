@@ -12,43 +12,46 @@ import py_poo.entities.ObjetoGrafico;
 import py_poo.entities.ParticulaLadrillo;
 import py_poo.entities.Puerta;
 public class Nivel {
-    public static final char VACIO = ' ';
-    public static final char LADRILLO = '=';
-    public static final char LADRILLO_IRROMPIBLE = '#';
-    public static final char ESCALERA = 'H';
-    public static final char BARRA = '-';
-    public static final char MONEDA = '$';
-    public static final char AGUJERO = 'A';
-    public static final char GUARDIA = 'E';
-    public static final char RECOLECTOR = 'P';
-    public static final char PUERTA = 'X';
+    // caracteres del mapa para cada tipo de tile
+    public static final char VACIO = ' '; // espacio vacío
+    public static final char LADRILLO = '='; // ladrillo destruible
+    public static final char LADRILLO_IRROMPIBLE = '#'; // ladrillo indestructible
+    public static final char ESCALERA = 'H'; // escalera
+    public static final char BARRA = '-'; // barra horizontal
+    public static final char MONEDA = '$'; // oro
+    public static final char AGUJERO = 'A'; // agujero
+    public static final char GUARDIA = 'E'; // enemigo guardia
+    public static final char RECOLECTOR = 'P'; // jugador
+    public static final char PUERTA = 'X'; // puerta de salida
 
-    protected int Numero;
-    protected String[] Mapa;
-    protected char[][] mapa;
-    protected int tile_size = 40;
-    protected List<ObjetoGrafico> Entidades;
-    protected List<Ladrillo> ladrillos;
-    protected List<Ladrillo> ladrillosIrrompibles;
-    protected List<Escalera> escaleras;
-    protected List<Barra> barras;
-    protected List<Moneda> monedas;
-    protected List<Agujero> agujeros;
-    protected List<ParticulaLadrillo> particulas;
-    protected int escapeLadderX = -1;
-    protected int escapeLadderY = -1;
-    protected boolean escapeLadderActiva;
-    protected int spawnRecolectorX;
-    protected int spawnRecolectorY;
-    protected Puerta puertaSalida;
-    protected List<int[]> spawnGuardias;
-    protected int totalOro;
-    public int tiempoLimite = 120;
+    protected int Numero; // número de nivel
+    protected String[] Mapa; // datos del mapa en crudo
+    protected char[][] mapa; // matriz de tiles del nivel
+    protected int tile_size = 40; // tamaño de cada tile en píxeles
+    protected List<ObjetoGrafico> Entidades; // lista de entidades gráficas del nivel
+    protected List<Ladrillo> ladrillos; // ladrillos destruibles
+    protected List<Ladrillo> ladrillosIrrompibles; // ladrillos indestructibles
+    protected List<Escalera> escaleras; // escaleras del nivel
+    protected List<Barra> barras; // barras horizontales
+    protected List<Moneda> monedas; // monedas de oro
+    protected List<Agujero> agujeros; // agujeros activos
+    protected List<ParticulaLadrillo> particulas; // partículas de ladrillos rotos
+    protected int escapeLadderX = -1; // tile X de la escalera de escape
+    protected int escapeLadderY = -1; // tile Y de la escalera de escape
+    protected boolean escapeLadderActiva; // true si la escalera de escape se activó
+    protected int spawnRecolectorX; // tile X de spawn del jugador
+    protected int spawnRecolectorY; // tile Y de spawn del jugador
+    protected Puerta puertaSalida; // puerta de salida del nivel
+    protected List<int[]> spawnGuardias; // posiciones de spawn de los guardias
+    protected int totalOro; // total de monedas en el nivel
+    public int tiempoLimite = 120; // tiempo límite del nivel en segundos
 
+    // constructor vacío
     public Nivel() {
         this(0, null);
     }
 
+    // constructor con número de nivel y datos del mapa
     public Nivel(int numero, String[] mapaData) {
         this.Numero = numero;
         this.Mapa = mapaData;
@@ -64,52 +67,62 @@ public class Nivel {
         this.totalOro = 0;
     }
 
-    public int getNumero() { return Numero; }
-    public int getTile_size() { return tile_size; }
+    public int getNumero() { return Numero; } // retorna número de nivel
+    public int getTile_size() { return tile_size; } // retorna tamaño de tile
 
+    // retorna el caracter del tile en (x, y), fuera del mapa retorna irrompible
     public char getTile(int x, int y) {
         if (x < 0 || x >= mapa.length || y < 0 || y >= mapa[0].length) return LADRILLO_IRROMPIBLE;
         return mapa[x][y];
     }
 
+    // true si el tile es sólido (ladrillo o irrompible)
     public boolean esSolido(int x, int y) {
         char t = getTile(x, y);
         return t == LADRILLO || t == LADRILLO_IRROMPIBLE;
     }
 
+    // true si el tile es un ladrillo cavable (destruible)
     public boolean esLadrilloCavable(int x, int y) {
         char t = getTile(x, y);
         return t == LADRILLO;
     }
 
+    // true si el tile es escalera
     public boolean esEscalera(int x, int y) {
         return getTile(x, y) == ESCALERA;
     }
 
+    // true si el tile es barra
     public boolean esBarra(int x, int y) {
         return getTile(x, y) == BARRA;
     }
 
+    // true si el tile es moneda
     public boolean esMoneda(int x, int y) {
         return getTile(x, y) == MONEDA;
     }
 
+    // true si el tile está vacío
     public boolean esVacio(int x, int y) {
         return getTile(x, y) == VACIO;
     }
 
+    // asigna un caracter en la posición (x, y) del mapa
     public void setTile(int x, int y, char c) {
         if (x >= 0 && x < mapa.length && y >= 0 && y < mapa[0].length) {
             mapa[x][y] = c;
         }
     }
 
+    // agrega una entidad gráfica a la lista
     public void agregarEntidad(ObjetoGrafico entidad) {
         if (Entidades != null) {
             Entidades.add(entidad);
         }
     }
 
+    // carga el mapa desde los datos, creando todas las entidades del nivel
     public void cargar() {
         if (Mapa == null) return;
         int filas = Mapa.length;
@@ -180,6 +193,7 @@ public class Nivel {
         }
     }
 
+    // actualiza estado de todas las entidades del nivel cada frame
     public void actualizar() {
         for (Ladrillo l : ladrillos) l.actualizar();
         for (Ladrillo l : ladrillosIrrompibles) l.actualizar();
@@ -187,30 +201,31 @@ public class Nivel {
         for (Moneda m : monedas) m.actualizar();
         List<Agujero> aEliminar = new ArrayList<>();
         for (Agujero a : agujeros) {
-            a.actualizar();
-            if (!a.isAbierto()) {
+            a.actualizar(); // actualiza contador del agujero
+            if (!a.isAbierto()) { // si se cerró
                 Ladrillo l = a.getLadrilloAsociado();
                 if (l != null) {
-                    l.iniciarRegen();
+                    l.iniciarRegen(); // regenera el ladrillo
                     int lx = (int)(l.getX() / tile_size);
                     int ly = (int)(l.getY() / tile_size);
-                    setTile(lx, ly, LADRILLO);
+                    setTile(lx, ly, LADRILLO); // restaura el tile
                 }
-                aEliminar.add(a);
+                aEliminar.add(a); // marca para eliminar
             }
         }
-        agujeros.removeAll(aEliminar);
+        agujeros.removeAll(aEliminar); // elimina agujeros cerrados
         List<ParticulaLadrillo> pEliminar = new ArrayList<>();
         for (ParticulaLadrillo p : particulas) {
             p.actualizar();
-            if (!p.isActivo()) pEliminar.add(p);
+            if (!p.isActivo()) pEliminar.add(p); // partículas que expiraron
         }
         particulas.removeAll(pEliminar);
         Entidades.removeAll(pEliminar);
     }
 
-    public void renderizar() {}
+    public void renderizar() {} // renderizado del nivel
 
+    // activa la escalera de escape cuando se recolecta todo el oro
     public void activarEscape() {
         if (escapeLadderX < 0) return;
         escapeLadderActiva = true;
@@ -243,15 +258,17 @@ public class Nivel {
         }
     }
 
+    // limpia todas las entidades al finalizar el nivel
     public void finalizarNivel() {
         if (Entidades != null) Entidades.clear();
     }
 
-    public int getAnchoMapa() { return mapa != null ? mapa.length : 0; }
-    public int getAltoMapa() { return mapa != null ? mapa[0].length : 0; }
-    public int getAnchoPixels() { return getAnchoMapa() * tile_size; }
-    public int getAltoPixels() { return getAltoMapa() * tile_size; }
+    public int getAnchoMapa() { return mapa != null ? mapa.length : 0; } // ancho del mapa en tiles
+    public int getAltoMapa() { return mapa != null ? mapa[0].length : 0; } // alto del mapa en tiles
+    public int getAnchoPixels() { return getAnchoMapa() * tile_size; } // ancho en píxeles
+    public int getAltoPixels() { return getAltoMapa() * tile_size; } // alto en píxeles
 
+    // busca una moneda no recolectada en la posición (x, y)
     public Moneda getMonedaEn(int x, int y) {
         for (Moneda m : monedas) {
             if (!m.isRecolectada() && m.getBounds().contains(x, y)) return m;
@@ -259,6 +276,7 @@ public class Nivel {
         return null;
     }
 
+    // cava un ladrillo en la posición (tileX, tileY), creando un agujero
     public boolean cavarEn(int tileX, int tileY) {
         if (!esLadrilloCavable(tileX, tileY)) return false;
         Ladrillo ladrillo = null;

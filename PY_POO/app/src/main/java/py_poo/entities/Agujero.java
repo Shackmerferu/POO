@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 public class Agujero extends Bloque {
-    private static final int TIEMPO_CIERRE = 240;
+    private static final int TIEMPO_CIERRE = 180;
     private int contador;
     private boolean abierto;
     private Ladrillo ladrilloAsociado;

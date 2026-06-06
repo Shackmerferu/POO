@@ -26,25 +26,27 @@ import py_poo.utils.CargadorRecursos;
 
 public class JuegoLodeRunner extends VideoJuego {
 
-    private InputManager input;
-    private MenuLodeRunner menu;
-    private CollisionManager collisionManager;
-    private Recolector heroe;
-    private List<Guardia> guardias;
-    private List<Nivel> niveles;
-    private int nivelIdx;
-    private int puntosJ1;
-    private boolean rankingRegistrado;
-    private int tiempoNivel;
-    private BufferedImage fondo;
-    private FXPlayer fxPlayer;
-    private boolean musicaIniciada;
+    private InputManager input; // gestor de entrada del jugador
+    private MenuLodeRunner menu; // menú principal del juego
+    private CollisionManager collisionManager; // gestor de colisiones
+    private Recolector heroe; // personaje del jugador
+    private List<Guardia> guardias; // lista de guardias enemigos
+    private List<Nivel> niveles; // lista de niveles del juego
+    private int nivelIdx; // índice del nivel actual
+    private int puntosJ1; // puntos acumulados del jugador
+    private boolean rankingRegistrado; // true si ya se registró el puntaje
+    private int tiempoNivel; // contador de tiempo transcurrido en el nivel
+    private BufferedImage fondo; // imagen de fondo
+    private FXPlayer fxPlayer; // reproductor de efectos de sonido
+    private boolean musicaIniciada; // true si la música ya empezó
 
+    // constructor: establece nombre del juego
     public JuegoLodeRunner() {
         this.Nombre = "Lode Runner";
     }
 
     @Override
+    // inicia el juego: configura input, menú, collision manager y carga recursos
     public void iniciar() {
         super.iniciar();
         this.input = new InputManager();
@@ -59,17 +61,19 @@ public class JuegoLodeRunner extends VideoJuego {
         this.fondo = cr.cargarImagen("imagenes/Lode Runner/fondo negro.png");
 
         fxPlayer = new FXPlayer();
-        fxPlayer.cargarSonidoRecurso("punto", "sonidos/punto.wav");
-        fxPlayer.cargarSonidoRecurso("paleta", "sonidos/paleta.wav");
-        fxPlayer.cargarSonidoRecurso("empieza", "sonidos/Empieza.wav");
-        fxPlayer.cargarSonidoRecurso("soundtrack", "sonidos/SoundTrack.wav");
+        fxPlayer.cargarSonidoRecurso("punto", "sonidos/punto.wav"); // sonido al recoger oro
+        fxPlayer.cargarSonidoRecurso("paleta", "sonidos/paleta.wav"); // sonido al cavar
+        fxPlayer.cargarSonidoRecurso("empieza", "sonidos/Empieza.wav"); // sonido de evento
+        fxPlayer.cargarSonidoRecurso("soundtrack", "sonidos/SoundTrack.wav"); // música de fondo
     }
 
+    // pausa el juego
     public void pause() {
         estado = EstadoJuego.PAUSA;
     }
 
     @Override
+    // renderiza todos los elementos del juego en pantalla
     public void renderizar(Graphics g) {
         Graphics2D g2d = (g instanceof Graphics2D) ? (Graphics2D) g : null;
         if (g2d != null) {
@@ -155,24 +159,26 @@ public class JuegoLodeRunner extends VideoJuego {
     }
 
     @Override
+    // crea una nueva partida, inicializa niveles y carga el primer nivel
     protected void crearPartida() {
         niveles = new ArrayList<>();
         niveles.add(new Nivel1());
         niveles.add(new Nivel2());
         niveles.add(new Nivel3());
 
-        nivelIdx = 0;
-        puntosJ1 = 0;
+        nivelIdx = 0; // empieza en nivel 1
+        puntosJ1 = 0; // puntos en cero
         rankingRegistrado = false;
-        tiempoNivel = 0;
+        tiempoNivel = 0; // cronómetro en cero
         Jugador.clear();
         Jugador.add(new Jugador(nombreJugadorPrincipal));
-        estado = EstadoJuego.JUGANDO;
+        estado = EstadoJuego.JUGANDO; // cambia a estado jugando
 
         musicaIniciada = false;
-        cargarNivelActual();
+        cargarNivelActual(); // carga el primer nivel
     }
 
+    // carga el nivel actual, creando héroe, guardias y entidades del mapa
     private void cargarNivelActual() {
         if (nivelIdx >= niveles.size()) {
             estado = EstadoJuego.VICTORIA;
@@ -218,6 +224,7 @@ public class JuegoLodeRunner extends VideoJuego {
         Entidades.add(heroe);
     }
     @Override
+    // lógica principal del juego ejecutada cada frame
     protected void actualizarLogicaJuego() {
         if (this.estado == EstadoJuego.MENU) {
             if (menu.isConfigMode()) {
@@ -347,9 +354,15 @@ public class JuegoLodeRunner extends VideoJuego {
                     for (Agujero a : nivelActual.agujeros) {
                         if (collisionManager.colisiona(a, g)) {
                             enAlgunAgujero = true;
-                            if (a.getTiempoRestante() < 90) {
-                                g.setY(g.getY() - Guardia.VELOCIDAD);
-                                if (!collisionManager.colisiona(a, g)) {
+                            if (g.getIA().getEstado() == IA_Guardia.Comportamiento.REAPARECER) {
+                                int tileSize = (int)a.getHeight(); // tamaño del tile en píxeles
+                                g.setY(a.getY() - tileSize); // sube un tile completo (encima del agujero)
+                                if (Math.random() < 0.5) { // se desplaza un tile a izquierda o derecha
+                                    g.setX(g.getX() - tileSize);
+                                } else {
+                                    g.setX(g.getX() + tileSize);
+                                }
+                                if (!collisionManager.colisiona(a, g)) { // si salió del agujero
                                     g.enAgujero(false);
                                     g.getIA().reaparecer();
                                 }
@@ -370,9 +383,35 @@ public class JuegoLodeRunner extends VideoJuego {
                             }
                             g.enAgujero(true);
                             g.setCayendo(false);
+                            g.setY(a.getY()); // alinea sprite del guardia con el agujero
                             g.getIA().atrapar();
                             break;
                         }
+                    }
+                }
+            }
+
+            // RECOLECTOR vs agujeros
+            for (Agujero a : nivelActual.agujeros) {
+                if (collisionManager.colisiona(a, heroe) && a.getTiempoRestante() < 120) {
+                    heroe.perderVida();
+                    if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
+                    if (heroe.getVidas() <= 0) {
+                        if (!rankingRegistrado) {
+                            rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx + 1, puntosJ1);
+                            if (menu != null) menu.recargarRanking();
+                            rankingRegistrado = true;
+                        }
+                        heroe.desaparecer();
+                        this.estado = EstadoJuego.GAME_OVER;
+                        fxPlayer.detener("soundtrack");
+                        return;
+                    } else {
+                        int vidasGuardadas = heroe.getVidas();
+                        nivelActual.finalizarNivel();
+                        cargarNivelActual();
+                        heroe.setVidas(vidasGuardadas);
+                        return;
                     }
                 }
             }
@@ -427,30 +466,29 @@ public class JuegoLodeRunner extends VideoJuego {
     }
 
     @Override
-    public String getGanador() {
-        return nombreJugadorPrincipal;
-    }
+    public String getGanador() { return nombreJugadorPrincipal; } // retorna nombre del ganador
 
     @Override
-    public String getPerdedor() {
-        return nombreJugadorPrincipal;
-    }
+    public String getPerdedor() { return nombreJugadorPrincipal; } // retorna nombre del perdedor
 
+    // suelta la moneda que lleva cargada un guardia en su posición actual
     private void soltarOroGuardia(Guardia g, Nivel nivel) {
         if (!g.isCargandoOro()) return;
         int tx = g.getTileX();
         int ty = g.getTileY();
         Moneda suelta = new Moneda(tx, ty, nivel.getTile_size());
-        nivel.monedas.add(suelta);
-        Entidades.add(suelta);
-        g.setMonedaCargada(null);
+        nivel.monedas.add(suelta); // agrega moneda al nivel
+        Entidades.add(suelta); // agrega moneda al renderer
+        g.setMonedaCargada(null); // guardia ya no lleva moneda
     }
 
+    // asigna el nombre del jugador principal
     public void setNombreJugador(String nombre) {
         this.nombreJugadorPrincipal = nombre;
     }
 
     @Override
+    // reinicia el juego, deteniendo música y estado
     protected void reiniciar() {
         fxPlayer.detener("soundtrack");
         musicaIniciada = false;
