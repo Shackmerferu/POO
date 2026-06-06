@@ -28,7 +28,7 @@ public class FXPlayer {
     /*
     Este método  lee el archivo .wav del disco duro UNA SOLA VEZ y lo deja
      listo en la memoria RAM. Así, cuando el jugador choca, el sonido sale instantáneo sin lag.*/
-    public void cargarSonido(String nombre, String ruta) {
+    public void cargarSonidoRecurso(String nombre, String ruta) {
         try {
             // Buscamos el archivo dentro de la carpeta compilada 'resources' de nuestro proyecto Gradle
             java.net.URL url = getClass().getClassLoader().getResource(ruta);
@@ -60,8 +60,22 @@ public class FXPlayer {
     // --- REPRODUCIR EFECTOS DE SONIDO
     // Buscambia el sonido por su nombre y lo reproduce una sola vez.
     public void reproducir(String nombre) {
-        Clip clip = sonido.get(nombre); // Busca el audio en el diccionario
+        Clip clip = sonido.get(nombre); // Busca el audio en el diccionario 
 
+    if (clip == null) {
+        System.out.println("--> [AUDIO ERROR] Intentaste reproducir '" + nombre + "' pero NO está cargado en el mapa.");
+        return;
+    }
+
+    System.out.println("--> [AUDIO OK] Tocando el sonido: '" + nombre + "' | ¿Está corriendo?: " + clip.isRunning());
+
+    try {
+        clip.setFramePosition(0);
+        clip.start(); 
+    } catch (Exception e) {
+        System.out.println("--> [AUDIO CRASH] Falló el .start() de '" + nombre + "'. Motivo:");
+        e.printStackTrace();
+    }
         if (clip != null) {
             //  setFramePosition(0) rebobina el audio al segundo cero.
             //  el sonido arranca de nuevo al instante en lugar de esperar a terminar.

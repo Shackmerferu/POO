@@ -35,7 +35,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         "Configurar Teclas", "RESET VALORES", "VOLVER"
     };
 
-    // Atributos integrados para la gestión de mejores puntajes
+
     private RankingManager rankingManager;
     private List<RankingEntry> topRanking;
 
@@ -124,18 +124,15 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             return;           
         }
         
-        // Fondo Negro de la ventana
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
 
-        // TÍTULO DEL JUEGO (Alineado a la izquierda para mantener la simetría)
+       
         g.setFont(new Font("Consolas", Font.BOLD, 45));
         g.setColor(Color.CYAN);
         g.drawString("SPACE INVADERS", 100, 100);
 
-        // ========================================================
-        // COLUMNA IZQUIERDA: OPCIONES DEL MENÚ
-        // ========================================================
+        
         String[] opciones = {"INICIAR PARTIDA", "OPCIONES", "SALIR AL LAUNCHER"};
         g.setFont(new Font("Consolas", Font.PLAIN, 20));
 
@@ -149,7 +146,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             }
         }
 
-        // TEXTO DE AYUDA Y CONTROLES (Abajo a la izquierda)
+      
         g.setFont(new Font("Consolas", Font.PLAIN, 14));
         g.setColor(Color.GRAY);
         g.drawString("Flechas Arriba/Abajo para mover | ENTER para seleccionar", 100, 420);
@@ -163,9 +160,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         g.drawString("P: Pausa Local", 100, 500);
         g.drawString("Esc: Volver al Menú", 100, 515);
 
-        // ========================================================
-        // COLUMNA DERECHA: TOP 10 RANKING
-        // ========================================================
+        
         g.setFont(new Font("Consolas", Font.BOLD, 22));
         g.setColor(Color.CYAN);
         g.drawString("--- TOP 10 RANKING ---", 450, 180);
@@ -179,8 +174,8 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             for (int i = 0; i < topRanking.size(); i++) {
                 RankingEntry entry = topRanking.get(i);
 
-                // Formateamos la entrada idéntico a Lode Runner
-                String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
+                
+                String texto = String.format("%d. %s  NIVEL: %d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
                 g.drawString(texto, 450, y);
                 y += 20;
             }
@@ -251,5 +246,9 @@ public class MenuSpaceInvaders extends MenuPrincipal {
 
     public boolean isConfigMode() {
         return configMode;
+    }
+
+    public boolean isSonidoActivado() {
+        return this.sonidoActivado;
     }
 }

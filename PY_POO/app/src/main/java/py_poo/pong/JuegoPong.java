@@ -51,10 +51,10 @@ public class JuegoPong extends VideoJuego {
 
         // incia el sonido y carga los sonidos
         this.fxPlayer = new FXPlayer();
-        this.fxPlayer.cargarSonido("rebote", "sonidos/paleta.wav");
-        this.fxPlayer.cargarSonido("punto", "sonidos/punto.wav");
-        this.fxPlayer.cargarSonido("inicio", "sonidos/Empieza.wav");
-        this.fxPlayer.cargarSonido("fondo", "sonidos/SoundTrack.wav");
+        this.fxPlayer.cargarSonidoRecurso("rebote", "sonidos/paleta.wav");
+        this.fxPlayer.cargarSonidoRecurso("punto", "sonidos/punto.wav");
+        this.fxPlayer.cargarSonidoRecurso("inicio", "sonidos/Empieza.wav");
+        this.fxPlayer.cargarSonidoRecurso("fondo", "sonidos/SoundTrack.wav");
         this.fxPlayer.setVolumen("fondo", "bajo");
 
         // seteamos valores
