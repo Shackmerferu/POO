@@ -25,8 +25,8 @@ public class FXPlayer {
         this.sonido = new HashMap<>();
     }
 
-    /* CARGAR SONIDOS EN MEMORIA
-    Este método es vital: lee el archivo .wav del disco duro UNA SOLA VEZ y lo deja
+    /*
+    Este método  lee el archivo .wav del disco duro UNA SOLA VEZ y lo deja
      listo en la memoria RAM. Así, cuando el jugador choca, el sonido sale instantáneo sin lag.*/
     public void cargarSonido(String nombre, String ruta) {
         try {
@@ -57,20 +57,20 @@ public class FXPlayer {
         }
     }
 
-    // --- REPRODUCIR EFECTOS DE SONIDO ---
-    // Busca el sonido por su nombre y lo reproduce una sola vez.
+    // --- REPRODUCIR EFECTOS DE SONIDO
+    // Buscambia el sonido por su nombre y lo reproduce una sola vez.
     public void reproducir(String nombre) {
         Clip clip = sonido.get(nombre); // Busca el audio en el diccionario
 
         if (clip != null) {
-            // Un detalle súper profesional: setFramePosition(0) rebobina el audio al segundo cero.
-            // Si el jugador agarra 3 monedas muy rápido, el sonido arranca de nuevo al instante en lugar de esperar a terminar.
+            //  setFramePosition(0) rebobina el audio al segundo cero.
+            //  el sonido arranca de nuevo al instante en lugar de esperar a terminar.
             clip.setFramePosition(0);
             clip.start(); // Le da Play
         }
     }
 
-    // --- DETENER AUDIO ---
+    //  DETENER AUDIO
     // Útil para cortar la música de fondo al salir al menú.
     public void detener(String nombre) {
         Clip clip = sonido.get(nombre);
@@ -92,7 +92,7 @@ public class FXPlayer {
             // Usamos un switch para traducir palabras amigables a valores técnicos (decibeles)
             switch (nivel.toLowerCase()) {
                 case "bajo":
-                    gainControl.setValue(-30.0f); // -30 dB reduce muchísimo el volumen (ideal para música de fondo)
+                    gainControl.setValue(-30.0f); // -30 dB reduce  el volumen
                     break;
                 case "medio":
                     gainControl.setValue(-10.0f); // Reduce moderadamente el volumen
