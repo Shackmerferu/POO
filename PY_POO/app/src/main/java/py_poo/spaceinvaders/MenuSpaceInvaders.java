@@ -251,4 +251,16 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     public boolean isSonidoActivado() {
         return this.sonidoActivado;
     }
+
+    public int getSkinNave() {
+        return skinNave;
+    }
+
+    public int getSkinInvasores() {
+        return skinInvasores;
+    }
+
+    public int getSkinProyectiles() {
+        return skinProyectiles;
+    }
 }

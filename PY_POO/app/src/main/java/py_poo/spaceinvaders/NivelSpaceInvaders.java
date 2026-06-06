@@ -6,7 +6,7 @@ import py_poo.entities.ObjetoGrafico;
 
 
 public class NivelSpaceInvaders {
-    public void generarOleadas(HashMap<String, Enemigo> flotaE, List<ObjetoGrafico> Entidades, int nivelActual) {
+    public void generarOleadas(HashMap<String, Enemigo> flotaE, List<ObjetoGrafico> Entidades, int nivelActual, int skinInvasores) {
         int filas = 4;
         int columnas = 10;
         
@@ -20,11 +20,14 @@ public class NivelSpaceInvaders {
                 
                 Enemigo bicho = null; 
                 if (i == 0) {
-                    bicho = new EnemigoA(posX, posY); 
+                    bicho = new EnemigoA(posX, posY);
+                    if (skinInvasores == 1) bicho.setSprite("imagenes/Space Invaders/Invaders/space__0001_A2.png");
                 } else if (i == 1 || i == 2) {
-                    bicho = new EnemigoB(posX, posY); 
+                    bicho = new EnemigoB(posX, posY);
+                    if (skinInvasores == 1) bicho.setSprite("imagenes/Space Invaders/Invaders/space__0003_B2.png");
                 } else {
-                    bicho = new EnemigoC(posX, posY); 
+                    bicho = new EnemigoC(posX, posY);
+                    if (skinInvasores == 1) bicho.setSprite("imagenes/Space Invaders/Invaders/space__0005_C2.png");
                 }
               
                 String clave = i + "," + j; 

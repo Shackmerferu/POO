@@ -182,7 +182,8 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 if (!bicho.isParaEliminar() && Math.random() < 0.0001) {
                     int centroX = (int) bicho.getX() + (bicho.getWidth() / 2); 
                     int origenY = (int) bicho.getY() + bicho.getHeight();
-                    Laser disparoEnemigo = new Laser(centroX, origenY, 4, "imagenes/Space Invaders/Projectiles/ProjectileA_1.png");
+                    String laserEnemigoSkin = skinsLaserEnemigo[menu.getSkinProyectiles()];
+                    Laser disparoEnemigo = new Laser(centroX, origenY, 4, laserEnemigoSkin);
                     if (this.menu.isSonidoActivado()) {
                         this.fxPlayer.reproducir("LaserFlota");
                     }
@@ -270,7 +271,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
                 if (flotaE.isEmpty()) {
                     navecita.agregarVida(1);
                     this.nivelDeFlota++; 
-                    nivel.generarOleadas(this.flotaE, Entidades, this.nivelDeFlota);
+                    nivel.generarOleadas(this.flotaE, Entidades, this.nivelDeFlota, menu.getSkinInvasores());
                 }
             }
 
@@ -347,18 +348,37 @@ public class JuegoSpaceInvaders extends VideoJuego {
         }
     }
    
+    private String[] skinsNave = {
+        "imagenes/Space Invaders/Invaders/space__0006_Player.png",
+        "imagenes/Space Invaders/Invaders/space__0007_UFO.png" // Skin alternativa
+    };
+
+    private String[] skinsLaser = {
+        "imagenes/Space Invaders/Projectiles/Projectile_Player.png",
+        "imagenes/Space Invaders/Projectiles/ProjectileB_1.png" // Skin alternativa
+    };
+
+    private String[] skinsLaserEnemigo = {
+        "imagenes/Space Invaders/Projectiles/ProjectileA_1.png",
+        "imagenes/Space Invaders/Projectiles/ProjectileB_4.png" // Skin alternativa
+    };
+
     @Override
     protected void crearPartida() {
         this.Entidades.clear();
         this.disparo = null;
         this.puntaje = 0;
         this.platoVolador = null;
-        this.navecita = new NaveJugador(380, 500);
+
+        String naveSkin = skinsNave[menu.getSkinNave()];
+        String laserSkin = skinsLaser[menu.getSkinProyectiles()];
+
+        this.navecita = new NaveJugador(380, 500, naveSkin, laserSkin);
         Entidades.add(navecita);
         this.rankingRegistrado = false;
         this.nivelDeFlota = 0;
         this.flotaE = new HashMap<>(); 
-        nivel.generarOleadas(this.flotaE, Entidades, this.nivelDeFlota);
+        nivel.generarOleadas(this.flotaE, Entidades, this.nivelDeFlota, menu.getSkinInvasores());
         Escudo e1 = new Escudo(150, 420);
         Escudo e2 = new Escudo(320, 420);
         Escudo e3 = new Escudo(490, 420);
