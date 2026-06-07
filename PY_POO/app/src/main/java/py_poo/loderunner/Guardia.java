@@ -5,223 +5,329 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
+import py_poo.entities.Agujero;
 import py_poo.entities.Moneda;
 import py_poo.entities.Personaje;
 import py_poo.graphics.Animacion;
 import py_poo.graphics.Sprite;
 import py_poo.utils.CargadorRecursos;
 
+// Guardia enemigo que patrulla el nivel, puede caer en agujeros, recolectar oro y perseguir al héroe
 public class Guardia extends Personaje {
-    public static final double VELOCIDAD = 1.7; // velocidad de movimiento del guardia
+    public static final double VELOCIDAD = 1.5; // velocidad de movimiento del guardia (más lento que el héroe)
 
-    private IA_Guardia ia; // inteligencia artificial del guardia
-    private Recolector heroe; // referencia al héroe (recolector)
-    private Nivel nivel; // nivel en el que se encuentra el guardia
-    private boolean enAgujero; // indica si está atrapado en un agujero
-    private boolean enEscalera; // indica si está sobre una escalera
-    private boolean enBarra; // indica si está sobre una barra
-    private boolean cayendo; // indica si está cayendo
-    private Moneda monedaCargada; // moneda que lleva cargada si recolectó una
-    private boolean enAire; // indica si está en el aire sin soporte
-    private int tileSize; // tamaño en píxeles de cada tile
-    private int spawnTileX; // tile X de aparición inicial
+    private IA_Guardia ia; // inteligencia artificial que decide sus movimientos y estados
+    private Recolector heroe; // referencia al héroe para perseguirlo
+    private Nivel nivel; // nivel en el que se encuentra para consultar tiles
+    private boolean enAgujero; // true si está atrapado dentro de un agujero
+    private boolean enEscalera; // true si está pisando una escalera
+    private boolean enBarra; // true si está colgado de una barra
+    private boolean cayendo; // true si está en caída libre
+    private Moneda monedaCargada; // moneda que lleva cargada (null si no tiene ninguna)
+    private boolean enAire; // true si está en el aire sin soporte bajo los pies
+    private int tileSize; // tamaño en píxeles de cada tile del nivel
+    private int spawnTileX; // tile X de aparición inicial (para reapariciones)
     private int spawnTileY; // tile Y de aparición inicial
 
     private Animacion animCaminando; // animación al caminar
-    private Animacion animAtrapado; // animación cuando está atrapado
+    private Animacion animAtrapado; // animación cuando está atrapado en un agujero
+
+    private int tiempoEsperaEscape; // frames restantes de espera quieto tras salir del agujero
+    private int contadorAtascado; // frames acumulados sin poder moverse (anti-atasco)
 
     // RUTAS DE IMAGENES DEL GUARDIA - CAMBIAR AQUI
     private static final String RUTA_GUARDIA = "imagenes/Lode Runner/personaje (2).png";
 
-    // constructor: crea guardia en posición de tile y tamaño dado
+    // Constructor: crea guardia en la posición de tile y con el tamaño de tile dados
+    // Inicializa su IA, vidas, dirección y carga las animaciones
     public Guardia(int tileX, int tileY, int tileSize) {
-        this.spawnTileX = tileX; // guarda tile de reaparición
+        this.spawnTileX = tileX;
         this.spawnTileY = tileY;
         this.tileSize = tileSize;
-        this.ia = new IA_Guardia(); // crea nueva IA
-        this.vidas = 1; // una vida
-        this.direccion = -1; // mira a izquierda por defecto
-        this.monedaCargada = null; // sin moneda al inicio
+        this.ia = new IA_Guardia();
+        this.vidas = 1;
+        this.direccion = -1;
+        this.monedaCargada = null;
         this.dimension = new java.awt.Dimension(tileSize, tileSize);
-        setX(tileX * tileSize); // posición en píxeles
+        setX(tileX * tileSize);
         setY(tileY * tileSize);
-        cargarAnimaciones(); // carga sprites de animación
+        cargarAnimaciones();
     }
 
-    // carga las imágenes de animación del guardia
+    // Carga las imágenes de animación del guardia desde los archivos de recursos
     private void cargarAnimaciones() {
         CargadorRecursos cr = new CargadorRecursos();
         BufferedImage img = cr.cargarImagen(RUTA_GUARDIA);
         if (img != null) {
             Sprite s = new Sprite(img);
-            animCaminando = new Animacion(List.of(s), 200); // animación caminando
-            animAtrapado = new Animacion(List.of(s), 300); // animación atrapado
+            animCaminando = new Animacion(List.of(s), 200);
+            animAtrapado = new Animacion(List.of(s), 300);
         }
     }
 
-    // actualiza las animaciones del guardia cada frame
+    // Actualiza las animaciones del guardia cada frame
     public void actualizar() {
         if (animCaminando != null) animCaminando.actualizar();
         if (animAtrapado != null) animAtrapado.actualizar();
     }
 
-    // mueve al guardia hacia la izquierda si no hay obstáculo
+    // Mueve al guardia un paso a la izquierda si no hay tile sólido bloqueando
     public void moverIzquierda() {
         if (cayendo || nivel == null) return;
         double newX = getX() - VELOCIDAD;
         int tx = (int)newX / tileSize;
         int ty = enEscalera ? (int)(getY() + tileSize / 2) / tileSize
                 : (int)(getY() + tileSize - 1) / tileSize;
-        if (nivel.esSolido(tx, ty)) return; // bloqueado por ladrillo
-        direccion = -1; // mira a izquierda
-        setX(newX); // actualiza posición
+        if (nivel.esSolido(tx, ty)) return;
+        direccion = -1;
+        setX(newX);
     }
 
-    // mueve al guardia hacia la derecha si no hay obstáculo
+    // Mueve al guardia un paso a la derecha si no hay tile sólido bloqueando
     public void moverDerecha() {
         if (cayendo || nivel == null) return;
         double newX = getX() + VELOCIDAD;
         int tx = (int)(newX + tileSize - 1) / tileSize;
         int ty = enEscalera ? (int)(getY() + tileSize / 2) / tileSize
                 : (int)(getY() + tileSize - 1) / tileSize;
-        if (nivel.esSolido(tx, ty)) return; // bloqueado por ladrillo
-        direccion = 1; // mira a derecha
-        setX(newX); // actualiza posición
+        if (nivel.esSolido(tx, ty)) return;
+        direccion = 1;
+        setX(newX);
     }
 
-    // mueve al guardia hacia arriba por escalera/barra
+    // Sube al guardia por una escalera o barra si es posible
     public void moverArriba() {
         if (!enEscalera || cayendo || nivel == null) return;
         double nuevaY = getY() - VELOCIDAD;
         int tx = getTileX();
-        if (nivel.esSolido(tx, (int)nuevaY / tileSize)) return; // bloqueado arriba
+        if (nivel.esSolido(tx, (int)nuevaY / tileSize)) return;
         int tyPies = (int)(nuevaY + tileSize - 1) / tileSize;
         if (nivel.esEscalera(tx, tyPies) || nivel.esBarra(tx, tyPies)
             || nivel.esSolido(tx, tyPies)) {
-            setY(nuevaY); // sube normalmente
+            setY(nuevaY);
         } else if (nivel.esEscalera(tx, tyPies + 1) || nivel.esBarra(tx, tyPies + 1)) {
-            setY(tyPies * tileSize); // ajusta posición al siguiente escalón
+            setY(tyPies * tileSize);
         }
     }
 
-    // mueve al guardia hacia abajo por escalera
+    // Baja al guardia por una escalera o se agarra a una si está en el borde
     public void moverAbajo() {
         if (cayendo || nivel == null) return;
         int tx = getTileX();
         int tyPies2 = (int)(getY() + tileSize) / tileSize;
         if (!enEscalera) {
             if (nivel.esEscalera(tx, tyPies2)) {
-                enEscalera = true; // se sube a escalera si está en los pies
+                enEscalera = true;
                 setY(tyPies2 * tileSize - tileSize);
             }
             return;
         }
         double nuevaY = getY() + VELOCIDAD;
         int tyPies = (int)(nuevaY + tileSize - 1) / tileSize;
-        if (nivel.esSolido(tx, tyPies)) return; // bloqueado abajo
+        if (nivel.esSolido(tx, tyPies)) return;
         if (nivel.esEscalera(tx, tyPies) || nivel.esBarra(tx, tyPies)) {
-            setY(nuevaY); // baja normalmente
+            setY(nuevaY);
         }
     }
 
-    // reaparece al guardia en su posición inicial
+    // Reposiciona al guardia en un tile aleatorio de la fila superior del nivel,
+    // evitando el tile del héroe, paredes sólidas y la puerta
     public void reaparecer() {
-        setX(spawnTileX * tileSize + tileSize / 4);
-        setY(spawnTileY * tileSize);
-        enAgujero = false; // ya no está atrapado
+        if (nivel != null && heroe != null) {
+            int w = nivel.getAnchoMapa();
+            int h = nivel.getAltoMapa();
+            if (w > 0 && h > 0) {
+                int hTx = heroe.getTileX();
+                int rx, ry;
+                int intentos = 0;
+                do {
+                    rx = (int)(Math.random() * w);
+                    ry = 0;
+                    while (ry < h && (nivel.esSolido(rx, ry) || nivel.getTile(rx, ry) == Nivel.PUERTA)) {
+                        ry++;
+                    }
+                    intentos++;
+                } while ((rx == hTx || ry >= h) && intentos < 20);
+                if (ry < h) {
+                    setX(rx * tileSize);
+                    setY(ry * tileSize);
+                } else {
+                    setX(rx * tileSize);
+                    setY(0);
+                }
+            }
+        } else {
+            setY(0);
+        }
+        enAgujero = false;
         cayendo = false;
         enEscalera = false;
         enBarra = false;
         enAire = false;
         if (monedaCargada != null) {
-            monedaCargada = null; // suelta la moneda si llevaba una
+            monedaCargada = null;
         }
-        ia.reanimar(); // inicia reanimación al volver al spawn
+        ia.reanimar();
     }
 
-    public int getTileX() { return (int)((getX() + tileSize / 2) / tileSize); } // tile X actual
-    public int getTileY() { return (int)((getY() + tileSize / 2) / tileSize); } // tile Y actual
+    // Retorna la columna (tile X) actual del guardia basada en su centro
+    public int getTileX() { return (int)((getX() + tileSize / 2) / tileSize); }
+    // Retorna la fila (tile Y) actual del guardia basada en su centro
+    public int getTileY() { return (int)((getY() + tileSize / 2) / tileSize); }
 
-    public IA_Guardia getIA() { return ia; } // retorna la IA del guardia
-    public boolean isEnEscalera() { return enEscalera; } // true si está en escalera
-    public void setHeroe(Recolector heroe) { this.heroe = heroe; } // asigna el héroe a perseguir
-    public void setNivel(Nivel nivel) { this.nivel = nivel; } // asigna el nivel
+    public IA_Guardia getIA() { return ia; }
+    public boolean isEnEscalera() { return enEscalera; }
+    public void setHeroe(Recolector heroe) { this.heroe = heroe; }
+    public void setNivel(Nivel nivel) { this.nivel = nivel; }
 
     @Override
-    // actualiza lógica de movimiento del guardia cada frame
+    // Lógica de movimiento del guardia ejecutada cada frame:
+    // - Si está atrapado en agujero no se mueve
+    // - Si está saliendo del agujero espera quieto el tiempo de espera
+    // - Aplica gravedad, calcula dirección según IA y ejecuta el movimiento
+    // - Detecta escaleras/barras y actualiza animaciones
     public void mover() {
-        if (enAgujero) return; // no se mueve si está atrapado
+        if (enAgujero) return;
         if (heroe == null || nivel == null) return;
 
-        aplicarGravedad(); // aplica caída si es necesario
-
-        if (!cayendo) {
-            int hx = (int)heroe.getX(); // posición X del héroe
-            int hy = (int)heroe.getY(); // posición Y del héroe
-            int gx = (int)getX(); // posición X del guardia
-            int gy = (int)getY(); // posición Y del guardia
-            int tx = getTileX(); // tile X del guardia
-            int ty = getTileY(); // tile Y del guardia
-
-            boolean puedeIzq = !nivel.esSolido(tx - 1, ty); // puede moverse a izquierda
-            boolean puedeDer = !nivel.esSolido(tx + 1, ty); // puede moverse a derecha
-            boolean puedeSubir = nivel.esEscalera(tx, ty - 1); // puede subir escalera
-            boolean puedeBajar = nivel.esEscalera(tx, ty + 1); // puede bajar escalera
-
-            // calcula dirección según IA
-            int dir = ia.calcularMovimiento(gx, gy, hx, hy, puedeIzq, puedeDer, puedeSubir, puedeBajar, enEscalera, enBarra);
-
-            if (dir == -1) moverIzquierda();
-            else if (dir == 1) moverDerecha();
-            else if (dir == -2) moverArriba();
-            else if (dir == 2) moverAbajo();
+        if (ia.isSaliendo()) {
+            tiempoEsperaEscape--;
+            if (tiempoEsperaEscape <= 0) {
+                ia.reaparecer();
+            }
+            actualizar();
+            return;
         }
 
-        detectarPlataforma(); // detecta escaleras/barras bajo los pies
-        actualizar(); // actualiza animaciones
+        aplicarGravedad();
+
+        if (!cayendo) {
+            int hx = (int)heroe.getX();
+            int hy = (int)heroe.getY();
+            int gx = (int)getX();
+            int gy = (int)getY();
+            int tx = getTileX();
+            int ty = getTileY();
+
+            boolean puedeIzq = !nivel.esSolido(tx - 1, ty);
+            boolean puedeDer = !nivel.esSolido(tx + 1, ty);
+            boolean puedeSubir = nivel.esEscalera(tx, ty - 1);
+            boolean puedeBajar = nivel.esEscalera(tx, ty + 1);
+
+            int dir = ia.calcularMovimiento(gx, gy, hx, hy, puedeIzq, puedeDer, puedeSubir, puedeBajar, enEscalera, enBarra);
+
+            if (dir == -1) { moverIzquierda(); contadorAtascado = 0; }
+            else if (dir == 1) { moverDerecha(); contadorAtascado = 0; }
+            else if (dir == -2) { moverArriba(); contadorAtascado = 0; }
+            else if (dir == 2) { moverAbajo(); contadorAtascado = 0; }
+            else {
+                contadorAtascado++;
+                if (contadorAtascado > 30) {
+                    contadorAtascado = 0;
+                    if (enEscalera || enBarra) {
+                        double nuevoY = getY() + tileSize / 2;
+                        int tyPies = (int)(nuevoY + tileSize - 1) / tileSize;
+                        if (!nivel.esSolido(getTileX(), tyPies)) {
+                            setY(nuevoY);
+                        } else {
+                            setY(tyPies * tileSize - tileSize);
+                        }
+                        enEscalera = false;
+                        enBarra = false;
+                    }
+                    ia.setEstado(IA_Guardia.Comportamiento.VAGAR);
+                }
+            }
+        }
+
+        detectarPlataforma();
+        actualizar();
     }
 
-    // verifica si hay soporte sólido, escalera o barra en el tile dado
+    // Verifica si hay soporte sólido, escalera o agujero cerrándose en el tile dado
+    // Las barras NO son soporte: solo se agarran con la cabeza al caer
     private boolean tieneSoporte(int tx, int ty) {
-        return nivel.esSolido(tx, ty) || nivel.esEscalera(tx, ty) || nivel.esBarra(tx, ty);
+        if (nivel.esSolido(tx, ty) || nivel.esEscalera(tx, ty))
+            return true;
+        if (hayAgujeroSeguro(tx, ty))
+            return true;
+        return false;
     }
 
-    // aplica gravedad al guardia si no hay soporte bajo sus pies
+    // True si hay un agujero cerrándose (seguro para caminar) en el tile dado
+    private boolean hayAgujeroSeguro(int tx, int ty) {
+        if (nivel == null) return false;
+        for (Agujero a : nivel.agujeros) {
+            int aTx = (int)a.getX() / tileSize;
+            int aTy = (int)a.getY() / tileSize;
+            if (aTx == tx && aTy == ty && a.getTiempoRestante() < 120) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Aplica gravedad al guardia: si está cayendo baja, si no tiene soporte empieza a caer
+    // Si durante la caída la cabeza encuentra una barra, el guardia se agarra de ella
     private void aplicarGravedad() {
         if (nivel == null) return;
-        int txL = (int)getX() / tileSize; // tile izquierdo de los pies
-        int txR = (int)(getX() + tileSize - 1) / tileSize; // tile derecho de los pies
+        int txL = (int)getX() / tileSize;
+        int txR = (int)(getX() + tileSize - 1) / tileSize;
         int tyPies = (int)(getY() + tileSize) / tileSize;
 
         if (cayendo) {
-            setY(getY() + VELOCIDAD); // cae
+            setY(getY() + VELOCIDAD);
+            txL = (int)getX() / tileSize;
+            txR = (int)(getX() + tileSize - 1) / tileSize;
+            int tyCabeza = (int)(getY()) / tileSize;
+            if (nivel.esBarra(txL, tyCabeza) || nivel.esBarra(txR, tyCabeza)) {
+                setY(tyCabeza * tileSize);
+                cayendo = false;
+                enBarra = true;
+                return;
+            }
+            tyPies = (int)(getY() + tileSize) / tileSize;
             if (tieneSoporte(txL, tyPies) || tieneSoporte(txR, tyPies)) {
-                setY(tyPies * tileSize - tileSize); // aterriza
+                setY(tyPies * tileSize - tileSize);
                 cayendo = false;
             }
         } else if (!enEscalera && !enBarra
             && !tieneSoporte(txL, tyPies)
             && !tieneSoporte(txR, tyPies)) {
-            cayendo = true; // empieza a caer
+            cayendo = true;
         }
     }
 
-    // detecta si el guardia está en escalera, barra o aire
+    // Detecta si el guardia está sobre escalera, barra o en el aire, actualizando flags
+    // La barra se detecta cuando la CABEZA del guardia está a su nivel (no los pies)
     private void detectarPlataforma() {
         if (nivel == null) return;
         int txL = (int)getX() / tileSize;
         int txR = (int)(getX() + tileSize - 1) / tileSize;
         int tyPies = (int)(getY() + tileSize - 1) / tileSize;
         int tyPies2 = (int)(getY() + tileSize) / tileSize;
+        int tyCabeza = (int)(getY()) / tileSize;
         enEscalera = nivel.esEscalera(txL, tyPies) || nivel.esEscalera(txR, tyPies);
-        enBarra = nivel.esBarra(txL, tyPies) || nivel.esBarra(txR, tyPies);
+        enBarra = nivel.esBarra(txL, tyCabeza) || nivel.esBarra(txR, tyCabeza);
         if (!enEscalera && !enBarra
             && (nivel.esEscalera(txL, tyPies2) || nivel.esEscalera(txR, tyPies2))) {
             enEscalera = true;
         }
-        enAire = !cayendo && !enEscalera && !enBarra // sin soporte y no cayendo = en aire
+        enAire = !cayendo && !enEscalera && !enBarra
             && !tieneSoporte(txL, tyPies2)
             && !tieneSoporte(txR, tyPies2);
+    }
+
+    // Inicia la secuencia de escape del agujero: sube un tile y entra en estado SALIENDO
+    public void iniciarEscape(int holeTileY) {
+        enAgujero = false;
+        setY((holeTileY - 1) * tileSize);
+        cayendo = false;
+        enEscalera = false;
+        enBarra = false;
+        enAire = false;
+        tiempoEsperaEscape = IA_Guardia.getTiempoEsperaEscape();
+        ia.salir();
     }
 
     public void setEnEscalera(boolean v) { this.enEscalera = v; }
@@ -229,29 +335,29 @@ public class Guardia extends Personaje {
     public void setEnBarra(boolean v) { this.enBarra = v; }
     public boolean isCayendo() { return cayendo; }
     public void setCayendo(boolean v) { this.cayendo = v; }
-    public boolean isCargandoOro() { return monedaCargada != null; } // true si lleva moneda
+    public boolean isCargandoOro() { return monedaCargada != null; }
     public Moneda getMonedaCargada() { return monedaCargada; }
     public void setMonedaCargada(Moneda m) { this.monedaCargada = m; }
     public boolean isEnAire() { return enAire; }
     public void setEnAire(boolean v) { this.enAire = v; }
-    public boolean enAgujero() { return enAgujero; } // true si está en agujero
+    public boolean enAgujero() { return enAgujero; }
     public void enAgujero(boolean v) { this.enAgujero = v; }
 
     @Override
-    // dibuja al guardia en pantalla con su animación correspondiente
+    // Dibuja al guardia en pantalla con el sprite correspondiente a su estado actual
     public void display(Graphics g) {
         Sprite s = (ia.getEstado() == IA_Guardia.Comportamiento.ATRAPADO && animAtrapado != null)
-            ? animAtrapado.obtenerFrame() // sprite atrapado
-            : (animCaminando != null ? animCaminando.obtenerFrame() : null); // sprite caminando
+            ? animAtrapado.obtenerFrame()
+            : (animCaminando != null ? animCaminando.obtenerFrame() : null);
         if (s != null) {
             int x = (int)getX();
             int y = (int)getY();
             if (direccion < 0) {
-                s.dibujar(g, x, y, tileSize, tileSize); // mira a izquierda
+                s.dibujar(g, x, y, tileSize, tileSize);
             } else {
-                g.drawImage(s.getImagen(), x + tileSize, y, -tileSize, tileSize, null); // invertido a derecha
+                g.drawImage(s.getImagen(), x + tileSize, y, -tileSize, tileSize, null);
             }
-            if (monedaCargada != null) { // dibuja moneda sobre el guardia si lleva una
+            if (monedaCargada != null) {
                 g.setColor(Color.YELLOW);
                 g.fillOval(x + tileSize / 4, y - 8, tileSize / 2, 8);
             }

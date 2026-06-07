@@ -221,6 +221,7 @@ public class JuegoLodeRunner extends VideoJuego {
             guardias.add(g);
             Entidades.add(g);
         }
+        heroe.setGuardias(guardias);
         Entidades.add(heroe);
     }
     @Override
@@ -279,6 +280,40 @@ public class JuegoLodeRunner extends VideoJuego {
             if (soundEnabled && soundFxEnabled && heroe.cavoEsteFrame()) {
                 fxPlayer.reproducir("paleta");
             }
+
+            // RECOLECTOR vs agujeros (muerte cuando el agujero se cierra encima del héroe)
+            for (Agujero a : nivelActual.agujeros) {
+                if (!collisionManager.colisiona(a, heroe)) continue;
+                if (a.getTiempoRestante() > 1) continue; // sigue abierto → cae seguro
+                boolean guardiaTapa = false;
+                for (Guardia g : guardias) {
+                    if (g.enAgujero() && collisionManager.colisiona(a, g)) {
+                        guardiaTapa = true;
+                        break;
+                    }
+                }
+                if (guardiaTapa) continue;
+                heroe.perderVida();
+                if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
+                if (heroe.getVidas() <= 0) {
+                    if (!rankingRegistrado) {
+                        rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx + 1, puntosJ1);
+                        if (menu != null) menu.recargarRanking();
+                        rankingRegistrado = true;
+                    }
+                    heroe.desaparecer();
+                    this.estado = EstadoJuego.GAME_OVER;
+                    fxPlayer.detener("soundtrack");
+                    return;
+                } else {
+                    int vidasGuardadas = heroe.getVidas();
+                    nivelActual.finalizarNivel();
+                    cargarNivelActual();
+                    heroe.setVidas(vidasGuardadas);
+                    return;
+                }
+            }
+
             tiempoNivel++;
             nivelActual.actualizar();
 
@@ -297,14 +332,97 @@ public class JuegoLodeRunner extends VideoJuego {
                 }
             }
 
-            // GUARDIAS vs oro
+            // GUARDIAS vs oro (incluye drop periódico)
             for (Guardia g : guardias) {
-                if (g == null || g.isCargandoOro()) continue;
-                for (var m : nivelActual.monedas) {
-                    if (!m.isRecolectada() && collisionManager.colisiona(g, m)) {
-                        m.recolectar();
-                        g.setMonedaCargada(m);
-                        break;
+                if (g == null) continue;
+                if (g.isCargandoOro()) {
+                    if (Math.random() < 0.005) {
+                        soltarOroGuardia(g, nivelActual);
+                    }
+                } else {
+                    for (var m : nivelActual.monedas) {
+                        if (!m.isRecolectada() && collisionManager.colisiona(g, m)) {
+                            m.recolectar();
+                            g.setMonedaCargada(m);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // GUARDIAS vs agujeros (antes que JUGADOR para marcar enAgujero)
+            int tileSize = nivelActual.getTile_size();
+            for (Guardia g : guardias) {
+                if (g == null) continue;
+                if (g.enAgujero()) {
+                    g.getIA().incrementarTiempoAtrapado();
+                    boolean enAlgunAgujero = false;
+                    for (Agujero a : nivelActual.agujeros) {
+                        if (collisionManager.colisiona(a, g)) {
+                            enAlgunAgujero = true;
+                        } else {
+                            int aTx = (int)a.getX() / tileSize;
+                            int aTy = (int)a.getY() / tileSize;
+                            if (g.getTileX() == aTx && (g.getY() + tileSize) / tileSize == aTy) {
+                                enAlgunAgujero = true;
+                            }
+                        }
+                        if (enAlgunAgujero) {
+                            int ta = g.getIA().getTiempoAtrapado();
+                            if (ta >= IA_Guardia.getTiempoEscape() && ta < a.getTiempoRestante()) {
+                                g.iniciarEscape((int)a.getY() / tileSize);
+                                break;
+                            } else if (g.getIA().getEstado() == IA_Guardia.Comportamiento.REAPARECER) {
+                                g.setY(a.getY() - tileSize);
+                                if (Math.random() < 0.5) {
+                                    g.setX(g.getX() - tileSize);
+                                } else {
+                                    g.setX(g.getX() + tileSize);
+                                }
+                                if (!collisionManager.colisiona(a, g)) {
+                                    g.enAgujero(false);
+                                    g.getIA().reaparecer();
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    if (!enAlgunAgujero) {
+                        soltarOroGuardia(g, nivelActual);
+                        g.reaparecer();
+                        puntosJ1 += 200;
+                    }
+                } else {
+                    for (Agujero a : nivelActual.agujeros) {
+                        boolean colision = false;
+                        if (collisionManager.colisiona(a, g)) {
+                            colision = true;
+                        } else {
+                            int aTx = (int)a.getX() / tileSize;
+                            int aTy = (int)a.getY() / tileSize;
+                            if (g.getTileX() == aTx && (g.getY() + tileSize) / tileSize == aTy) {
+                                colision = true;
+                            }
+                        }
+                        if (colision) {
+                            boolean ocupado = false;
+                            for (Guardia otro : guardias) {
+                                if (otro != g && otro.enAgujero() && collisionManager.colisiona(a, otro)) {
+                                    ocupado = true;
+                                    break;
+                                }
+                            }
+                            if (ocupado) break;
+                            if (g.isCargandoOro()) {
+                                soltarOroGuardia(g, nivelActual);
+                            }
+                            g.enAgujero(true);
+                            g.setCayendo(false);
+                            g.setX(a.getX());
+                            g.setY(a.getY());
+                            g.getIA().atrapar();
+                            break;
+                        }
                     }
                 }
             }
@@ -313,7 +431,7 @@ public class JuegoLodeRunner extends VideoJuego {
             for (Guardia g : guardias) {
                 if (g == null) continue;
                 if (collisionManager.colisiona(g, heroe)) {
-                    if (g.enAgujero()) continue;
+                    if (g.enAgujero() || g.getIA().isSaliendo()) continue;
                     boolean puedeBajar = input.isDownPressed() || input.isSPressed();
                     boolean heroearriba = heroe.getY() + heroe.getHeight() <= g.getY() + g.getHeight() + 5;
                     boolean hayAgujeroAbierto = false;
@@ -321,7 +439,30 @@ public class JuegoLodeRunner extends VideoJuego {
                         if (a.isAbierto()) { hayAgujeroAbierto = true; break; }
                     }
                     if (heroearriba && hayAgujeroAbierto && !puedeBajar) {
-                        heroe.setY(g.getY() - heroe.getHeight());
+                        int headTy = (int)(heroe.getY() - 1) / nivelActual.getTile_size();
+                        if (headTy >= 0 && !nivelActual.esSolido(heroe.getTileX(), headTy)) {
+                            heroe.setY(g.getY() - heroe.getHeight());
+                        } else {
+                            heroe.perderVida();
+                            if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
+                            if (heroe.getVidas() <= 0) {
+                                if (!rankingRegistrado) {
+                                    rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx + 1, puntosJ1);
+                                    if (menu != null) menu.recargarRanking();
+                                    rankingRegistrado = true;
+                                }
+                                heroe.desaparecer();
+                                this.estado = EstadoJuego.GAME_OVER;
+                                fxPlayer.detener("soundtrack");
+                                return;
+                            } else {
+                                int vidasGuardadas = heroe.getVidas();
+                                nivelActual.finalizarNivel();
+                                cargarNivelActual();
+                                heroe.setVidas(vidasGuardadas);
+                                return;
+                            }
+                        }
                     } else {
                         heroe.perderVida();
                         if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
@@ -342,76 +483,6 @@ public class JuegoLodeRunner extends VideoJuego {
                             heroe.setVidas(vidasGuardadas);
                             return;
                         }
-                    }
-                }
-            }
-
-            // GUARDIAS vs agujeros
-            for (Guardia g : guardias) {
-                if (g == null) continue;
-                if (g.enAgujero()) {
-                    boolean enAlgunAgujero = false;
-                    for (Agujero a : nivelActual.agujeros) {
-                        if (collisionManager.colisiona(a, g)) {
-                            enAlgunAgujero = true;
-                            if (g.getIA().getEstado() == IA_Guardia.Comportamiento.REAPARECER) {
-                                int tileSize = (int)a.getHeight(); // tamaño del tile en píxeles
-                                g.setY(a.getY() - tileSize); // sube un tile completo (encima del agujero)
-                                if (Math.random() < 0.5) { // se desplaza un tile a izquierda o derecha
-                                    g.setX(g.getX() - tileSize);
-                                } else {
-                                    g.setX(g.getX() + tileSize);
-                                }
-                                if (!collisionManager.colisiona(a, g)) { // si salió del agujero
-                                    g.enAgujero(false);
-                                    g.getIA().reaparecer();
-                                }
-                            }
-                            break;
-                        }
-                    }
-                    if (!enAlgunAgujero) {
-                        soltarOroGuardia(g, nivelActual);
-                        g.reaparecer();
-                        puntosJ1 += 200;
-                    }
-                } else {
-                    for (Agujero a : nivelActual.agujeros) {
-                        if (collisionManager.colisiona(a, g)) {
-                            if (g.isCargandoOro()) {
-                                soltarOroGuardia(g, nivelActual);
-                            }
-                            g.enAgujero(true);
-                            g.setCayendo(false);
-                            g.setY(a.getY()); // alinea sprite del guardia con el agujero
-                            g.getIA().atrapar();
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // RECOLECTOR vs agujeros
-            for (Agujero a : nivelActual.agujeros) {
-                if (collisionManager.colisiona(a, heroe) && a.getTiempoRestante() < 120) {
-                    heroe.perderVida();
-                    if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
-                    if (heroe.getVidas() <= 0) {
-                        if (!rankingRegistrado) {
-                            rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx + 1, puntosJ1);
-                            if (menu != null) menu.recargarRanking();
-                            rankingRegistrado = true;
-                        }
-                        heroe.desaparecer();
-                        this.estado = EstadoJuego.GAME_OVER;
-                        fxPlayer.detener("soundtrack");
-                        return;
-                    } else {
-                        int vidasGuardadas = heroe.getVidas();
-                        nivelActual.finalizarNivel();
-                        cargarNivelActual();
-                        heroe.setVidas(vidasGuardadas);
-                        return;
                     }
                 }
             }
