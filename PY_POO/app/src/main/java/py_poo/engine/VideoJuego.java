@@ -86,7 +86,7 @@ public abstract class VideoJuego implements JuegoLoopable {
                 actualizarLogicaJuego();
                 break;
             case VICTORIA:
-                getResultado();
+                actualizarLogicaJuego();
                 break;
         }
     }
