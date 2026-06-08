@@ -7,7 +7,7 @@ public class Nivel2 extends Nivel {
     private static final String[] MAPA = {
         "##########################X#",
         "# $  E   H=###=H      $   H#",
-        "#======  H     H H======= H#",
+        "#======H H     H H========H#",
         "#      H H  $  H H        H#",
         "# ---- H ======= H -----  H#",
         "#    $ H         H   $    H#",

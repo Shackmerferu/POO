@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigManager {
-    private static final String ARCHIVO = "configuracion.txt";
+    private static final String ARCHIVO = "configuracion.txt"; //archivo mapeo de configuracion de teclas , sonido y atributos 
 
     private float volumen;
     private boolean fullscreen;
@@ -28,21 +28,21 @@ public class ConfigManager {
         this.keyBindings = new HashMap<>();
     }
 
-    public void cargar() {
+    public void cargar() {//se carga el archivo
         File f = new File(ARCHIVO);
         if (!f.exists()) {
             guardar();
             return;
         }
-        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) { //se lee linea por linea
             String linea;
             while ((linea = br.readLine()) != null) {
                 linea = linea.trim();
-                if (linea.isEmpty() || linea.startsWith("#")) continue;
-                int idx = linea.indexOf('=');
+                if (linea.isEmpty() || linea.startsWith("#")) continue; //si en la linea detectamos # estamos ante un parametro
+                int idx = linea.indexOf('=');//si en la linea detectamos = estamos ante un valor de parametro
                 if (idx < 0) continue;
-                String key = linea.substring(0, idx).trim();
-                String val = linea.substring(idx + 1).trim();
+                String key = linea.substring(0, idx).trim();//guardamos el parametro
+                String val = linea.substring(idx + 1).trim();//guardamos el valor
                 switch (key) {
                     case "volumen":
                         try { volumen = Float.parseFloat(val); } catch (NumberFormatException e) {}
@@ -74,7 +74,7 @@ public class ConfigManager {
         aplicarKeyBindings();
     }
 
-    public void guardar() {
+    public void guardar() {//guardamos en configuracion para posterior uso
         try (PrintWriter pw = new PrintWriter(new FileWriter(ARCHIVO))) {
             pw.println("volumen=" + volumen);
             pw.println("fullscreen=" + fullscreen);
@@ -90,7 +90,7 @@ public class ConfigManager {
         }
     }
 
-    private void aplicarKeyBindings() {
+    private void aplicarKeyBindings() {//se aplica los cambios de teclas dinamicamente
         for (Map.Entry<String, Integer> entry : keyBindings.entrySet()) {
             KeyBindings.set(entry.getKey(), entry.getValue());
         }
