@@ -1,11 +1,12 @@
 package py_poo.audio;
 
-import javax.sound.sampled.FloatControl;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 
 public class FXPlayer {
 
@@ -128,9 +129,9 @@ public class FXPlayer {
         Clip clip = sonido.get(nombre);
 
         if (clip != null) {
-            // LOOP_CONTINUOUSLY es una constante de Java que le dice al Clip que repita hasta el infinito o que
-            //utlicesmos la funcion detener
-            clip.loop(Clip.LOOP_CONTINUOUSLY);
+            // LOOP_CONTINUOUSLY es una constante de Java que le dice al Clip que repita hasta el infinito o hasta que
+            //utlicemos la funcion detener
+            clip.loop(clip.LOOP_CONTINUOUSLY);
         }
     }
 }
