@@ -3,11 +3,22 @@ package py_poo.graphics;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
+import javax.imageio.ImageIO;
+
 public class Sprite {
     private BufferedImage imagen;
 
     public Sprite(BufferedImage imagen) {
         this.imagen = imagen;
+    }
+
+    public Sprite(String ruta) {
+        try{
+        this.imagen = ImageIO.read(getClass().getClassLoader().getResourceAsStream(ruta));
+        }catch(Exception e){
+            System.err.println("No se pudo cargar la imagen en: " + ruta);
+            e.printStackTrace();
+        }
     }
 
     public BufferedImage getImagen() {
