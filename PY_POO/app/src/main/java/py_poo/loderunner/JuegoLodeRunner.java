@@ -57,8 +57,8 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         fxPlayer.cargarSonidoRecurso("punto", "sonidos/punto.wav"); // sonido al recoger oro
         fxPlayer.cargarSonidoRecurso("paleta", "sonidos/paleta.wav"); // sonido al cavar
         fxPlayer.cargarSonidoRecurso("empieza", "sonidos/Empieza.wav"); // sonido de evento
-        fxPlayer.cargarSonidoRecurso("soundtrack", "sonidos/SoundTrack.wav"); // música de fondo
-        fxPlayer.setVolumen("soundtrack", "medio");
+        fxPlayer.cargarSonidoRecurso("La Bestia Pop", "sonidos/La Bestia Pop.wav"); // música de fondo
+        fxPlayer.setVolumen("La Bestia Pop", "medio");
     }
 
     // pausa el juego
@@ -296,7 +296,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
                     rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx + 1, puntosJ1);
                     if (menu != null) menu.recargarRanking();
                     estado = EstadoJuego.VICTORIA;
-                    fxPlayer.detener("soundtrack");
+                    fxPlayer.detener("La Bestia Pop.mp3");
                     finalizar(EstadoJuego.VICTORIA, "Ganaste todos los niveles!");
                     return;
                 }
@@ -308,11 +308,11 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
     private void gestionarMusica() {
         if (soundEnabled && musicEnabled) {
             if (!musicaIniciada) {
-                fxPlayer.repetir("soundtrack");
+                fxPlayer.repetir("La Bestia Pop.mp3");
                 musicaIniciada = true;
             }
         } else if (musicaIniciada) {
-            fxPlayer.detener("soundtrack");
+            fxPlayer.detener("La Bestia Pop.mp3");
             musicaIniciada = false;
         }
     }
@@ -336,7 +336,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         }
         heroe.desaparecer();
         estado = EstadoJuego.GAME_OVER;
-        fxPlayer.detener("soundtrack");
+        fxPlayer.detener("La Bestia Pop.mp3");
     }
 
     @Override
@@ -364,7 +364,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
     @Override
     // reinicia el juego, deteniendo música y estado
     protected void reiniciar() {
-        fxPlayer.detener("soundtrack");
+        fxPlayer.detener("La Bestia Pop.mp3");
         musicaIniciada = false;
         super.reiniciar();
     }
