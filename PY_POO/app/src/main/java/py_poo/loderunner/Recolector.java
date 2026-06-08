@@ -5,10 +5,12 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 import py_poo.entities.Agujero;
+import py_poo.entities.Moneda;
 import py_poo.entities.Personaje;
 import py_poo.graphics.Animacion;
 import py_poo.graphics.Sprite;
 import py_poo.input.InputManager;
+import py_poo.interfaces.GameEventListener;
 import py_poo.utils.CargadorRecursos;
 
 // Personaje principal del juego controlado por el jugador (héroe).
@@ -29,6 +31,7 @@ public class Recolector extends Personaje {
     private InputManager input; // gestor de entrada del teclado para leer las teclas del jugador
     private Nivel nivel; // referencia al nivel actual para consultar tiles
     private List<Guardia> guardias; // lista de guardias del nivel (para detectar si tapan agujeros)
+    private GameEventListener listener; // listener para notificar eventos al juego
 
     private Animacion animParado; // animación cuando está quieto
     private Animacion animCaminando; // animación cuando camina
@@ -80,6 +83,10 @@ public class Recolector extends Personaje {
     // Asigna la lista de guardias del nivel (necesaria para detectar si tapan agujeros)
     public void setGuardias(List<Guardia> guardias) {
         this.guardias = guardias;
+    }
+
+    public void setGameEventListener(GameEventListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -239,15 +246,16 @@ public class Recolector extends Personaje {
         int tyPies = (int)(getY() + tileSize) / tileSize;
         if (nivel.cavarEn(getTileX() - 1, tyPies)) {
             cavoEsteFrame = true;
+            if (listener != null) listener.onDig();
         }
     }
 
-    // Cava un ladrillo a la derecha del héroe si es posible
     public void cavarDerecha() {
         if (enEscalera || enBarra || cayendo || nivel == null) return;
         int tyPies = (int)(getY() + tileSize) / tileSize;
         if (nivel.cavarEn(getTileX() + 1, tyPies)) {
             cavoEsteFrame = true;
+            if (listener != null) listener.onDig();
         }
     }
 
@@ -293,6 +301,77 @@ public class Recolector extends Personaje {
     }
 
     public boolean cavoEsteFrame() { return cavoEsteFrame; }
+
+    public void verificarCaidaEnAgujero() {
+        if (nivel == null) return;
+        for (Agujero a : nivel.agujeros) {
+            if (!getBounds().intersects(a.getBounds())) continue;
+            if (a.getTiempoRestante() > 1) continue;
+            boolean guardiaTapa = false;
+            for (Guardia g : guardias) {
+                if (g.enAgujero() && getBounds().intersects(a.getBounds())) {
+                    guardiaTapa = true;
+                    break;
+                }
+            }
+            if (guardiaTapa) continue;
+            perderVida();
+            if (vidas <= 0) {
+                if (listener != null) listener.onGameOver();
+            } else {
+                if (listener != null) listener.onHeroDeath();
+            }
+            return;
+        }
+    }
+
+    public void verificarColisionGuardias() {
+        if (nivel == null || guardias == null) return;
+        for (Guardia g : guardias) {
+            if (!getBounds().intersects(g.getBounds())) continue;
+            if (g.enAgujero() || g.getIA().isSaliendo()) continue;
+            boolean puedeBajar = input.isDownPressed() || input.isSPressed();
+            boolean heroearriba = getY() + getHeight() <= g.getY() + g.getHeight() + 5;
+            boolean hayAgujeroAbierto = false;
+            for (Agujero a : nivel.agujeros) {
+                if (a.isAbierto()) { hayAgujeroAbierto = true; break; }
+            }
+            if (heroearriba && hayAgujeroAbierto && !puedeBajar) {
+                int headTy = (int)(getY() - 1) / nivel.getTile_size();
+                if (headTy >= 0 && !nivel.esSolido(getTileX(), headTy)) {
+                    setY(g.getY() - getHeight());
+                } else {
+                    perderVida();
+                    if (vidas <= 0) {
+                        if (listener != null) listener.onGameOver();
+                    } else {
+                        if (listener != null) listener.onHeroDeath();
+                    }
+                }
+            } else {
+                perderVida();
+                if (vidas <= 0) {
+                    if (listener != null) listener.onGameOver();
+                } else {
+                    if (listener != null) listener.onHeroDeath();
+                }
+            }
+            return;
+        }
+    }
+
+    public void recolectarMonedas() {
+        if (nivel == null) return;
+        for (Moneda m : nivel.monedas) {
+            if (!m.isRecolectada() && getBounds().intersects(m.getBounds())) {
+                m.recolectar();
+                oroRecolectado++;
+                if (listener != null) listener.onCoinCollected();
+                return;
+            }
+        }
+    }
+
     public boolean isEnEscalera() { return enEscalera; }
     public void setEnEscalera(boolean v) { this.enEscalera = v; }
     public boolean isEnBarra() { return enBarra; }

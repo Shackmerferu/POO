@@ -234,6 +234,26 @@ public class Nivel {
 
     public void renderizar() {}
 
+    public void sincronizarEntidades(List<ObjetoGrafico> listaRender) {
+        for (Agujero a : agujeros) {
+            if (!listaRender.contains(a)) listaRender.add(0, a);
+        }
+        for (ParticulaLadrillo p : particulas) {
+            if (!listaRender.contains(p)) listaRender.add(p);
+        }
+        for (Escalera e : escaleras) {
+            if (!listaRender.contains(e)) listaRender.add(e);
+        }
+        if (puertaSalida != null && !listaRender.contains(puertaSalida)) {
+            listaRender.add(puertaSalida);
+        }
+        listaRender.removeIf(e ->
+            (e instanceof ParticulaLadrillo && !particulas.contains(e))
+            || (e instanceof Agujero && !agujeros.contains(e))
+            || (e instanceof Escalera && !escaleras.contains(e))
+            || (e instanceof Puerta && e != puertaSalida));
+    }
+
     // Activa la escalera de escape (puerta) cuando el jugador recolectó todo el oro del nivel.
     // Convierte los tiles verticales en escaleras hasta la puerta y muestra la puerta de salida.
     public void activarEscape() {

@@ -131,7 +131,7 @@ public class FXPlayer {
         if (clip != null) {
             // LOOP_CONTINUOUSLY es una constante de Java que le dice al Clip que repita hasta el infinito o hasta que
             //utlicemos la funcion detener
-            clip.loop(Clip.LOOP_CONTINUOUSLY);
+            clip.loop(clip.LOOP_CONTINUOUSLY);
         }
     }
 }

@@ -338,6 +338,97 @@ public class Guardia extends Personaje {
     public boolean isCargandoOro() { return monedaCargada != null; }
     public Moneda getMonedaCargada() { return monedaCargada; }
     public void setMonedaCargada(Moneda m) { this.monedaCargada = m; }
+
+    public void soltarMoneda() {
+        if (monedaCargada == null || nivel == null) return;
+        Moneda suelta = new Moneda(getTileX(), getTileY(), tileSize);
+        nivel.monedas.add(suelta);
+        setMonedaCargada(null);
+    }
+
+    public void intentarRecolectarOro() {
+        if (nivel == null) return;
+        if (isCargandoOro()) {
+            if (Math.random() < 0.005) {
+                soltarMoneda();
+            }
+        } else {
+            for (Moneda m : nivel.monedas) {
+                if (!m.isRecolectada() && getBounds().intersects(m.getBounds())) {
+                    m.recolectar();
+                    setMonedaCargada(m);
+                    break;
+                }
+            }
+        }
+    }
+
+    public boolean manejarColisionAgujero(List<Agujero> agujeros, List<Guardia> otrosGuardias) {
+        if (nivel == null) return false;
+        if (enAgujero) {
+            ia.incrementarTiempoAtrapado();
+            for (Agujero a : agujeros) {
+                boolean enEsteAgujero = getBounds().intersects(a.getBounds());
+                if (!enEsteAgujero) {
+                    int aTx = (int)a.getX() / tileSize;
+                    int aTy = (int)a.getY() / tileSize;
+                    if (getTileX() == aTx && (getY() + tileSize) / tileSize == aTy) {
+                        enEsteAgujero = true;
+                    }
+                }
+                if (enEsteAgujero) {
+                    int ta = ia.getTiempoAtrapado();
+                    if (ta >= IA_Guardia.getTiempoEscape() && ta < a.getTiempoRestante()) {
+                        iniciarEscape((int)a.getY() / tileSize);
+                        return false;
+                    } else if (ia.getEstado() == IA_Guardia.Comportamiento.REAPARECER) {
+                        setY(a.getY() - tileSize);
+                        if (Math.random() < 0.5) {
+                            setX(getX() - tileSize);
+                        } else {
+                            setX(getX() + tileSize);
+                        }
+                        if (!getBounds().intersects(a.getBounds())) {
+                            enAgujero(false);
+                            ia.reaparecer();
+                        }
+                    }
+                    return false;
+                }
+            }
+            soltarMoneda();
+            reaparecer();
+            return true;
+        }
+        for (Agujero a : agujeros) {
+            boolean colision = getBounds().intersects(a.getBounds());
+            if (!colision) {
+                int aTx = (int)a.getX() / tileSize;
+                int aTy = (int)a.getY() / tileSize;
+                if (getTileX() == aTx && (getY() + tileSize) / tileSize == aTy) {
+                    colision = true;
+                }
+            }
+            if (!colision) continue;
+            boolean ocupado = false;
+            for (Guardia otro : otrosGuardias) {
+                if (otro != this && otro.enAgujero() && otro.getBounds().intersects(a.getBounds())) {
+                    ocupado = true;
+                    break;
+                }
+            }
+            if (ocupado) return false;
+            if (monedaCargada != null) soltarMoneda();
+            enAgujero(true);
+            setCayendo(false);
+            setX(a.getX());
+            setY(a.getY());
+            ia.atrapar();
+            return false;
+        }
+        return false;
+    }
+
     public boolean isEnAire() { return enAire; }
     public void setEnAire(boolean v) { this.enAire = v; }
     public boolean enAgujero() { return enAgujero; }
