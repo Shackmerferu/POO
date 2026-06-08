@@ -28,6 +28,10 @@ public class MenuPong extends MenuPrincipal {
     private RankingManager rankingManager;      // El gestor de SQLite
     private List<RankingEntry> topRanking;      // Lista temporal que guarda el Top 10 para dibujarlo en pantalla
 
+    // ─── SKIN Y PISTA MUSICAL (descomentar cuando haya assets alternativos) ───
+    // private int skinPaletas = 0;
+    // private int pistaMusical = 0;
+
     //  CONSTRUCTOR
     public MenuPong(InputManager input, Object mouse) {
         super("Pong", "Menú Principal", Color.BLACK, "Jugar", "Salir"); // Configuración heredada de MenuPrincipal
@@ -234,4 +238,81 @@ public class MenuPong extends MenuPrincipal {
             }
         }
     }
+
+    // ─── Getters para skin y pista musical ───
+    // public int getSkinPaletas() { return skinPaletas; }
+    // public int getPistaMusical() { return pistaMusical; }
+
+    // ═══════════════════════════════════════════════════════════════
+    // CONFIGURACIÓN COMPLETA (descomentar cuando haya assets alternativos)
+    // Reemplazar los métodos dibujarConfig() y actualizarConfig()
+    // existentes por estos que incluyen Skin y Pista Musical.
+    // ═══════════════════════════════════════════════════════════════
+    // private final String[] opcionesConfig = {
+    //     "Skin Paletas", "Pista Musical",
+    //     "Configurar Teclas", "RESET VALORES", "VOLVER"
+    // };
+    //
+    // public void dibujarConfig(Graphics g) {
+    //     g.setColor(new Color(0, 0, 0, 200));
+    //     g.fillRect(0, 0, 800, 600);
+    //     g.setFont(new Font("Consolas", Font.BOLD, 28));
+    //     g.setColor(Color.CYAN);
+    //     g.drawString("CONFIGURACIÓN", 280, 60);
+    //     g.setFont(new Font("Consolas", Font.PLAIN, 18));
+    //     for (int i = 0; i < opcionesConfig.length; i++) {
+    //         int y = 110 + i * 40;
+    //         if (i == configSelected) {
+    //             g.setColor(Color.YELLOW);
+    //             g.drawString("> ", 150, y);
+    //         } else {
+    //             g.setColor(Color.WHITE);
+    //         }
+    //         String extra = "";
+    //         if (i == 0) extra = skinPaletas == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
+    //         else if (i == 1) extra = pistaMusical == 0 ? " [ORIGINAL]" : " [TEMA 2]";
+    //         g.drawString(opcionesConfig[i] + extra, 180, y);
+    //     }
+    //     g.setFont(new Font("Consolas", Font.PLAIN, 12));
+    //     g.setColor(Color.GRAY);
+    //     g.drawString("Flechas: mover  |  Enter: cambiar  |  Esc: volver", 180, 560);
+    // }
+    //
+    // public void actualizarConfig() {
+    //     long now = System.currentTimeMillis();
+    //     if (configActionIndex >= 0) {
+    //         if (now - lastConfigKeyTime < 120) return;
+    //         for (int code = 0; code < 256; code++) {
+    //             if (input.isKeyPressed(code)) {
+    //                 KeyBindings.set(KeyBindings.getActionNames()[0], code);
+    //                 lastConfigKeyTime = now;
+    //                 configActionIndex = -1;
+    //                 break;
+    //             }
+    //         }
+    //         return;
+    //     }
+    //     if (now - lastConfigKeyTime > 120) {
+    //         if (input.isMenuUpPressed() || input.isWPressed()) {
+    //             configSelected--;
+    //             if (configSelected < 0) configSelected = opcionesConfig.length - 1;
+    //             lastConfigKeyTime = now;
+    //         }
+    //         if (input.isMenuDownPressed() || input.isSPressed()) {
+    //             configSelected++;
+    //             if (configSelected >= opcionesConfig.length) configSelected = 0;
+    //             lastConfigKeyTime = now;
+    //         }
+    //     }
+    //     if (input.isEnterPressed() && (now - lastConfigKeyTime > 150)) {
+    //         lastConfigKeyTime = now;
+    //         switch (configSelected) {
+    //             case 0: skinPaletas = (skinPaletas + 1) % 2; break;
+    //             case 1: pistaMusical = (pistaMusical + 1) % 2; break;
+    //             case 2: configActionIndex = 0; break;
+    //             case 3: skinPaletas = 0; pistaMusical = 0; break;
+    //             case 4: configMode = false; break;
+    //         }
+    //     }
+    // }
 }
