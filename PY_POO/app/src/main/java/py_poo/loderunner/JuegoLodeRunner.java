@@ -111,6 +111,40 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             g.drawString("P = reanudar  |  ESC = menu", Constantes.WIDTH / 2 - 160, Constantes.HEIGHT / 2 + 50);
         }
 
+        if (estado == EstadoJuego.VICTORIA) {
+            g.setFont(new Font("Consolas", Font.BOLD, 40));
+            g.setColor(new Color(80, 255, 80));
+            g.drawString("¡VICTORIA!", Constantes.WIDTH / 2 - 130, 120);
+
+            g.setFont(new Font("Consolas", Font.BOLD, 24));
+            g.setColor(Color.WHITE);
+            g.drawString("Puntaje: " + puntosJ1, Constantes.WIDTH / 2 - 80, 180);
+            g.drawString("Niveles completados: " + niveles.size(), Constantes.WIDTH / 2 - 130, 210);
+
+            g.setFont(new Font("Consolas", Font.BOLD, 18));
+            g.setColor(Color.CYAN);
+            g.drawString("--- TOP 10 ---", Constantes.WIDTH / 2 - 70, 260);
+
+            var top = new py_poo.ranking.RankingManager().cargarDetalleTop("Lode%", 10);
+            g.setFont(new Font("Consolas", Font.PLAIN, 14));
+            g.setColor(Color.WHITE);
+            int y = 290;
+            if (top == null || top.isEmpty()) {
+                g.drawString("Aún no hay puntajes.", Constantes.WIDTH / 2 - 80, y);
+            } else {
+                for (int i = 0; i < top.size(); i++) {
+                    var entry = top.get(i);
+                    String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
+                    g.drawString(texto, Constantes.WIDTH / 2 - 150, y);
+                    y += 22;
+                }
+            }
+
+            g.setFont(new Font("Consolas", Font.PLAIN, 18));
+            g.setColor(Color.GRAY);
+            g.drawString("ENTER = volver al menú", Constantes.WIDTH / 2 - 120, Constantes.HEIGHT - 80);
+        }
+
         if (estado == EstadoJuego.GAME_OVER) {
             g.setFont(new Font("Consolas", Font.BOLD, 40));
             g.setColor(new Color(255, 80, 80));
@@ -257,9 +291,17 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             return;
         }
 
+        if (estado == EstadoJuego.VICTORIA) {
+            if (input.isEnterPressed()) {
+                estado = EstadoJuego.MENU;
+                musicaIniciada = false;
+            }
+            return;
+        }
+
         if (estado != EstadoJuego.JUGANDO || heroe == null || NivelActual == null) return;
 
-        
+        gestionarMusica();
         Nivel nivelActual = (Nivel) this.NivelActual;
 
         heroe.mover();
@@ -301,11 +343,10 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
                 nivelActual.finalizarNivel();
                 nivelIdx++;
                 if (nivelIdx >= niveles.size()) {
-                    rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx + 1, puntosJ1);
+                    rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx, puntosJ1);
                     if (menu != null) menu.recargarRanking();
                     estado = EstadoJuego.VICTORIA;
-                   
-                    finalizar(EstadoJuego.VICTORIA, "Ganaste todos los niveles!");
+                    fxPlayer.detener("La Bestia Pop.mp3");
                     return;
                 }
                 cargarNivelActual();
@@ -313,7 +354,17 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         }
     }
 
-
+    private void gestionarMusica() {
+        if (soundEnabled && musicEnabled) {
+            if (!musicaIniciada) {
+                fxPlayer.repetir("La Bestia Pop.mp3");
+                musicaIniciada = true;
+            }
+        } else if (musicaIniciada) {
+            fxPlayer.detener("La Bestia Pop.mp3");
+            musicaIniciada = false;
+        }
+    }
 
     @Override
     public void onHeroDeath() {
@@ -334,7 +385,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         }
         heroe.desaparecer();
         estado = EstadoJuego.GAME_OVER;
-        fxPlayer.detener("CancionFondoLodeRunner");
+        fxPlayer.detener("La Bestia Pop.mp3");
     }
 
     @Override
