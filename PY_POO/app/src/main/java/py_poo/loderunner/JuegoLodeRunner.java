@@ -294,6 +294,14 @@ public class JuegoLodeRunner extends VideoJuego {
             return;
         }
 
+        if (estado == EstadoJuego.VICTORIA) {
+            if (input.isEnterPressed()) {
+                estado = EstadoJuego.MENU;
+                musicaIniciada = false;
+            }
+            return;
+        }
+
         if (estado != EstadoJuego.JUGANDO || heroe == null || NivelActual == null) return;
 
         gestionarMusica();
@@ -549,11 +557,10 @@ public class JuegoLodeRunner extends VideoJuego {
                 nivelActual.finalizarNivel();
                 nivelIdx++;
                 if (nivelIdx >= niveles.size()) {
-                    rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx + 1, puntosJ1);
+                    rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx, puntosJ1);
                     if (menu != null) menu.recargarRanking();
                     estado = EstadoJuego.VICTORIA;
                     fxPlayer.detener("La Bestia Pop.mp3");
-                    finalizar(EstadoJuego.VICTORIA, "Ganaste todos los niveles!");
                     return;
                 }
                 cargarNivelActual();
