@@ -26,11 +26,11 @@ public class JuegoSpaceInvaders extends VideoJuego {
     private NaveNodriza platoVolador = null;
     private int nivelDeFlota = 0;
     private int puntaje = 0;
+    private int contadorDisparos = 0;
     private SegmentoEscudo SegmentoEscudo = null;
     private NivelSpaceInvaders nivel = new NivelSpaceInvaders();
     private RankingManager rankingManager;
     private boolean rankingRegistrado;
-   
 
     private void registrarRankingFinal() {
         if (rankingRegistrado) {
@@ -122,6 +122,7 @@ protected void actualizarLogicaJuego() {
         if (input.isSpacePressed()) {
            if (disparo == null || disparo.isParaEliminar()) { 
                 disparo = navecita.Disparar();
+                this.contadorDisparos++;
                 Entidades.add(disparo);
 
                 if (this.menu.isSonidoActivado()) {
@@ -136,7 +137,7 @@ protected void actualizarLogicaJuego() {
             }
         }
 
-       
+       //Implementar 3 niveles de velocidad de flota
         long tiempoActualFlota = System.currentTimeMillis();
         if (tiempoActualFlota - ultimoMovimientoFlota > 50) {
             boolean tocaronBorde = false;
@@ -211,7 +212,7 @@ protected void actualizarLogicaJuego() {
                     if (platoVolador != null && !platoVolador.isParaEliminar() && laser.getBounds().intersects(platoVolador.getBounds())) {
                         Entidades.add(new Murido((int)platoVolador.getX(), (int)platoVolador.getY(), 1));
                         platoVolador.marcarParaEliminar();
-                        this.puntaje += this.platoVolador.puntaje();
+                        this.puntaje += this.platoVolador.puntaje(this.contadorDisparos);
                         laser.marcarParaEliminar();
                         platoVolador = null; 
                     }
