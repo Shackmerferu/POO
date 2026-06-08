@@ -3,7 +3,8 @@ package py_poo;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-public class App {
+public class
+App {
     public static void main(String[] args) {
             
         try {
