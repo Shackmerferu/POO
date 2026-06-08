@@ -12,38 +12,37 @@ import py_poo.ranking.RankingManager.RankingEntry;
 import py_poo.ui.MenuPrincipal;
 
 public class MenuLodeRunner extends MenuPrincipal {
-    private int seleccion;
-    private RankingManager rankingManager;
-    private List<RankingEntry> topRanking;
+    private int seleccion; // opción seleccionada actualmente (0=Jugar, 1=Config, 2=Salir)
+    private RankingManager rankingManager; // gestor de rankings
+    private List<RankingEntry> topRanking; // lista del top 10 de puntajes
 
+    // constructor: crea el menú con los puntajes cargados
     public MenuLodeRunner(InputManager input, Object mouse) {
         super("Lode Runner - Menu Principal", "LODE RUNNER", Color.GREEN, "Jugar", "Salir");
         this.input = input;
-        this.seleccion = 0;
+        this.seleccion = 0; // empieza en "Jugar"
         this.rankingManager = new RankingManager();
-        this.topRanking = rankingManager.cargarDetalleTop("Lode%", 10);
+        this.topRanking = rankingManager.cargarDetalleTop("Lode%", 10); // carga top 10
     }
 
-    public int getSeleccion() {
-        return seleccion;
-    }
+    public int getSeleccion() { return seleccion; } // retorna opción seleccionada
 
-    public void setSeleccion(int seleccion) {
-        this.seleccion = seleccion;
-    }
+    public void setSeleccion(int seleccion) { this.seleccion = seleccion; } // asigna opción seleccionada
 
+    // recarga el ranking desde la base de datos
     public void recargarRanking() {
         this.topRanking = rankingManager.cargarDetalleTop("Lode%", 10);
     }
 
     @Override
+    // retorna las acciones configurables del juego
     protected String[] getConfigActions() {
         return new String[]{"UP", "DOWN", "LEFT", "RIGHT", "DIG", "MUSIC", "FULLSCREEN", "RESET"};
     }
 
-    public void actualizar() {
-    }
+    public void actualizar() {} // actualización del menú
 
+    // dibuja el menú principal con opciones y ranking top 10
     public void dibujar(Graphics g) {
         if (isConfigMode()) {
             dibujarConfig(g);

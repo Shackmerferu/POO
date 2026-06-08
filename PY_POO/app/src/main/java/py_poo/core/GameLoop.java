@@ -20,7 +20,7 @@ public class GameLoop extends com.entropyinteractive.Game {
     private static double deltaTime;
     private boolean isFullscreen;
 
-    public GameLoop(String title, int width, int height) {
+    public GameLoop(String title, int width, int height) { //constructor
         super(title, width, height);
         instancia = this;
     }

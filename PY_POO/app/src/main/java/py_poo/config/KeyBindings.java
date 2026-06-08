@@ -6,7 +6,7 @@ import java.util.Map;
 public class KeyBindings {
     private static Map<String, Integer> bindings = new HashMap<>();
 
-    static {
+    static {//teclas predefinidas
         bindings.put("J1_UP", 87);
         bindings.put("J1_DOWN", 83);
         bindings.put("UP", 38);
@@ -29,7 +29,7 @@ public class KeyBindings {
     public static void set(String action, int keyCode) {
         bindings.put(action, keyCode);
     }
-
+    //mapeo de teclas
     public static String keyName(int keyCode) {
         switch (keyCode) {
             case 10: return "Enter";
@@ -52,7 +52,7 @@ public class KeyBindings {
                 return "Key(" + keyCode + ")";
         }
     }
-
+    //nombre y accion de teclas
     public static String[] getActionNames() {
         return new String[]{
             "J1_UP", "J1_DOWN",
