@@ -117,6 +117,40 @@ public class JuegoLodeRunner extends VideoJuego {
             g.drawString("P = reanudar  |  ESC = menu", Constantes.WIDTH / 2 - 160, Constantes.HEIGHT / 2 + 50);
         }
 
+        if (estado == EstadoJuego.VICTORIA) {
+            g.setFont(new Font("Consolas", Font.BOLD, 40));
+            g.setColor(new Color(80, 255, 80));
+            g.drawString("¡VICTORIA!", Constantes.WIDTH / 2 - 130, 120);
+
+            g.setFont(new Font("Consolas", Font.BOLD, 24));
+            g.setColor(Color.WHITE);
+            g.drawString("Puntaje: " + puntosJ1, Constantes.WIDTH / 2 - 80, 180);
+            g.drawString("Niveles completados: " + niveles.size(), Constantes.WIDTH / 2 - 130, 210);
+
+            g.setFont(new Font("Consolas", Font.BOLD, 18));
+            g.setColor(Color.CYAN);
+            g.drawString("--- TOP 10 ---", Constantes.WIDTH / 2 - 70, 260);
+
+            var top = new py_poo.ranking.RankingManager().cargarDetalleTop("Lode%", 10);
+            g.setFont(new Font("Consolas", Font.PLAIN, 14));
+            g.setColor(Color.WHITE);
+            int y = 290;
+            if (top == null || top.isEmpty()) {
+                g.drawString("Aún no hay puntajes.", Constantes.WIDTH / 2 - 80, y);
+            } else {
+                for (int i = 0; i < top.size(); i++) {
+                    var entry = top.get(i);
+                    String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
+                    g.drawString(texto, Constantes.WIDTH / 2 - 150, y);
+                    y += 22;
+                }
+            }
+
+            g.setFont(new Font("Consolas", Font.PLAIN, 18));
+            g.setColor(Color.GRAY);
+            g.drawString("ENTER = volver al menú", Constantes.WIDTH / 2 - 120, Constantes.HEIGHT - 80);
+        }
+
         if (estado == EstadoJuego.GAME_OVER) {
             g.setFont(new Font("Consolas", Font.BOLD, 40));
             g.setColor(new Color(255, 80, 80));
@@ -259,19 +293,11 @@ public class JuegoLodeRunner extends VideoJuego {
             }
             return;
         }
-        if (this.estado == EstadoJuego.JUGANDO) {
-            if (soundEnabled && musicEnabled) {
-                if (!musicaIniciada) {
-                    fxPlayer.repetir("soundtrack");
-                    musicaIniciada = true;
-                }
-            } else if (musicaIniciada) {
-                fxPlayer.detener("soundtrack");
-                musicaIniciada = false;
-            }
-            if (heroe == null) return;
-            Nivel nivelActual = (Nivel) this.NivelActual;
-            if (nivelActual == null) return;
+
+        if (estado != EstadoJuego.JUGANDO || heroe == null || NivelActual == null) return;
+
+        gestionarMusica();
+        Nivel nivelActual = (Nivel) this.NivelActual;
 
             heroe.mover();
             if (camara != null) {
@@ -512,28 +538,72 @@ public class JuegoLodeRunner extends VideoJuego {
                 nivelActual.activarEscape();
             }
 
-            if (nivelActual.escapeLadderActiva) {
-                int htx = (int)((heroe.getX() + nivelActual.getTile_size() / 2) / nivelActual.getTile_size());
-                int hty = (int)((heroe.getY() + nivelActual.getTile_size() / 2) / nivelActual.getTile_size());
-                if (htx == nivelActual.escapeLadderX && hty == nivelActual.escapeLadderY) {
-                    int bonusTiempo = Math.max(0, (nivelActual.tiempoLimite * 60 - tiempoNivel) / 6);
-                    puntosJ1 += 500 + bonusTiempo;
-                    heroe.setVidas(heroe.getVidas() + 1);
-                    if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
-                    nivelActual.finalizarNivel();
-                    nivelIdx++;
-                    if (nivelIdx >= niveles.size()) {
-                        rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx + 1, puntosJ1);
-                        if (menu != null) menu.recargarRanking();
-                        estado = EstadoJuego.VICTORIA;
-                        fxPlayer.detener("soundtrack");
-                        finalizar(EstadoJuego.VICTORIA, "Ganaste todos los niveles!");
-                        return;
-                    }
-                    cargarNivelActual();
+        if (nivelActual.escapeLadderActiva) {
+            int htx = (int)((heroe.getX() + nivelActual.getTile_size() / 2) / nivelActual.getTile_size());
+            int hty = (int)((heroe.getY() + nivelActual.getTile_size() / 2) / nivelActual.getTile_size());
+            if (htx == nivelActual.escapeLadderX && hty == nivelActual.escapeLadderY) {
+                int bonusTiempo = Math.max(0, (nivelActual.tiempoLimite * 60 - tiempoNivel) / 6);
+                puntosJ1 += 500 + bonusTiempo;
+                heroe.setVidas(heroe.getVidas() + 1);
+                if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
+                nivelActual.finalizarNivel();
+                nivelIdx++;
+                if (nivelIdx >= niveles.size()) {
+                    rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx + 1, puntosJ1);
+                    if (menu != null) menu.recargarRanking();
+                    estado = EstadoJuego.VICTORIA;
+                    fxPlayer.detener("La Bestia Pop.mp3");
+                    finalizar(EstadoJuego.VICTORIA, "Ganaste todos los niveles!");
+                    return;
                 }
+                cargarNivelActual();
             }
         }
+    }
+
+    private void gestionarMusica() {
+        if (soundEnabled && musicEnabled) {
+            if (!musicaIniciada) {
+                fxPlayer.repetir("La Bestia Pop.mp3");
+                musicaIniciada = true;
+            }
+        } else if (musicaIniciada) {
+            fxPlayer.detener("La Bestia Pop.mp3");
+            musicaIniciada = false;
+        }
+    }
+
+    @Override
+    public void onHeroDeath() {
+        if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
+        Nivel nivelActual = (Nivel) this.NivelActual;
+        int vidasGuardadas = heroe.getVidas();
+        nivelActual.finalizarNivel();
+        cargarNivelActual();
+        heroe.setVidas(vidasGuardadas);
+    }
+
+    @Override
+    public void onGameOver() {
+        if (!rankingRegistrado) {
+            rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx + 1, puntosJ1);
+            if (menu != null) menu.recargarRanking();
+            rankingRegistrado = true;
+        }
+        heroe.desaparecer();
+        estado = EstadoJuego.GAME_OVER;
+        fxPlayer.detener("La Bestia Pop.mp3");
+    }
+
+    @Override
+    public void onCoinCollected() {
+        puntosJ1 += 100;
+        if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("punto");
+    }
+
+    @Override
+    public void onDig() {
+        if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("paleta");
     }
 
     @Override
