@@ -16,6 +16,10 @@ public class MenuLodeRunner extends MenuPrincipal {
     private RankingManager rankingManager; // gestor de rankings
     private List<RankingEntry> topRanking; // lista del top 10 de puntajes
 
+    // ─── SKIN Y PISTA MUSICAL (descomentar cuando haya assets alternativos) ───
+    // private int skinPersonaje = 0;
+    // private int pistaMusical = 0;
+
     // constructor: crea el menú con los puntajes cargados
     public MenuLodeRunner(InputManager input, Object mouse) {
         super("Lode Runner - Menu Principal", "LODE RUNNER", Color.GREEN, "Jugar", "Salir");
@@ -33,6 +37,10 @@ public class MenuLodeRunner extends MenuPrincipal {
     public void recargarRanking() {
         this.topRanking = rankingManager.cargarDetalleTop("Lode%", 10);
     }
+
+    // ─── Getters para skin y pista musical ───
+    // public int getSkinPersonaje() { return skinPersonaje; }
+    // public int getPistaMusical() { return pistaMusical; }
 
     @Override
     // retorna las acciones configurables del juego
@@ -100,4 +108,80 @@ public class MenuLodeRunner extends MenuPrincipal {
             }
         }
     }
+
+    // ═══════════════════════════════════════════════════════════════
+    // CONFIGURACIÓN COMPLETA (descomentar el bloque completo cuando
+    // haya assets alternativos para skin y pista musical)
+    // Reemplaza la configuración actual (solo teclas) por una
+    // con opciones de Skin Personaje y Pista Musical.
+    // ═══════════════════════════════════════════════════════════════
+    // private final String[] opcionesConfig = {
+    //     "Skin Personaje", "Pista Musical",
+    //     "Configurar Teclas", "RESET VALORES", "VOLVER"
+    // };
+    //
+    // @Override
+    // public void dibujarConfig(Graphics g) {
+    //     g.setColor(new Color(0, 0, 0, 200));
+    //     g.fillRect(0, 0, 800, 600);
+    //     g.setFont(new Font("Consolas", Font.BOLD, 28));
+    //     g.setColor(Color.CYAN);
+    //     g.drawString("CONFIGURACIÓN", 280, 60);
+    //     g.setFont(new Font("Consolas", Font.PLAIN, 18));
+    //     for (int i = 0; i < opcionesConfig.length; i++) {
+    //         int y = 110 + i * 40;
+    //         if (i == configSelected) {
+    //             g.setColor(Color.YELLOW);
+    //             g.drawString("> ", 150, y);
+    //         } else {
+    //             g.setColor(Color.WHITE);
+    //         }
+    //         String extra = "";
+    //         if (i == 0) extra = skinPersonaje == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
+    //         else if (i == 1) extra = pistaMusical == 0 ? " [ORIGINAL]" : " [TEMA 2]";
+    //         g.drawString(opcionesConfig[i] + extra, 180, y);
+    //     }
+    //     g.setFont(new Font("Consolas", Font.PLAIN, 12));
+    //     g.setColor(Color.GRAY);
+    //     g.drawString("Flechas: mover  |  Enter: cambiar  |  Esc: volver", 180, 560);
+    // }
+    //
+    // @Override
+    // public void actualizarConfig() {
+    //     long now = System.currentTimeMillis();
+    //     if (configActionIndex >= 0) {
+    //         if (now - lastConfigKeyTime < 120) return;
+    //         for (int code = 0; code < 256; code++) {
+    //             if (input.isKeyPressed(code)) {
+    //                 KeyBindings.set(KeyBindings.getActionNames()[0], code);
+    //                 lastConfigKeyTime = now;
+    //                 configActionIndex = -1;
+    //                 break;
+    //             }
+    //         }
+    //         return;
+    //     }
+    //     if (now - lastConfigKeyTime > 120) {
+    //         if (input.isUpPressed() || input.isWPressed()) {
+    //             configSelected--;
+    //             if (configSelected < 0) configSelected = opcionesConfig.length - 1;
+    //             lastConfigKeyTime = now;
+    //         }
+    //         if (input.isDownPressed() || input.isSPressed()) {
+    //             configSelected++;
+    //             if (configSelected >= opcionesConfig.length) configSelected = 0;
+    //             lastConfigKeyTime = now;
+    //         }
+    //     }
+    //     if (input.isEnterPressed() && (now - lastConfigKeyTime > 150)) {
+    //         lastConfigKeyTime = now;
+    //         switch (configSelected) {
+    //             case 0: skinPersonaje = (skinPersonaje + 1) % 2; break;
+    //             case 1: pistaMusical = (pistaMusical + 1) % 2; break;
+    //             case 2: configActionIndex = 0; break;
+    //             case 3: skinPersonaje = 0; pistaMusical = 0; break;
+    //             case 4: configMode = false; break;
+    //         }
+    //     }
+    // }
 }

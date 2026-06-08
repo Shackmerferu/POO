@@ -58,6 +58,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         fxPlayer.cargarSonidoRecurso("paleta", "sonidos/paleta.wav"); // sonido al cavar
         fxPlayer.cargarSonidoRecurso("empieza", "sonidos/Empieza.wav"); // sonido de evento
         fxPlayer.cargarSonidoRecurso("soundtrack", "sonidos/SoundTrack.wav"); // música de fondo
+        fxPlayer.setVolumen("soundtrack", "medio");
     }
 
     // pausa el juego
