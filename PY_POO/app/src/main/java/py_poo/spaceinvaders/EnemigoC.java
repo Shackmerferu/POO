@@ -9,20 +9,21 @@ import py_poo.graphics.Sprite;
 import py_poo.interfaces.Armado;
 
 public class EnemigoC extends Enemigo {
-    private static Animacion animacionFlota(){
+    private static Animacion animacionFlota(int skin){
         List<Sprite> fotograma=new ArrayList<>();
-        fotograma.add(new Sprite("imagenes/Space Invaders/Invaders/space__0004_C1.png"));
-        fotograma.add(new Sprite("imagenes/Space Invaders/Invaders/space__0005_C2.png"));
+        if(skin==0){
+        fotograma.add(new Sprite("imagenes/Space Invaders/Invaders/space__0002_B1.png"));
+        fotograma.add(new Sprite("imagenes/Space Invaders/Invaders/space__0003_B2.png"));
+        }else{
+         fotograma.add(new Sprite("imagenes/Space Invaders/Invaders/Invaders_nuevo/Invasor3_A10.png"));
+         fotograma.add(new Sprite("imagenes/Space Invaders/Invaders/Invaders_nuevo/Invasor3_A20.png"));   
+        }
 
         return new Animacion(fotograma,200);
     }
 
-    public EnemigoC(int X, int Y) {
-        
-
-
-        super(X, Y,animacionFlota());
-        this.setSprite("imagenes/Space Invaders/Invaders/space__0004_C1.png"); 
+    public EnemigoC(int X, int Y, int skinInvasores) {
+        super(X, Y,animacionFlota(skinInvasores));
         this.puntosxKill = 10; 
     }
 }

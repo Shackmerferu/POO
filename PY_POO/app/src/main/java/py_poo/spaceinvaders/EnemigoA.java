@@ -10,19 +10,22 @@ import py_poo.interfaces.Armado;
 
 public class EnemigoA extends Enemigo implements Armado{
 
-    private static Animacion animacionFlota(){
+    private static Animacion animacionFlota(int skin){
         List<Sprite> fotograma=new ArrayList<>();
+        if(skin==0){
         fotograma.add(new Sprite("imagenes/Space Invaders/Invaders/space__0000_A1.png"));
         fotograma.add(new Sprite("imagenes/Space Invaders/Invaders/space__0001_A2.png"));
-
+        }else{
+         fotograma.add(new Sprite("imagenes/Space Invaders/Invaders/Invaders_nuevo/Invasor1_A10.png"));
+         fotograma.add(new Sprite("imagenes/Space Invaders/Invaders/Invaders_nuevo/Invasor1_A20.png"));   
+        }
         return new Animacion(fotograma,200);
     }
 
     
     
-    public EnemigoA(int X, int Y) {
-        super(X, Y, animacionFlota());
-       
+    public EnemigoA(int X, int Y, int skinInvasores) {
+        super(X, Y, animacionFlota(skinInvasores));
         this.puntosxKill = 30; 
     }
 

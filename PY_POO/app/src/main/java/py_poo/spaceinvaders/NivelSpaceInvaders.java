@@ -9,8 +9,6 @@ public class NivelSpaceInvaders {
     public void generarOleadas(HashMap<String, Enemigo> flotaE, List<ObjetoGrafico> Entidades, int nivelActual, int skinInvasores) {
         int filas = 5;
         int columnas = 10;
-        
-        
         int bajadaExtra = nivelActual * 40; 
         
         for (int i = 0; i < filas; i++) {
@@ -20,14 +18,14 @@ public class NivelSpaceInvaders {
                 //Cantidad de bichos
                 Enemigo bicho = null; 
                 if (i == 0) {
-                    bicho = new EnemigoA(posX, posY);
-                    if (skinInvasores == 1) bicho.setSprite("imagenes/Space Invaders/Invaders/space__0001_A2.png");
+                    bicho = new EnemigoA(posX, posY,skinInvasores);
+                    
                 } else if (i == 1 || i == 3) {
-                    bicho = new EnemigoB(posX, posY);
-                    if (skinInvasores == 1) bicho.setSprite("imagenes/Space Invaders/Invaders/space__0003_B2.png");
+                    bicho = new EnemigoB(posX, posY, skinInvasores);
+                    
                 } else {
-                    bicho = new EnemigoC(posX, posY);
-                    if (skinInvasores == 1) bicho.setSprite("imagenes/Space Invaders/Invaders/space__0005_C2.png");
+                    bicho = new EnemigoC(posX, posY, skinInvasores);
+                    
                 }
               
                 String clave = i + "," + j; 
