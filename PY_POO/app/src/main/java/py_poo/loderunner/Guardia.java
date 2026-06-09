@@ -3,6 +3,7 @@ package py_poo.loderunner;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 
 import py_poo.entities.Agujero;
@@ -31,12 +32,20 @@ public class Guardia extends Personaje {
 
     private Animacion animCaminando; // animación al caminar
     private Animacion animAtrapado; // animación cuando está atrapado en un agujero
+    private Animacion animEscalera; // animación cuando está en escalera
+    private Animacion animBarra; // animación cuando está en barra
+    private Animacion animCayendo; // animación cuando está cayendo
 
     private int tiempoEsperaEscape; // frames restantes de espera quieto tras salir del agujero
     private int contadorAtascado; // frames acumulados sin poder moverse (anti-atasco)
 
     // RUTAS DE IMAGENES DEL GUARDIA - CAMBIAR AQUI
     private static final String RUTA_GUARDIA = "imagenes/Lode Runner/personaje (2).png";
+    private static final String RUTA_MUERTO_2 = "imagenes/Lode Runner/personajes/muerto - 2 (%d).png";
+    private static final String RUTA_ESCALERA_2 = "imagenes/Lode Runner/personajes/escalera - 2 (%d).png";
+    private static final String RUTA_BARRA_2 = "imagenes/Lode Runner/personajes/barra - 2 (%d).png";
+    private static final String RUTA_CAYENDO_2 = "imagenes/Lode Runner/personajes/cayendo - 2 (%d).png";
+    private static final int FRAMES_ANIM = 4;
 
     // Constructor: crea guardia en la posición de tile y con el tamaño de tile dados
     // Inicializa su IA, vidas, dirección y carga las animaciones
@@ -57,18 +66,43 @@ public class Guardia extends Personaje {
     // Carga las imágenes de animación del guardia desde los archivos de recursos
     private void cargarAnimaciones() {
         CargadorRecursos cr = new CargadorRecursos();
+
         BufferedImage img = cr.cargarImagen(RUTA_GUARDIA);
         if (img != null) {
-            Sprite s = new Sprite(img);
-            animCaminando = new Animacion(List.of(s), 200);
-            animAtrapado = new Animacion(List.of(s), 300);
+            animCaminando = new Animacion(List.of(new Sprite(img)), 200);
         }
+
+        animEscalera = cargarAnimacion(cr, RUTA_ESCALERA_2, FRAMES_ANIM, 200);
+        animBarra = cargarAnimacion(cr, RUTA_BARRA_2, FRAMES_ANIM, 200);
+        animCayendo = cargarAnimacion(cr, RUTA_CAYENDO_2, FRAMES_ANIM, 200);
+
+        List<Sprite> framesAtrapado = new ArrayList<>();
+        for (int i = 1; i <= FRAMES_ANIM; i++) {
+            BufferedImage frameImg = cr.cargarImagen(String.format(RUTA_MUERTO_2, i));
+            if (frameImg != null) framesAtrapado.add(new Sprite(frameImg));
+        }
+        if (!framesAtrapado.isEmpty()) {
+            animAtrapado = new Animacion(framesAtrapado, 300);
+        }
+    }
+
+    private Animacion cargarAnimacion(CargadorRecursos cr, String template, int frames, long tiempoMs) {
+        List<Sprite> lista = new ArrayList<>();
+        for (int i = 1; i <= frames; i++) {
+            BufferedImage img = cr.cargarImagen(String.format(template, i));
+            if (img != null) lista.add(new Sprite(img));
+        }
+        if (!lista.isEmpty()) return new Animacion(lista, tiempoMs);
+        return null;
     }
 
     // Actualiza las animaciones del guardia cada frame
     public void actualizar() {
         if (animCaminando != null) animCaminando.actualizar();
         if (animAtrapado != null) animAtrapado.actualizar();
+        if (animEscalera != null) animEscalera.actualizar();
+        if (animBarra != null) animBarra.actualizar();
+        if (animCayendo != null) animCayendo.actualizar();
     }
 
     // Mueve al guardia un paso a la izquierda si no hay tile sólido bloqueando
@@ -187,7 +221,10 @@ public class Guardia extends Personaje {
     // - Aplica gravedad, calcula dirección según IA y ejecuta el movimiento
     // - Detecta escaleras/barras y actualiza animaciones
     public void mover() {
-        if (enAgujero) return;
+        if (enAgujero) {
+            actualizar();
+            return;
+        }
         if (heroe == null || nivel == null) return;
 
         if (ia.isSaliendo()) {
@@ -437,9 +474,18 @@ public class Guardia extends Personaje {
     @Override
     // Dibuja al guardia en pantalla con el sprite correspondiente a su estado actual
     public void display(Graphics g) {
-        Sprite s = (ia.getEstado() == IA_Guardia.Comportamiento.ATRAPADO && animAtrapado != null)
-            ? animAtrapado.obtenerFrame()
-            : (animCaminando != null ? animCaminando.obtenerFrame() : null);
+        Sprite s = null;
+        if (ia.getEstado() == IA_Guardia.Comportamiento.ATRAPADO) {
+            s = animAtrapado != null ? animAtrapado.obtenerFrame() : null;
+        } else if (enEscalera) {
+            s = animEscalera != null ? animEscalera.obtenerFrame() : null;
+        } else if (enBarra) {
+            s = animBarra != null ? animBarra.obtenerFrame() : null;
+        } else if (cayendo) {
+            s = animCayendo != null ? animCayendo.obtenerFrame() : null;
+        } else {
+            s = animCaminando != null ? animCaminando.obtenerFrame() : null;
+        }
         if (s != null) {
             int x = (int)getX();
             int y = (int)getY();

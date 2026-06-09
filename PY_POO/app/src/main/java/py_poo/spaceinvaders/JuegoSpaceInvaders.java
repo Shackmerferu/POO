@@ -139,7 +139,7 @@ protected void actualizarLogicaJuego() {
             }
         }
 
-       //Implementar 3 niveles de velocidad de flota//
+    
        //Movimiento de flota
        int delay=0;
         if(this.menu != null){

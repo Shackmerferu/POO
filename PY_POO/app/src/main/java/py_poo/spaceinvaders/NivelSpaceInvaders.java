@@ -7,7 +7,7 @@ import py_poo.entities.ObjetoGrafico;
 
 public class NivelSpaceInvaders {
     public void generarOleadas(HashMap<String, Enemigo> flotaE, List<ObjetoGrafico> Entidades, int nivelActual, int skinInvasores) {
-        int filas = 5;
+        int filas = 4;
         int columnas = 10;
         int bajadaExtra = nivelActual * 40; 
         
@@ -20,7 +20,7 @@ public class NivelSpaceInvaders {
                 if (i == 0) {
                     bicho = new EnemigoA(posX, posY,skinInvasores);
                     
-                } else if (i == 1 || i == 3) {
+                } else if (i == 1 || i == 2) {
                     bicho = new EnemigoB(posX, posY, skinInvasores);
                     
                 } else {

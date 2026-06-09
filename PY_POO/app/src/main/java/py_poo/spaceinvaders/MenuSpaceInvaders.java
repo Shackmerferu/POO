@@ -14,71 +14,62 @@ import py_poo.ui.MenuPrincipal;
 
 public class MenuSpaceInvaders extends MenuPrincipal {
 
-    //  ATRIBUTOS GLOBALES
     private JuegoSpaceInvaders juego;
-    private int seleccion; // Opción elegida en el menú principal (Iniciar, Opciones, Salir)
-
-    // Control de tiempo
-    private int delay = 150; // Milisegundos de espera entre cada pulsación de tecla para evitar doble click
+    private int seleccion;
+    private int delay = 150;
     private long ultimoTiempo;
+    private boolean configMode;
+    private int configSelected;
+    private int configActionIndex = -1;
     private long lastConfigKeyTime;
-
-    //  VARIABLES DE LA PANTALLA DE OPCIONES
-    private boolean configMode;         // Bandera: ¿Estamos en el menú principal (false) o en opciones (true)?
-    private int configSelected;         // Qué renglón del menú de opciones estamos marcando
-    private int configActionIndex = -1; // -1 significa que no estamos esperando que el usuario presione una tecla
-
-    // --- VARIABLES DE PERSONALIZACIÓN (Lo que modificará el juego real) ---
     private boolean pantallaCompleta = false;
     private boolean sonidoActivado = true;
-    private int skinNave = 0;       // 0 = Original, 1 = Alternativa
+    private int skinNave = 0;
     private int skinInvasores = 0;
     private int skinProyectiles = 0;
     private int pistaMusical = 0;
-    private int velocidad = 1;      // 0 = Lenta, 1 = Media, 2 = Rápida
-
-    // MATRIZ DE RENDERIZADO
-    // Usamos un arreglo (final) para no tener que escribir muchos if/else al dibujar el menú.
-    // Esto hace que el código sea escalable: si queremos agregar otra opción, solo la sumamos aquí.
+    private int velocidad = 1;
+    
     private final String[] opcionesConfig = {
-            "Modo Pantalla", "Sonido General", "Skin Nave", "Skin Invasores",
-            "Skin Proyectiles", "Pista Musical", "Velocidad Invasores",
-            "Configurar Teclas", "RESET VALORES", "VOLVER"
+        "Modo Pantalla", "Sonido General", "Skin Nave", "Skin Invasores",
+        "Skin Proyectiles", "Pista Musical", "Velocidad Invasores",
+        "Configurar Teclas", "RESET VALORES", "VOLVER"
     };
-
-
+    private String[] opcionesControles = {
+        "Mover Izquierda",
+        "Mover Derecha",
+        "Disparar",
+        "Pausa",
+        "Volver"
+    };
+    private boolean teclasmenuControles = false; 
+    private int seleccionOpcinesControles = 0;
     private RankingManager rankingManager;
     private List<RankingEntry> topRanking;
 
-    // CONSTRUCTOR
     public MenuSpaceInvaders(InputManager input, JuegoSpaceInvaders juego) {
-        // Llama al constructor de la clase padre pasándole los títulos y colores base
         super("Space Invaders", "Menú Principal", Color.CYAN, "Moverse: ◄ / ►", "Disparo: ESPACIO");
-
         this.input = input;
         this.juego = juego;
         this.seleccion = 0;
         this.ultimoTiempo = System.currentTimeMillis();
-
-        // Inicializamos SQLite.
-        // El "%" es un comodín SQL que significa "Cualquier texto que empiece con la palabra Space"
+        
         this.rankingManager = new RankingManager();
         this.topRanking = rankingManager.cargarDetalleTop("Space%", 10);
     }
 
-    public int getSeleccion() { return seleccion; }
-    public void setSeleccion(int seleccion) { this.seleccion = seleccion; }
+    public int getSeleccion() {
+        return seleccion;
+    }
 
+    public void setSeleccion(int seleccion) {
+        this.seleccion = seleccion;
+    }
 
-    // Fuerza a la aplicación a volver a consultar el archivo .db.
-    // Es vital llamarlo después de que el jugador termine una partida, para que su puntaje nuevo aparezca en la lista.
     public void recargarRanking() {
         this.topRanking = rankingManager.cargarDetalleTop("Space%", 10);
     }
-
-
-    // Modificamos el comportamiento de setVisible de la clase padre.
-    // Al ocultar el menú, usamos dispose() para liberar recursos de la ventana (gestión de memoria).
+    
     @Override
     public void setVisible(boolean b) {
         super.setVisible(false);
@@ -87,24 +78,57 @@ public class MenuSpaceInvaders extends MenuPrincipal {
 
     @Override
     public void actualizar() {
-    } // Vacío por contrato de la interfaz
-
-    // dibujado del menu de opciones
+    }
+    
     public void dibujarConfig(Graphics g) {
-
         g.setColor(new Color(0, 0, 0, 200));
         g.fillRect(0, 0, 800, 600);
+
+        if (teclasmenuControles) {
+            g.setFont(new Font("Consolas", Font.BOLD, 28));
+            g.setColor(Color.CYAN);
+            g.drawString("CONFIGURAR CONTROLES", 240, 60);
+
+            g.setFont(new Font("Consolas", Font.PLAIN, 18));
+            String[] acciones = KeyBindings.getActionNames();
+
+            for (int i = 0; i < opcionesControles.length; i++) {
+                int y = 150 + i * 45;
+
+                if (i == seleccionOpcinesControles) {
+                    g.setColor(Color.YELLOW);
+                    g.drawString("> ", 150, y);
+                } else {
+                    g.setColor(Color.WHITE);
+                    g.drawString("  ", 150, y);
+                }
+
+                if (i == seleccionOpcinesControles && configActionIndex >= 0) {
+                    g.setColor(Color.GREEN);
+                    g.drawString(opcionesControles[i] + ": [ PRESIONA UNA TECLA ]", 180, y);
+                } else {
+                    String bindActual = "";
+                    if (i < 4 && i < acciones.length) {
+                        int code = KeyBindings.get(acciones[i]);
+                        bindActual = " [" + java.awt.event.KeyEvent.getKeyText(code) + "]";
+                    }
+                    g.drawString(opcionesControles[i] + bindActual, 180, y);
+                }
+            }
+
+            g.setFont(new Font("Consolas", Font.PLAIN, 12));
+            g.setColor(Color.GRAY);
+            g.drawString("Flechas: mover  |  Enter: seleccionar  |  Asigna la tecla elegida", 180, 560);
+            return;
+        }
 
         g.setFont(new Font("Consolas", Font.BOLD, 28));
         g.setColor(Color.CYAN);
         g.drawString("CONFIGURACIÓN", 280, 60);
 
         g.setFont(new Font("Consolas", Font.PLAIN, 18));
-
-
         for (int i = 0; i < opcionesConfig.length; i++) {
             int y = 110 + i * 40;
-
 
             if (i == configSelected) {
                 g.setColor(Color.YELLOW);
@@ -112,7 +136,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             } else {
                 g.setColor(Color.WHITE);
             }
-
 
             String extra = "";
             if (i == 0) extra = pantallaCompleta ? " [PANTALLA COMPLETA]" : " [VENTANA]";
@@ -122,35 +145,25 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             else if (i == 4) extra = skinProyectiles == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
             else if (i == 5) extra = pistaMusical == 0 ? " [ORIGINAL]" : " [TEMA 2]";
             else if (i == 6) {
-
                 if(velocidad == 0) extra = " [LENTA]";
                 else if(velocidad == 1) extra = " [MEDIA]";
                 else extra = " [RÁPIDA]";
             }
 
-
-            if (i == 7 && configActionIndex >= 0) {
-                g.setColor(Color.GREEN);
-                g.drawString(opcionesConfig[i] + ": [ PRESIONA UNA TECLA ]", 180, y);
-            } else {
-                g.drawString(opcionesConfig[i] + extra, 180, y);
-            }
+            g.drawString(opcionesConfig[i] + extra, 180, y);
         }
-
 
         g.setFont(new Font("Consolas", Font.PLAIN, 12));
         g.setColor(Color.GRAY);
         g.drawString("Flechas: mover  |  Enter: cambiar/seleccionar  |  Esc: volver", 180, 560);
     }
-
-    // dibujado del menu principal
+    
     public void dibujar(Graphics g) {
-
-        if (isConfigMode()) {
-            dibujarConfig(g);
-            return;
+       if (isConfigMode()) {
+            dibujarConfig(g); 
+            return;           
         }
-
+        
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
 
@@ -161,7 +174,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         String[] opciones = {"INICIAR PARTIDA", "OPCIONES", "SALIR AL LAUNCHER"};
         g.setFont(new Font("Consolas", Font.PLAIN, 20));
 
-
         for (int i = 0; i < opciones.length; i++) {
             if (i == seleccion) {
                 g.setColor(Color.YELLOW);
@@ -171,7 +183,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
                 g.drawString("  " + opciones[i], 100, 200 + i * 35);
             }
         }
-
 
         g.setFont(new Font("Consolas", Font.PLAIN, 14));
         g.setColor(Color.GRAY);
@@ -186,7 +197,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         g.drawString("P: Pausa Local", 100, 500);
         g.drawString("Esc: Volver al Menú", 100, 515);
 
-        //dibujado del raking en el menu
         g.setFont(new Font("Consolas", Font.BOLD, 22));
         g.setColor(Color.CYAN);
         g.drawString("--- TOP 10 RANKING ---", 450, 180);
@@ -199,7 +209,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             int y = 220;
             for (int i = 0; i < topRanking.size(); i++) {
                 RankingEntry entry = topRanking.get(i);
-
                 String texto = String.format("%d. %s  NIVEL: %d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
                 g.drawString(texto, 450, y);
                 y += 20;
@@ -211,79 +220,132 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         this.configMode = configMode;
         configSelected = 0;
         configActionIndex = -1;
+        teclasmenuControles = false;
+        seleccionOpcinesControles = 0;
         lastConfigKeyTime = System.currentTimeMillis();
     }
 
     public void actualizarConfig() {
         long now = System.currentTimeMillis();
 
+        if (teclasmenuControles) {
+            if (configActionIndex >= 0) {
+                if (now - lastConfigKeyTime < 150) return;
+                for (int code = 0; code < 256; code++) {
+                    if (code == java.awt.event.KeyEvent.VK_ENTER) {
+                    continue; 
+                     }   
+                    if (input.isKeyPressed(code)) {
+                        KeyBindings.set(KeyBindings.getActionNames()[configActionIndex], code);
+                        lastConfigKeyTime = now;
+                        configActionIndex = -1; 
+                        break;
+                    }
+                }
+                return;
+            }
+
+            if (now - lastConfigKeyTime > delay) {
+                if (input.isUpPressed() || input.isWPressed()) {
+                    seleccionOpcinesControles--;
+                    if (seleccionOpcinesControles < 0) seleccionOpcinesControles = opcionesControles.length - 1;
+                    lastConfigKeyTime = now;
+                }
+                if (input.isDownPressed() || input.isSPressed()) {
+                    seleccionOpcinesControles++;
+                    if (seleccionOpcinesControles >= opcionesControles.length) seleccionOpcinesControles = 0;
+                    lastConfigKeyTime = now;
+                }
+            }
+
+            if (input.isEnterPressed() && (now - lastConfigKeyTime > 150)) {
+                lastConfigKeyTime = now;
+                if (seleccionOpcinesControles == 4) {
+                    teclasmenuControles = false;
+                } else {
+                    configActionIndex = seleccionOpcinesControles;
+                }
+            }
+            return;
+        }
 
         if (configActionIndex >= 0) {
-
             if (now - lastConfigKeyTime < 120) return;
-
-
             for (int code = 0; code < 256; code++) {
+                if (code == java.awt.event.KeyEvent.VK_ENTER) {
+                    continue; 
+                }
                 if (input.isKeyPressed(code)) {
                     KeyBindings.set(KeyBindings.getActionNames()[configActionIndex], code);
                     lastConfigKeyTime = now;
-                    configActionIndex = -1; // Cierra el estado de escucha
+                    configActionIndex = -1; 
                     break;
                 }
             }
             return;
         }
 
-
         if (now - lastConfigKeyTime > delay) {
             if (input.isUpPressed() || input.isWPressed()) {
                 configSelected--;
-                // Si sube más allá del primer renglón, "da la vuelta" y aparece en el último
                 if (configSelected < 0) configSelected = opcionesConfig.length - 1;
                 lastConfigKeyTime = now;
             }
             if (input.isDownPressed() || input.isSPressed()) {
                 configSelected++;
-
                 if (configSelected >= opcionesConfig.length) configSelected = 0;
                 lastConfigKeyTime = now;
             }
         }
 
-
         if (input.isEnterPressed() && (now - lastConfigKeyTime > 150)) {
             lastConfigKeyTime = now;
-
-
             switch(configSelected) {
                 case 0: pantallaCompleta = !pantallaCompleta; break;
                 case 1: sonidoActivado = !sonidoActivado; break;
-                case 2: skinNave = (skinNave + 1) % 2; break;
+                case 2: skinNave = (skinNave + 1) % 2; break; 
                 case 3: skinInvasores = (skinInvasores + 1) % 2; break;
                 case 4: skinProyectiles = (skinProyectiles + 1) % 2; break;
                 case 5: pistaMusical = (pistaMusical + 1) % 2; break;
-                case 6: velocidad = (velocidad + 1) % 3; break;
-                case 7:
-                    configActionIndex = 0;
-                    break;
-                case 8:
+                case 6: velocidad = (velocidad + 1) % 3; break; 
+                case 7: 
+                    teclasmenuControles = true;
+                    seleccionOpcinesControles = 0;
+                    break; 
+                case 8: 
                     pantallaCompleta = false;
                     sonidoActivado = true;
                     skinNave = 0; skinInvasores = 0; skinProyectiles = 0;
                     pistaMusical = 0; velocidad = 1;
                     break;
-                case 9:
-                    configMode = false;
-                    break;
+                case 9: 
+                    configMode = false; 
+                    break; 
             }
         }
     }
 
-    //  GETTERS
-    public boolean isConfigMode() { return configMode; }
-    public boolean isSonidoActivado() { return this.sonidoActivado; }
-    public int getSkinNave() { return skinNave; }
-    public int getSkinInvasores() { return skinInvasores; }
-    public int getSkinProyectiles() { return skinProyectiles; }
-    public int getVelocidad() { return velocidad; }
+    public boolean isConfigMode() {
+        return configMode;
+    }
+
+    public boolean isSonidoActivado() {
+        return this.sonidoActivado;
+    }
+
+    public int getSkinNave() {
+        return skinNave;
+    }
+
+    public int getSkinInvasores() {
+        return skinInvasores;
+    }
+
+    public int getSkinProyectiles() {
+        return skinProyectiles;
+    }
+
+    public int getVelocidad() {
+        return velocidad;
+    }
 }
