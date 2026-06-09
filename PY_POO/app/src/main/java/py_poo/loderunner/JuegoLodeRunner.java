@@ -243,7 +243,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         if (estado == EstadoJuego.PAUSA) {
         if (input.isPPressed()) { 
             estado = EstadoJuego.JUGANDO;
-            fxPlayer.repetir("LaBestiaPop"); // Reanuda la música ricotera
+            fxPlayer.repetir("LaBestiaPop"); 
         } else if (input.isEnterPressed()) { 
             estado = EstadoJuego.MENU;
         }

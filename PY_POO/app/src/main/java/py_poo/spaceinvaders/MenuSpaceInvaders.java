@@ -29,6 +29,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     private int skinProyectiles = 0;
     private int pistaMusical = 0;
     private int velocidad = 1;
+    // Matriz de constantes de texto para iterar el dibujado y lógica del panel de configuración
     private final String[] opcionesConfig = {
         "Modo Pantalla", "Sonido General", "Skin Nave", "Skin Invasores",
         "Skin Proyectiles", "Pista Musical", "Velocidad Invasores",
@@ -58,11 +59,12 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     public void setSeleccion(int seleccion) {
         this.seleccion = seleccion;
     }
+    //Lectura directa en disco del archivo de ranking para refrescar la lista en memoria.
 
     public void recargarRanking() {
         this.topRanking = rankingManager.cargarDetalleTop("Space%", 10);
     }
-
+    //Sobreescritura del método de visibilidad.
     @Override
     public void setVisible(boolean b) {
         super.setVisible(false);
@@ -72,7 +74,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     @Override
     public void actualizar() {
     }
-
+    //Renderiza la interfaz del panel de opciones y configuraciones.
     public void dibujarConfig(Graphics g) {
         g.setColor(new Color(0, 0, 0, 200));
         g.fillRect(0, 0, 800, 600);
@@ -117,7 +119,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         g.setColor(Color.GRAY);
         g.drawString("Flechas: mover  |  Enter: cambiar/seleccionar  |  Esc: volver", 180, 560);
     }
-
+    
     public void dibujar(Graphics g) {
        if (isConfigMode()) {
             dibujarConfig(g); 
@@ -262,5 +264,9 @@ public class MenuSpaceInvaders extends MenuPrincipal {
 
     public int getSkinProyectiles() {
         return skinProyectiles;
+    }
+
+    public int getVelocidad() {
+        return velocidad;
     }
 }

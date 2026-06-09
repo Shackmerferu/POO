@@ -56,7 +56,7 @@ public class KeyBindings {
     public static String[] getActionNames() {
         return new String[]{
             "J1_UP", "J1_DOWN",
-            "UP", "DOWN", "LEFT", "RIGHT","DIG",
+            "UP", "DOWN", "LEFT", "RIGHT",
             "PAUSE", "SOUND", "SOUND_FX", "MUSIC", "FULLSCREEN", "RESET"
         };
     }

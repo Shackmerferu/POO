@@ -27,7 +27,7 @@ public class EnemigoA extends Enemigo implements Armado{
     }
 
     
-    @Override
+    @Override //disparar, solo 1 clase de enemigos puede
     public Bala Disparar() {
        int centroX = (int) this.getX() + (this.getWidth() / 2) - 2; 
         
