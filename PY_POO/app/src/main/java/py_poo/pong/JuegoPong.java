@@ -43,10 +43,14 @@ public class JuegoPong extends VideoJuego {
 
     @Override
     public void iniciar() {
+        int viejaSkin1 = (this.menu != null) ? this.menu.getSkinPaleta1() : 0;
+        int viejaSkin2 = (this.menu != null) ? this.menu.getSkinPaleta2() : 0;
         super.iniciar();
         this.input = new InputManager();
         super.input = this.input;
         this.menu = new MenuPong(input, null);
+        this.menu.setSkinPaleta1(viejaSkin1);
+        this.menu.setSkinPaleta2(viejaSkin2);
         this.collisionManager = new CollisionManager();
 
         // incia el sonido y carga los sonidos
@@ -56,6 +60,7 @@ public class JuegoPong extends VideoJuego {
         this.fxPlayer.cargarSonidoRecurso("inicio", "sonidos/Empieza.wav");
         this.fxPlayer.cargarSonidoRecurso("fondo", "sonidos/SoundTrack.wav");
         this.fxPlayer.setVolumen("fondo", "bajo");
+
 
         // seteamos valores
         this.puntosJ1 = 0;
@@ -143,6 +148,23 @@ public class JuegoPong extends VideoJuego {
         paleta1.ResetearPOS();
         paleta2 = new Paleta(input, 2);
         paleta2.ResetearPOS();
+
+        // Aplicamos de forma independiente la skin del Jugador 1
+        int skinJ1 = menu.getSkinPaleta1();
+        if (skinJ1 == 1) {
+            paleta1.setSprite("imagenes/Pong/Paleta 1-2.png");
+        } else if (skinJ1 == 2) {
+            paleta1.setSprite("imagenes/Pong/Paleta 1-3.png");
+        }
+
+        // Aplicamos de forma independiente la skin del Jugador 2
+        int skinJ2 = menu.getSkinPaleta2();
+        if (skinJ2 == 1) {
+            paleta2.setSprite("imagenes/Pong/Paleta 2-2.png");
+        } else if (skinJ2 == 2) {
+            paleta2.setSprite("imagenes/Pong/Paleta 2-3.png");
+        }
+
         pelota = new PelotaPong();
         puntosJ1 = 0;
         puntosJ2 = 0;
@@ -155,8 +177,13 @@ public class JuegoPong extends VideoJuego {
             ia = null;
         }
         //sonido de inicio y de la hinchada
-        if (soundEnabled) fxPlayer.reproducir("inicio");
-        if (soundEnabled) fxPlayer.repetir("fondo");
+        if (soundEnabled) {
+            fxPlayer.reproducir("inicio");
+
+            // Primero apagamos cualquier música que haya quedado sonando de un partido anterior
+            fxPlayer.detener("fondo");
+            fxPlayer.repetir("fondo");
+        }
     }
     // obtenemos el nombre, ya sea que gano o perdio para anotarlo en el ranking
     @Override
@@ -188,7 +215,8 @@ public class JuegoPong extends VideoJuego {
             if (input.isEnterPressed()) {
                 if (menu.getSeleccion() == 3)
                 {
-                    if (fxPlayer != null) fxPlayer.detener("fondo");// pone salir apaga la musica
+                    if (fxPlayer != null)
+                        fxPlayer.detener("fondo");// pone salir apaga la musica
                     GameLoop.terminarJuego(); // vuelve al Launcher
                     return;
                 }
@@ -204,10 +232,14 @@ public class JuegoPong extends VideoJuego {
         // termina el partido
         if (this.estado == EstadoJuego.GAME_OVER) {
             if (input.isEnterPressed()) {
-                this.estado = EstadoJuego.MENU;
+                if (fxPlayer != null) {
+                    fxPlayer.detener("fondo"); // <-- Apagamos la música
+                }
+                reiniciar();
             }
             return;
         }
+
             // si esta en juego (logica)
         if (this.estado == EstadoJuego.JUGANDO) {
             //movimiento J1
@@ -275,5 +307,14 @@ public class JuegoPong extends VideoJuego {
         rankingManager.agregarPuntaje(nombreJugadorPrincipal, nombreJuegoDetalle, getNivelActual(), puntosJ1);
         rankingRegistrado = true;
     }
+        @Override
+        protected void reiniciar() {
+            if (fxPlayer != null) {
+                fxPlayer.detener("fondo");
+            }
+            super.reiniciar();
+        }
 
-}
+
+    }
+

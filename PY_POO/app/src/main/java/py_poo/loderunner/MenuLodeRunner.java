@@ -121,7 +121,7 @@ public class MenuLodeRunner extends MenuPrincipal {
     // };
     //
     // @Override
-    // public void dibujarConfig(Graphics g) {
+    // public void dibujarConfig(Graphics g)
     //     g.setColor(new Color(0, 0, 0, 200));
     //     g.fillRect(0, 0, 800, 600);
     //     g.setFont(new Font("Consolas", Font.BOLD, 28));
