@@ -9,7 +9,6 @@ key_UP=38
 key_DOWN=40
 key_LEFT=37
 key_RIGHT=39
-key_DIG=32
 key_PAUSE=80
 key_SOUND=17
 key_SOUND_FX=81

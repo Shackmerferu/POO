@@ -24,7 +24,7 @@ public class NaveJugador extends Personaje implements Armado {
     @Override
     public Laser Disparar() {
         
-     int centroX = (int) this.getX() + (this.getWidth() / 2) - 8;  
+     int centroX = (int) this.getX() + (this.getWidth() / 2) - 6; //Cambiar centro para bala. 
      return new Laser(centroX, (int) this.getY(), -5 ,  this.laserSkin);
     }
 }

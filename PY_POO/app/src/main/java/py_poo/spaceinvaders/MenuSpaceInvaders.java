@@ -29,14 +29,21 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     private int skinProyectiles = 0;
     private int pistaMusical = 0;
     private int velocidad = 1;
-    // Matriz de constantes de texto para iterar el dibujado y lógica del panel de configuración
+    
     private final String[] opcionesConfig = {
         "Modo Pantalla", "Sonido General", "Skin Nave", "Skin Invasores",
         "Skin Proyectiles", "Pista Musical", "Velocidad Invasores",
         "Configurar Teclas", "RESET VALORES", "VOLVER"
     };
-
-
+    private String[] opcionesControles = {
+        "Mover Izquierda",
+        "Mover Derecha",
+        "Disparar",
+        "Pausa",
+        "Volver"
+    };
+    private boolean teclasmenuControles = false; 
+    private int seleccionOpcinesControles = 0;
     private RankingManager rankingManager;
     private List<RankingEntry> topRanking;
 
@@ -47,7 +54,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         this.seleccion = 0;
         this.ultimoTiempo = System.currentTimeMillis();
         
-        // Inicializamos el gestor de ranking para Space Invaders
         this.rankingManager = new RankingManager();
         this.topRanking = rankingManager.cargarDetalleTop("Space%", 10);
     }
@@ -59,12 +65,11 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     public void setSeleccion(int seleccion) {
         this.seleccion = seleccion;
     }
-    //Lectura directa en disco del archivo de ranking para refrescar la lista en memoria.
 
     public void recargarRanking() {
         this.topRanking = rankingManager.cargarDetalleTop("Space%", 10);
     }
-    //Sobreescritura del método de visibilidad.
+    
     @Override
     public void setVisible(boolean b) {
         super.setVisible(false);
@@ -74,10 +79,48 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     @Override
     public void actualizar() {
     }
-    //Renderiza la interfaz del panel de opciones y configuraciones.
+    
     public void dibujarConfig(Graphics g) {
         g.setColor(new Color(0, 0, 0, 200));
         g.fillRect(0, 0, 800, 600);
+
+        if (teclasmenuControles) {
+            g.setFont(new Font("Consolas", Font.BOLD, 28));
+            g.setColor(Color.CYAN);
+            g.drawString("CONFIGURAR CONTROLES", 240, 60);
+
+            g.setFont(new Font("Consolas", Font.PLAIN, 18));
+            String[] acciones = KeyBindings.getActionNames();
+
+            for (int i = 0; i < opcionesControles.length; i++) {
+                int y = 150 + i * 45;
+
+                if (i == seleccionOpcinesControles) {
+                    g.setColor(Color.YELLOW);
+                    g.drawString("> ", 150, y);
+                } else {
+                    g.setColor(Color.WHITE);
+                    g.drawString("  ", 150, y);
+                }
+
+                if (i == seleccionOpcinesControles && configActionIndex >= 0) {
+                    g.setColor(Color.GREEN);
+                    g.drawString(opcionesControles[i] + ": [ PRESIONA UNA TECLA ]", 180, y);
+                } else {
+                    String bindActual = "";
+                    if (i < 4 && i < acciones.length) {
+                        int code = KeyBindings.get(acciones[i]);
+                        bindActual = " [" + java.awt.event.KeyEvent.getKeyText(code) + "]";
+                    }
+                    g.drawString(opcionesControles[i] + bindActual, 180, y);
+                }
+            }
+
+            g.setFont(new Font("Consolas", Font.PLAIN, 12));
+            g.setColor(Color.GRAY);
+            g.drawString("Flechas: mover  |  Enter: seleccionar  |  Asigna la tecla elegida", 180, 560);
+            return;
+        }
 
         g.setFont(new Font("Consolas", Font.BOLD, 28));
         g.setColor(Color.CYAN);
@@ -107,12 +150,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
                 else extra = " [RÁPIDA]";
             }
 
-            if (i == 7 && configActionIndex >= 0) {
-                g.setColor(Color.GREEN);
-                g.drawString(opcionesConfig[i] + ": [ PRESIONA UNA TECLA ]", 180, y);
-            } else {
-                g.drawString(opcionesConfig[i] + extra, 180, y);
-            }
+            g.drawString(opcionesConfig[i] + extra, 180, y);
         }
 
         g.setFont(new Font("Consolas", Font.PLAIN, 12));
@@ -129,12 +167,10 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
 
-       
         g.setFont(new Font("Consolas", Font.BOLD, 45));
         g.setColor(Color.CYAN);
         g.drawString("SPACE INVADERS", 100, 100);
 
-        
         String[] opciones = {"INICIAR PARTIDA", "OPCIONES", "SALIR AL LAUNCHER"};
         g.setFont(new Font("Consolas", Font.PLAIN, 20));
 
@@ -148,7 +184,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             }
         }
 
-      
         g.setFont(new Font("Consolas", Font.PLAIN, 14));
         g.setColor(Color.GRAY);
         g.drawString("Flechas Arriba/Abajo para mover | ENTER para seleccionar", 100, 420);
@@ -162,7 +197,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         g.drawString("P: Pausa Local", 100, 500);
         g.drawString("Esc: Volver al Menú", 100, 515);
 
-        
         g.setFont(new Font("Consolas", Font.BOLD, 22));
         g.setColor(Color.CYAN);
         g.drawString("--- TOP 10 RANKING ---", 450, 180);
@@ -175,8 +209,6 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             int y = 220;
             for (int i = 0; i < topRanking.size(); i++) {
                 RankingEntry entry = topRanking.get(i);
-
-                
                 String texto = String.format("%d. %s  NIVEL: %d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
                 g.drawString(texto, 450, y);
                 y += 20;
@@ -188,15 +220,61 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         this.configMode = configMode;
         configSelected = 0;
         configActionIndex = -1;
+        teclasmenuControles = false;
+        seleccionOpcinesControles = 0;
         lastConfigKeyTime = System.currentTimeMillis();
     }
 
     public void actualizarConfig() {
-       long now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
+
+        if (teclasmenuControles) {
+            if (configActionIndex >= 0) {
+                if (now - lastConfigKeyTime < 150) return;
+                for (int code = 0; code < 256; code++) {
+                    if (code == java.awt.event.KeyEvent.VK_ENTER) {
+                    continue; 
+                     }   
+                    if (input.isKeyPressed(code)) {
+                        KeyBindings.set(KeyBindings.getActionNames()[configActionIndex], code);
+                        lastConfigKeyTime = now;
+                        configActionIndex = -1; 
+                        break;
+                    }
+                }
+                return;
+            }
+
+            if (now - lastConfigKeyTime > delay) {
+                if (input.isUpPressed() || input.isWPressed()) {
+                    seleccionOpcinesControles--;
+                    if (seleccionOpcinesControles < 0) seleccionOpcinesControles = opcionesControles.length - 1;
+                    lastConfigKeyTime = now;
+                }
+                if (input.isDownPressed() || input.isSPressed()) {
+                    seleccionOpcinesControles++;
+                    if (seleccionOpcinesControles >= opcionesControles.length) seleccionOpcinesControles = 0;
+                    lastConfigKeyTime = now;
+                }
+            }
+
+            if (input.isEnterPressed() && (now - lastConfigKeyTime > 150)) {
+                lastConfigKeyTime = now;
+                if (seleccionOpcinesControles == 4) {
+                    teclasmenuControles = false;
+                } else {
+                    configActionIndex = seleccionOpcinesControles;
+                }
+            }
+            return;
+        }
 
         if (configActionIndex >= 0) {
             if (now - lastConfigKeyTime < 120) return;
             for (int code = 0; code < 256; code++) {
+                if (code == java.awt.event.KeyEvent.VK_ENTER) {
+                    continue; 
+                }
                 if (input.isKeyPressed(code)) {
                     KeyBindings.set(KeyBindings.getActionNames()[configActionIndex], code);
                     lastConfigKeyTime = now;
@@ -231,7 +309,8 @@ public class MenuSpaceInvaders extends MenuPrincipal {
                 case 5: pistaMusical = (pistaMusical + 1) % 2; break;
                 case 6: velocidad = (velocidad + 1) % 3; break; 
                 case 7: 
-                    configActionIndex = 0; 
+                    teclasmenuControles = true;
+                    seleccionOpcinesControles = 0;
                     break; 
                 case 8: 
                     pantallaCompleta = false;
