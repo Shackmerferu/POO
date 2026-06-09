@@ -186,4 +186,5 @@ public class MenuPrincipal extends JFrame {
         g.setColor(Color.GRAY);
         g.drawString("Flechas: mover  |  Enter: seleccionar / cambiar  |  Esc: salir", 180, 580);
     }
+
 }

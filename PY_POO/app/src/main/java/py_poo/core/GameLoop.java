@@ -7,6 +7,8 @@ import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import com.entropyinteractive.Keyboard;
 import com.entropyinteractive.Mouse;
@@ -98,6 +100,22 @@ public class GameLoop extends com.entropyinteractive.Game {
     public void gameStartup() {
         if (videojuego != null) {
             videojuego.iniciar();
+        }
+        for (Frame f : Frame.getFrames()) {
+            if (f.isVisible()) {
+                f.addWindowListener(new WindowListener() {
+                    public void windowClosing(WindowEvent e) {
+                        terminarJuego();
+                    }
+                    public void windowOpened(WindowEvent e) {}
+                    public void windowClosed(WindowEvent e) {}
+                    public void windowIconified(WindowEvent e) {}
+                    public void windowDeiconified(WindowEvent e) {}
+                    public void windowActivated(WindowEvent e) {}
+                    public void windowDeactivated(WindowEvent e) {}
+                });
+                break;
+            }
         }
     }
 
