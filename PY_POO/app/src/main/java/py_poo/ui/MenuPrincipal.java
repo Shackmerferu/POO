@@ -119,7 +119,7 @@ public class MenuPrincipal extends JFrame {
     }
 
     private int obtenerDefault(String accion) {
-        // NOTA: W/S (87/83) están reservados como J1_UP/J1_DOWN para el
+        // NOTA: W/S (87/83) estÃ¡n reservados como J1_UP/J1_DOWN para el
         // control del Jugador 2 en Pong. Por eso MUSIC usa M (77) en
         // lugar de W como indican los requisitos de Lode Runner.
         switch (accion) {
