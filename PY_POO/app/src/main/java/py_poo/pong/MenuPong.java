@@ -50,6 +50,9 @@ public class MenuPong extends MenuPrincipal {
 
     public int getSkinPaleta2() { return skinPaletas2; }
     public void setSkinPaleta2(int skin) { this.skinPaletas2 = skin; }
+    public void recargarRanking() {
+        this.topRanking = rankingManager.cargarDetalleTop("Pong%", 10);
+    }
     public void setConfigMode(boolean configMode) {
         this.configMode = configMode;
         configSelected = 0;
