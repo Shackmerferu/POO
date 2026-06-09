@@ -49,7 +49,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     private List<RankingEntry> topRanking;
 
     public MenuSpaceInvaders(InputManager input, JuegoSpaceInvaders juego) {
-        super("Space Invaders", "Menú Principal", Color.CYAN, "Moverse: ◄ / ►", "Disparo: ESPACIO");
+        super("Space Invaders - Menu Principal", "SPACE INVADERS", Color.CYAN, "Jugar", "Salir");
         this.input = input;
         this.juego = juego;
         this.seleccion = 0;
@@ -139,16 +139,20 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             }
 
             String extra = "";
-            if (i == 0) extra = pantallaCompleta ? " [PANTALLA COMPLETA]" : " [VENTANA]";
+            if (configActionIndex == -99 && i == configSelected) {
+               
+                extra = " - Adquiera el DLC a SOLO 1.99$ (Antes: 5̶.̶0̶0̶$̶)";
+                g.setColor(Color.RED); 
+            } else if (i == 0) extra = pantallaCompleta ? " [PANTALLA COMPLETA]" : " [VENTANA]";
             else if (i == 1) extra = sonidoActivado ? " [ACTIVADO]" : " [DESACTIVADO]";
             else if (i == 2) extra = skinNave == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
             else if (i == 3) extra = skinInvasores == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
             else if (i == 4) extra = skinProyectiles == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
-            else if (i == 5) extra = pistaMusical == 0 ? " [ORIGINAL]" : " [TEMA 2]";
+            else if (i == 5) extra = pistaMusical == 0 ? " [ORIGINAL]" : " [TEMAIKEN]";
             else if (i == 6) {
                 if(velocidad == 0) extra = " [LENTA]";
                 else if(velocidad == 1) extra = " [MEDIA]";
-                else extra = " [RÁPIDA]";
+                else extra = " [RAPIDA]";
             }
 
             g.drawString(opcionesConfig[i] + extra, 180, y);
@@ -165,14 +169,14 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             return;           
         }
         
-        g.setColor(Color.BLACK);
+        g.setColor(new Color(25, 27, 34));
         g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
 
         g.setFont(new Font("Consolas", Font.BOLD, 45));
-        g.setColor(Color.CYAN);
-        g.drawString("SPACE INVADERS", 100, 100);
+        g.setColor(new Color(255, 210, 60));
+        g.drawString("SPACE INVADERS", Constantes.WIDTH / 2 - 200, 100);
 
-        String[] opciones = {"INICIAR PARTIDA", "OPCIONES", "SALIR AL LAUNCHER"};
+        String[] opciones = {"JUGAR", "CONFIG", "SALIR"};
         g.setFont(new Font("Consolas", Font.PLAIN, 20));
 
         for (int i = 0; i < opciones.length; i++) {
@@ -187,7 +191,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
 
         g.setFont(new Font("Consolas", Font.PLAIN, 14));
         g.setColor(Color.GRAY);
-        g.drawString("Flechas Arriba/Abajo para mover | ENTER para seleccionar", 100, 420);
+        g.drawString("W/S o Flechas para mover | ENTER para seleccionar", 100, 420);
 
         g.setFont(new Font("Consolas", Font.PLAIN, 12));
         g.setColor(new Color(230, 140, 60));
@@ -210,7 +214,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             int y = 220;
             for (int i = 0; i < topRanking.size(); i++) {
                 RankingEntry entry = topRanking.get(i);
-                String texto = String.format("%d. %s  NIVEL: %d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
+                String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
                 g.drawString(texto, 450, y);
                 y += 20;
             }
@@ -228,14 +232,21 @@ public class MenuSpaceInvaders extends MenuPrincipal {
 
     public void actualizarConfig() {
         long now = System.currentTimeMillis();
+        if (configActionIndex == -99) {
+            if (input.isEnterPressed() || input.isUpPressed() || input.isDownPressed() || input.isWPressed() || input.isSPressed()) {
+                configActionIndex = -1;
+                lastConfigKeyTime = now;
+                return;
+            }
+        }
 
         if (teclasmenuControles) {
             if (configActionIndex >= 0) {
                 if (now - lastConfigKeyTime < 150) return;
                 for (int code = 0; code < 256; code++) {
                     if (code == java.awt.event.KeyEvent.VK_ENTER) {
-                    continue; 
-                     }   
+                        continue; 
+                    }   
                     if (input.isKeyPressed(code)) {
                         KeyBindings.set(KeyBindings.getActionNames()[configActionIndex], code);
                         lastConfigKeyTime = now;
@@ -309,7 +320,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
                 case 1: sonidoActivado = !sonidoActivado; break;
                 case 2: skinNave = (skinNave + 1) % 2; break; 
                 case 3: skinInvasores = (skinInvasores + 1) % 2; break;
-                case 4: skinProyectiles = (skinProyectiles + 1) % 2; break;
+                case 4: configActionIndex = -99; break;
                 case 5: pistaMusical = (pistaMusical + 1) % 2; break;
                 case 6: velocidad = (velocidad + 1) % 3; break; 
                 case 7: 
