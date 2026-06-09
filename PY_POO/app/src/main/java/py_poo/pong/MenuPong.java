@@ -15,28 +15,27 @@ import py_poo.ui.MenuPrincipal;
 public class MenuPong extends MenuPrincipal {
 
     // --- VARIABLES DEL MENÚ ---
-    private InputManager input;         
-    private int seleccion;              
+    private InputManager input;
+    private int seleccion;
 
     // --- VARIABLES DE CONFIGURACIÓN ---
-    private boolean configMode;         
-    private int configSelected;         
-    private int configActionIndex = -1; 
-    private long lastConfigKeyTime;     
+    private boolean configMode;
+    private int configSelected;
+    private int configActionIndex = -1;
+    private long lastConfigKeyTime;
 
     // --- BASE DE DATOS ---
-    private RankingManager rankingManager;      
-    private List<RankingEntry> topRanking;      
+    private RankingManager rankingManager;
+    private List<RankingEntry> topRanking;
 
-    // --- SKIN Y PISTA MUSICAL ---
-    private int skinPaletas = 0;
-    private int pistaMusical = 0;
-
+    // --- SKINS ---
+    private int skinPaletas1 = 0;
+    private int skinPaletas2 = 0;
     // --- CONSTRUCTOR ---
     public MenuPong(InputManager input, Object mouse) {
-        super("Pong", "Menú Principal", Color.BLACK, "Jugar", "Salir"); 
+        super("Pong", "Menú Principal", Color.BLACK, "Jugar", "Salir");
         this.input = input;
-        this.seleccion = 0; 
+        this.seleccion = 0;
 
         this.rankingManager = new RankingManager();
         this.topRanking = rankingManager.cargarDetalleTop("Pong%", 10);
@@ -46,27 +45,33 @@ public class MenuPong extends MenuPrincipal {
     public int getSeleccion() { return seleccion; }
     public void setSeleccion(int seleccion) { this.seleccion = seleccion; }
     public boolean isConfigMode() { return configMode; }
-    public int getSkinPaletas() { return skinPaletas; }
-    public int getPistaMusical() { return pistaMusical; }
+    public int getSkinPaleta1() { return skinPaletas1; }
+    public void setSkinPaleta1(int skin) { this.skinPaletas1 = skin; }
 
+    public int getSkinPaleta2() { return skinPaletas2; }
+    public void setSkinPaleta2(int skin) { this.skinPaletas2 = skin; }
+    public void recargarRanking() {
+        this.topRanking = rankingManager.cargarDetalleTop("Pong%", 10);
+    }
     public void setConfigMode(boolean configMode) {
         this.configMode = configMode;
-        configSelected = 0;       
-        configActionIndex = -1;   
-        lastConfigKeyTime = System.currentTimeMillis(); 
+        configSelected = 0;
+        configActionIndex = -1;
+        lastConfigKeyTime = System.currentTimeMillis();
     }
 
-
+    public void actualizar() {
+    }
 
     // ═══════════════════════════════════════════════════════════════
-    // LÓGICA DE CONFIGURACIÓN (SKINS + MÚSICA + TECLAS)
+    // LÓGICA DE CONFIGURACIÓN (SKINS + TECLAS)
     // ═══════════════════════════════════════════════════════════════
     public void actualizarConfig() {
         long now = System.currentTimeMillis();
         String[] actions = KeyBindings.getActionNames();
-        
-        // Calculamos la cantidad total de opciones en el menú
-        int offsetTeclas = 2; // Las primeras 2 son Skin y Música
+
+        // Ahora solo hay 1 opción (Skin) antes de la lista de teclas
+        int offsetTeclas = 2;
         int indexReset = offsetTeclas + actions.length; // Posición de "RESET VALORES"
         int indexVolver = indexReset + 1; // Posición de "VOLVER"
         int totalOpciones = indexVolver + 1;
@@ -79,11 +84,11 @@ public class MenuPong extends MenuPrincipal {
                     KeyBindings.set(actions[configActionIndex], code);
                     lastConfigKeyTime = now;
                     configActionIndex = -1;
-    //                 break;
+                    break;
                 }
             }
             return;
-       }
+        }
 
         // 2. Navegación arriba y abajo
         if (now - lastConfigKeyTime > 120) {
@@ -102,27 +107,22 @@ public class MenuPong extends MenuPrincipal {
         // 3. Selección al apretar ENTER
         if (input.isEnterPressed() && (now - lastConfigKeyTime > 150)) {
             lastConfigKeyTime = now;
-            
+
             if (configSelected == 0) {
-                skinPaletas = (skinPaletas + 1) % 3; // Alternar entre 3 opciones
+                skinPaletas1 = (skinPaletas1 + 1) % 3; // Skin J1
             } else if (configSelected == 1) {
-                pistaMusical = (pistaMusical + 1) % 3; // Alternar entre 3 opciones
+                skinPaletas2 = (skinPaletas2 + 1) % 3; // Skin J2
             } else if (configSelected >= offsetTeclas && configSelected < indexReset) {
-                // Seleccionó una de las teclas para cambiar
                 configActionIndex = configSelected - offsetTeclas;
             } else if (configSelected == indexReset) {
-                // RESET VALORES
-                skinPaletas = 0;
-                pistaMusical = 0;
+                skinPaletas1 = 0;
+                skinPaletas2 = 0;
             } else if (configSelected == indexVolver) {
-                // VOLVER
                 configMode = false;
             }
-       
-
-    // DIBUJA LA PANTALLA DE CONFIGURACIÓN
+        }
     }
-}
+
     public void dibujarConfig(Graphics g) {
         g.setColor(new Color(0, 0, 0, 200));
         g.fillRect(0, 0, 800, 600);
@@ -132,18 +132,18 @@ public class MenuPong extends MenuPrincipal {
         g.drawString("CONFIGURACIÓN", 280, 60);
 
         g.setFont(new Font("Consolas", Font.PLAIN, 18));
-        
+
         String[] actions = KeyBindings.getActionNames();
-        int offsetTeclas = 2;
+        int offsetTeclas = 2; // Solo Skin antes de las teclas
         int indexReset = offsetTeclas + actions.length;
         int indexVolver = indexReset + 1;
 
         // Bucle para dibujar todas las opciones dinámicamente
         for (int i = 0; i <= indexVolver; i++) {
-            int y = 110 + i * 35;
+            int y = 110 + i * 28;
 
             // Dibujar cursor
-           if (i == configSelected) {
+            if (i == configSelected) {
                 g.setColor(Color.YELLOW);
                 g.drawString("> ", 150, y);
             } else {
@@ -152,28 +152,28 @@ public class MenuPong extends MenuPrincipal {
 
             // Textos según la opción
             if (i == 0) {
-                String extra = skinPaletas == 0 ? "[ORIGINAL]" : (skinPaletas == 1 ? "[ALTERNA 1]" : "[ALTERNA 2]");
-                g.drawString("Skin Paletas: " + extra, 180, y);
-            } 
+                String extra = skinPaletas1 == 0 ? "[ORIGINAL]" : (skinPaletas1 == 1 ? "[SAMURAI]" : "[LUNAR]");
+                g.drawString("Skin Jugador 1: " + extra, 180, y);
+            }
             else if (i == 1) {
-                String extra = pistaMusical == 0 ? "[ORIGINAL]" : (pistaMusical == 1 ? "[TEMA 2]" : "[TEMA 3]");
-                g.drawString("Pista Musical: " + extra, 180, y);
-            } 
+                String extra = skinPaletas2 == 0 ? "[ORIGINAL]" : (skinPaletas2 == 1 ? "[SAMURAI]" : "[LUNAR]");
+                g.drawString("Skin Jugador 2: " + extra, 180, y);
+            }
             else if (i >= offsetTeclas && i < indexReset) {
                 int actionIdx = i - offsetTeclas;
                 String label = actions[actionIdx].replace("_", " ");
-                   
-           String key = KeyBindings.keyName(KeyBindings.get(actions[actionIdx]));
-                  if (configActionIndex == actionIdx) {
+                String key = KeyBindings.keyName(KeyBindings.get(actions[actionIdx]));
+
+                if (configActionIndex == actionIdx) {
                     g.setColor(Color.GREEN);
                     g.drawString(label + ": [ PRESIONA UNA TECLA ]", 180, y);
                 } else {
                     g.drawString(label + ": " + key, 180, y);
                 }
-            } 
+            }
             else if (i == indexReset) {
                 g.drawString("RESET VALORES", 180, y);
-            } 
+            }
             else if (i == indexVolver) {
                 g.drawString("VOLVER", 180, y);
             }
@@ -182,10 +182,6 @@ public class MenuPong extends MenuPrincipal {
         g.setFont(new Font("Consolas", Font.PLAIN, 12));
         g.setColor(Color.GRAY);
         g.drawString("Flechas: mover  |  Enter: cambiar / configurar  |  Esc: volver", 180, 560);
-    }
-
-
-    public void actualizar() {
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -209,10 +205,10 @@ public class MenuPong extends MenuPrincipal {
         for (int i = 0; i < opciones.length; i++) {
             if (i == seleccion) {
                 g.setColor(Color.YELLOW);
-                g.drawString("> " + opciones[i], 100, 200 + i * 35); 
+                g.drawString("> " + opciones[i], 100, 200 + i * 35);
             } else {
                 g.setColor(Color.WHITE);
-                g.drawString("  " + opciones[i], 100, 200 + i * 35); 
+                g.drawString("  " + opciones[i], 100, 200 + i * 35);
             }
         }
 
@@ -232,7 +228,7 @@ public class MenuPong extends MenuPrincipal {
         if (topRanking == null || topRanking.isEmpty()) {
             g.drawString("Aún no hay puntajes.", 450, 220);
         } else {
-            int y = 220; 
+            int y = 220;
             for (int i = 0; i < topRanking.size(); i++) {
                 RankingEntry entry = topRanking.get(i);
 
@@ -243,9 +239,8 @@ public class MenuPong extends MenuPrincipal {
 
                 String texto = String.format("%d. %s  %s", (i + 1), entry.jugador(), detalle);
                 g.drawString(texto, 450, y);
-                y += 20; 
+                y += 20;
             }
         }
     }
-
 }
