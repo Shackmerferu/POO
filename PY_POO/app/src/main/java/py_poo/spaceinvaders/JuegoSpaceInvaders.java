@@ -48,7 +48,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
         this.fxPlayer = new FXPlayer();
         this.input = new InputManager();
         
-        
+        //Precarga de efectos de sonido
         this.fxPlayer.cargarSonidoRecurso("Laser", "sonidos/SpaceInvader/Laser.wav");
         this.fxPlayer.cargarSonidoRecurso("LaserFlota", "sonidos/SpaceInvader/LaserFlota.wav");
         this.fxPlayer.cargarSonidoRecurso("ExplosionNaves", "sonidos/SpaceInvader/ExplosionNaves.wav");
@@ -69,6 +69,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
     
    @Override
 protected void actualizarLogicaJuego() {
+    //Estado 1 Menu Principal
     if (this.estado == EstadoJuego.MENU) {
         if (menu.isConfigMode()) {
             menu.actualizarConfig();
@@ -96,17 +97,19 @@ protected void actualizarLogicaJuego() {
             }
         }
         return;
+        //Estado 2 Pausa
     } else if (this.estado == EstadoJuego.PAUSA) {
         if (input.isEnterPressed()) { 
             this.estado = EstadoJuego.JUGANDO;
         }
         return; 
+        //Estado 3 Jugando
     } else if (this.estado == EstadoJuego.JUGANDO) {
         if (input.isPPressed()) {
             this.estado = EstadoJuego.PAUSA;
             return;
         }
-       
+       //Movimiento de la nave
         if (navecita != null) {
             int limiteDerecho = Constantes.WIDTH - navecita.getWidth(); 
 
@@ -117,7 +120,7 @@ protected void actualizarLogicaJuego() {
                 navecita.setX(navecita.getX() + 5);
             }
         }
-
+        //disparo Nave
         if (input.isSpacePressed()) {
            if (disparo == null || disparo.isParaEliminar()) { 
                 disparo = navecita.Disparar();
@@ -129,16 +132,30 @@ protected void actualizarLogicaJuego() {
                 }
             }
         }
-
+        //Animacion de Flota
         if (flotaE != null) {
             for (Enemigo bicho : flotaE.values()) {
                 bicho.actualizacionAnimacion(); 
             }
         }
 
-       //Implementar 3 niveles de velocidad de flota
+       //Implementar 3 niveles de velocidad de flota//
+       //Movimiento de flota
+       int delay=0;
+        if(this.menu != null){
+            int velocidad=this.menu.getVelocidad();
+            if(velocidad == 0){
+                delay=80; // bajo
+            }else if(velocidad== 1){
+                delay=50; //normal
+            }else{
+                delay=20; //mas rapido
+            }
+        }
+       
+        
         long tiempoActualFlota = System.currentTimeMillis();
-        if (tiempoActualFlota - ultimoMovimientoFlota > 50) {
+        if (tiempoActualFlota - ultimoMovimientoFlota > delay) {
             boolean tocaronBorde = false;
            
             for (Enemigo bicho : flotaE.values()) {
@@ -163,7 +180,7 @@ protected void actualizarLogicaJuego() {
                 }
                 
                
-                
+                //derrota imnmediata sin importar las vidas, invasion
                 if (navecita != null && bicho.getY() + bicho.getHeight() >= navecita.getY()) {
                     this.navecita = null;
                     this.Resultado = "No compa, nos entraron los bichos, Corre Wachin";
@@ -177,9 +194,9 @@ protected void actualizarLogicaJuego() {
             }   
             ultimoMovimientoFlota = tiempoActualFlota;
         }  
-
+        //Nave Nodriza desarrollo completo
         if (this.platoVolador == null) {
-            if (Math.random() < 0.0002) { 
+            if (Math.random() < 0.0001) { 
                 this.platoVolador = new NaveNodriza();
                 Entidades.add(this.platoVolador);
             }
@@ -188,7 +205,7 @@ protected void actualizarLogicaJuego() {
                 this.platoVolador = null;
             }
         }
-
+            //Tiros de flota bichos
         for (Enemigo bicho : flotaE.values()) {
             if (!bicho.isParaEliminar() && Math.random() < 0.0001) {
                 int centroX = (int) bicho.getX() + (bicho.getWidth() / 2); 
@@ -201,7 +218,7 @@ protected void actualizarLogicaJuego() {
                 Entidades.add(disparoEnemigo);  
             }
         }
-
+            //Matriz de colisiones
         for (int i = 0; i < Entidades.size(); i++) {
             ObjetoGrafico entidad = Entidades.get(i);
             if (entidad instanceof Laser) {
@@ -276,7 +293,7 @@ protected void actualizarLogicaJuego() {
                 }
             }
         }
-    
+        //Limpieza de flota en hashmap
         if (flotaE != null) {
             flotaE.values().removeIf(bicho -> bicho.isParaEliminar());
             if (flotaE.isEmpty()) {
@@ -295,6 +312,13 @@ protected void actualizarLogicaJuego() {
             }
         }
 
+        if(input.isEscapePressed()){
+            if (this.fxPlayer != null) {
+                    this.fxPlayer.detener("CancionSpaceInvaders");
+                }
+            this.estado= EstadoJuego.MENU;
+        }
+        //Estado 4 Game over
     } else if (this.estado == EstadoJuego.GAME_OVER) {
             if (input.isEnterPressed()) {
                 if (this.fxPlayer != null) {

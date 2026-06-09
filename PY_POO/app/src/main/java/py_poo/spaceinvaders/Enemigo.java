@@ -16,12 +16,14 @@ public class Enemigo extends Personaje {
         this.setPunto(new java.awt.Point(X, Y));
        
     }
-    public void actualizacionAnimacion(){
+
+    public void actualizacionAnimacion(){ //animacion para enemigos
         if(this.animacion!=null){
             this.animacion.actualizar();
         }
     }
     @Override
+    //Dibuja Alien
     public void display(Graphics g){
         if(this.animacion != null){
             this.animacion.dibujar(g, (int)this.getX(), (int)this.getY(),this.getWidth(), this.getHeight());

@@ -15,16 +15,12 @@ public class Laser extends Bala {
     public int getVelocidad() {
         return velocidad;
     }
-    
-    public void Mover() {
-        this.setY(this.getY()+this.velocidad);
-    }
     @Override
-public void actualizar() {
-
-    Mover(); 
-    if (this.getY() + this.getHeight() < 0 || this.getY() > 600) {
+    public void actualizar() {
+        this.setY(this.getY()+this.velocidad);
+        
+        if (this.getY() + this.getHeight() < 0 || this.getY() > 600) {
         this.marcarParaEliminar();
+        }
     }
-}
 }

@@ -94,7 +94,7 @@ public class JuegoPong extends VideoJuego {
                 g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
             }
 
-            // si ya existen las entidades ñas dibujamos
+            // si ya existen las entidades las dibujamos
 
             if (paleta1 != null) paleta1.dibujar(g);
             if (paleta2 != null) paleta2.dibujar(g);

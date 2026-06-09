@@ -8,7 +8,7 @@ public class SegmentoEscudo extends ObjetoGrafico {
     private String archivoSano;
     private String archivoDaniado;
 
-    // El constructor ahora acepta los dos nombres de archivos por separado
+    
     public SegmentoEscudo(int x, int y, String archivoSano, String archivoDaniado) {
         super();
         this.estado = 2; 
