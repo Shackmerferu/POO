@@ -6,7 +6,7 @@ public class Nivel1 extends Nivel {
     // mapa del nivel 1: #=irrompible, ==ladrillo, H=escalera, -=barra, $=oro, E=guardia, P=jugador, X=puerta
     private static final String[] MAPA = {
     "##########################X#",
-    "#  E       $        ---  $H#",
+    "#  E     =  $        ---  $H#",
     "#===##==H=======H===   ###H#",
     "#       H                 H#",
     "#   $   H              $  H#",
