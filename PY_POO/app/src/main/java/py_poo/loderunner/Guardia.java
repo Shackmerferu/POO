@@ -36,15 +36,18 @@ public class Guardia extends Personaje {
     private Animacion animBarra; // animación cuando está en barra
     private Animacion animCayendo; // animación cuando está cayendo
 
+    private String skin = "original"; // skin activa ("original" o "alternativo")
+
     private int tiempoEsperaEscape; // frames restantes de espera quieto tras salir del agujero
     private int contadorAtascado; // frames acumulados sin poder moverse (anti-atasco)
 
     // RUTAS DE IMAGENES DEL GUARDIA - CAMBIAR AQUI
-    private static final String RUTA_GUARDIA = "imagenes/Lode Runner/personaje (2).png";
-    private static final String RUTA_MUERTO_2 = "imagenes/Lode Runner/personajes/muerto - 2 (%d).png";
-    private static final String RUTA_ESCALERA_2 = "imagenes/Lode Runner/personajes/escalera - 2 (%d).png";
-    private static final String RUTA_BARRA_2 = "imagenes/Lode Runner/personajes/barra - 2 (%d).png";
-    private static final String RUTA_CAYENDO_2 = "imagenes/Lode Runner/personajes/cayendo - 2 (%d).png";
+    private static final String RUTA_CAMINANDO_2 = "imagenes/Lode Runner/personajes/%s/caminando - 2 (%d).png";
+    private static final String RUTA_CAMINANDO = "imagenes/Lode Runner/personajes/%s/caminando - 2(1).png";
+    private static final String RUTA_MUERTO_2 = "imagenes/Lode Runner/personajes/%s/muerto - 2 (%d).png";
+    private static final String RUTA_ESCALERA_2 = "imagenes/Lode Runner/personajes/%s/escalera - 2 (%d).png";
+    private static final String RUTA_BARRA_2 = "imagenes/Lode Runner/personajes/%s/barra - 2 (%d).png";
+    private static final String RUTA_CAYENDO_2 = "imagenes/Lode Runner/personajes/%s/cayendo - 2 (%d).png";
     private static final int FRAMES_ANIM = 4;
 
     // Constructor: crea guardia en la posición de tile y con el tamaño de tile dados
@@ -67,29 +70,30 @@ public class Guardia extends Personaje {
     private void cargarAnimaciones() {
         CargadorRecursos cr = new CargadorRecursos();
 
-        BufferedImage img = cr.cargarImagen(RUTA_GUARDIA);
-        if (img != null) {
-            animCaminando = new Animacion(List.of(new Sprite(img)), 200);
+        animCaminando = cargarAnimacion(cr, RUTA_CAMINANDO_2, skin, FRAMES_ANIM, 200);
+        if (animCaminando == null) {
+            animCaminando = cargarAnimacion(cr, RUTA_CAMINANDO, skin, 1, 200);
         }
 
-        animEscalera = cargarAnimacion(cr, RUTA_ESCALERA_2, FRAMES_ANIM, 200);
-        animBarra = cargarAnimacion(cr, RUTA_BARRA_2, FRAMES_ANIM, 200);
-        animCayendo = cargarAnimacion(cr, RUTA_CAYENDO_2, FRAMES_ANIM, 200);
+        animEscalera = cargarAnimacion(cr, RUTA_ESCALERA_2, skin, FRAMES_ANIM, 200);
+        animBarra = cargarAnimacion(cr, RUTA_BARRA_2, skin, FRAMES_ANIM, 200);
+        animCayendo = cargarAnimacion(cr, RUTA_CAYENDO_2, skin, FRAMES_ANIM, 200);
+        animAtrapado = cargarAnimacion(cr, RUTA_MUERTO_2, skin, FRAMES_ANIM, 300);
+    }
 
-        List<Sprite> framesAtrapado = new ArrayList<>();
-        for (int i = 1; i <= FRAMES_ANIM; i++) {
-            BufferedImage frameImg = cr.cargarImagen(String.format(RUTA_MUERTO_2, i));
-            if (frameImg != null) framesAtrapado.add(new Sprite(frameImg));
-        }
-        if (!framesAtrapado.isEmpty()) {
-            animAtrapado = new Animacion(framesAtrapado, 300);
+    public void setSkin(String skin) {
+        if (skin.equals("original") || skin.equals("alternativo")) {
+            this.skin = skin;
+            cargarAnimaciones();
         }
     }
 
-    private Animacion cargarAnimacion(CargadorRecursos cr, String template, int frames, long tiempoMs) {
+    public String getSkin() { return skin; }
+
+    private Animacion cargarAnimacion(CargadorRecursos cr, String template, String skin, int frames, long tiempoMs) {
         List<Sprite> lista = new ArrayList<>();
         for (int i = 1; i <= frames; i++) {
-            BufferedImage img = cr.cargarImagen(String.format(template, i));
+            BufferedImage img = cr.cargarImagen(String.format(template, skin, i));
             if (img != null) lista.add(new Sprite(img));
         }
         if (!lista.isEmpty()) return new Animacion(lista, tiempoMs);

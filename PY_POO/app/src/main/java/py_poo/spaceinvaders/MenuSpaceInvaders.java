@@ -7,6 +7,7 @@ import java.util.List;
 
 import py_poo.config.KeyBindings;
 import py_poo.core.Constantes;
+import py_poo.core.GameLoop;
 import py_poo.input.InputManager;
 import py_poo.ranking.RankingManager;
 import py_poo.ranking.RankingManager.RankingEntry;
@@ -301,7 +302,10 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         if (input.isEnterPressed() && (now - lastConfigKeyTime > 150)) {
             lastConfigKeyTime = now;
             switch(configSelected) {
-                case 0: pantallaCompleta = !pantallaCompleta; break;
+                case 0:
+                    pantallaCompleta = !pantallaCompleta;
+                    GameLoop.toggleFullscreenStatic();
+                    break;
                 case 1: sonidoActivado = !sonidoActivado; break;
                 case 2: skinNave = (skinNave + 1) % 2; break; 
                 case 3: skinInvasores = (skinInvasores + 1) % 2; break;
@@ -312,7 +316,10 @@ public class MenuSpaceInvaders extends MenuPrincipal {
                     teclasmenuControles = true;
                     seleccionOpcinesControles = 0;
                     break; 
-                case 8: 
+                case 8:
+                    if (pantallaCompleta) {
+                        GameLoop.toggleFullscreenStatic();
+                    }
                     pantallaCompleta = false;
                     sonidoActivado = true;
                     skinNave = 0; skinInvasores = 0; skinProyectiles = 0;

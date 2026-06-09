@@ -46,14 +46,15 @@ public class Recolector extends Personaje {
     private Animacion animMuriendo; // animación cuando está muriendo
     private Animacion animCavando; // animación cuando está cavando
 
+    private String skin = "original"; // skin activa ("original" o "alternativo")
+
     // RUTAS DE IMAGENES DEL RECOLECTOR - CAMBIAR AQUI
-    private static final String RUTA_PERSONAJE_1 = "imagenes/Lode Runner/personajes/caminando (1).png";
-    private static final String RUTA_CAMINANDO = "imagenes/Lode Runner/personajes/caminando (%d).png";
-    private static final String RUTA_ESCALERA = "imagenes/Lode Runner/personajes/escalera (%d).png";
-    private static final String RUTA_BARRA = "imagenes/Lode Runner/personajes/barra (%d).png";
-    private static final String RUTA_CAYENDO = "imagenes/Lode Runner/personajes/cayendo (%d).png";
-    private static final String RUTA_MUERTO = "imagenes/Lode Runner/personajes/muerto (%d).png";
-    private static final String RUTA_CAVANDO = "imagenes/Lode Runner/personajes/cavando (%d).png";
+    private static final String RUTA_CAMINANDO = "imagenes/Lode Runner/personajes/%s/caminando (%d).png";
+    private static final String RUTA_ESCALERA = "imagenes/Lode Runner/personajes/%s/escalera (%d).png";
+    private static final String RUTA_BARRA = "imagenes/Lode Runner/personajes/%s/barra (%d).png";
+    private static final String RUTA_CAYENDO = "imagenes/Lode Runner/personajes/%s/cayendo (%d).png";
+    private static final String RUTA_MUERTO = "imagenes/Lode Runner/personajes/%s/muerto (%d).png";
+    private static final String RUTA_CAVANDO = "imagenes/Lode Runner/personajes/%s/cavando (%d).png";
     
     private static final int FRAMES_ANIM = 4;
     private static final int FRAMES_MUERTO = 8;
@@ -67,7 +68,7 @@ public class Recolector extends Personaje {
         this.vidas = VIDAS_INICIALES;
         this.direccion = 1;
         this.oroRecolectado = 0;
-        this.dimension = new java.awt.Dimension(tileSize, tileSize);
+        this.dimension = new java.awt.Dimension(16, 16);
         this.cargarAnimaciones();
         setX(tileX * tileSize);
         setY(tileY * tileSize);
@@ -77,24 +78,37 @@ public class Recolector extends Personaje {
     private void cargarAnimaciones() {
         CargadorRecursos cr = new CargadorRecursos();
 
-        BufferedImage img1 = cr.cargarImagen(RUTA_PERSONAJE_1);
-        if (img1 != null) {
-            animParado = new Animacion(List.of(new Sprite(img1)), 500);
+        List<Sprite> framesParado = new ArrayList<>();
+        for (int i = 1; i <= FRAMES_ANIM; i++) {
+            BufferedImage img = cr.cargarImagen(String.format(RUTA_CAMINANDO, skin, i));
+            if (img != null) { framesParado.add(new Sprite(img)); break; }
+        }
+        if (!framesParado.isEmpty()) {
+            animParado = new Animacion(framesParado, 500);
         }
 
-        animCaminando = cargarAnimacion(cr, RUTA_CAMINANDO, FRAMES_ANIM, 150);
-        animEscalera = cargarAnimacion(cr, RUTA_ESCALERA, FRAMES_ANIM, 200);
-        animBarra = cargarAnimacion(cr, RUTA_BARRA, FRAMES_ANIM, 200);
-        animCayendo = cargarAnimacion(cr, RUTA_CAYENDO, FRAMES_ANIM, 200);
-        animMuriendo = cargarAnimacion(cr, RUTA_MUERTO, FRAMES_MUERTO, 200);
+        animCaminando = cargarAnimacion(cr, RUTA_CAMINANDO, skin, FRAMES_ANIM, 150);
+        animEscalera = cargarAnimacion(cr, RUTA_ESCALERA, skin, FRAMES_ANIM, 200);
+        animBarra = cargarAnimacion(cr, RUTA_BARRA, skin, FRAMES_ANIM, 200);
+        animCayendo = cargarAnimacion(cr, RUTA_CAYENDO, skin, FRAMES_ANIM, 200);
+        animMuriendo = cargarAnimacion(cr, RUTA_MUERTO, skin, FRAMES_MUERTO, 200);
         if (animMuriendo != null) animMuriendo.setRepitiendo(false);
-        animCavando  = cargarAnimacion(cr, RUTA_CAVANDO, FRAMES_ANIM, 200);
+        animCavando  = cargarAnimacion(cr, RUTA_CAVANDO, skin, FRAMES_ANIM, 200);
     }
 
-    private Animacion cargarAnimacion(CargadorRecursos cr, String template, int frames, long tiempoMs) {
+    public void setSkin(String skin) {
+        if (skin.equals("original") || skin.equals("alternativo")) {
+            this.skin = skin;
+            cargarAnimaciones();
+        }
+    }
+
+    public String getSkin() { return skin; }
+
+    private Animacion cargarAnimacion(CargadorRecursos cr, String template, String skin, int frames, long tiempoMs) {
         List<Sprite> lista = new ArrayList<>();
         for (int i = 1; i <= frames; i++) {
-            BufferedImage img = cr.cargarImagen(String.format(template, i));
+            BufferedImage img = cr.cargarImagen(String.format(template, skin, i));
             if (img != null) lista.add(new Sprite(img));
         }
         if (!lista.isEmpty()) return new Animacion(lista, tiempoMs);

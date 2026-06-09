@@ -49,7 +49,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         this.puntosJ1 = 0;
         this.rankingRegistrado = false;
         this.estado = EstadoJuego.MENU;
-    
+
         CargadorRecursos cr = new CargadorRecursos();
         this.fondo = cr.cargarImagen("imagenes/Lode Runner/fondo negro.png");
 
@@ -59,6 +59,14 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         this.fxPlayer.cargarSonidoRecurso("Empieza", "sonidos/Empieza.wav"); // sonido de evento
         this.fxPlayer.cargarSonidoRecurso("CancionFondoLodeRunner", "sonidos/LodeRunner/CancionFondoLodeRunner.wav");
         this.fxPlayer.setVolumen("CancionFondoLodeRunner", "medio");
+    }
+
+    @Override
+    protected void reiniciar() {
+        if (fxPlayer != null) {
+            fxPlayer.detener("CancionFondoLodeRunner");
+        }
+        super.reiniciar();
     }
 
     // pausa el juego
@@ -134,7 +142,8 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             } else {
                 for (int i = 0; i < top.size(); i++) {
                     var entry = top.get(i);
-                    String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
+                    String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(),
+                            entry.puntaje());
                     g.drawString(texto, Constantes.WIDTH / 2 - 150, y);
                     y += 22;
                 }
@@ -168,7 +177,8 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             } else {
                 for (int i = 0; i < top.size(); i++) {
                     var entry = top.get(i);
-                    String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
+                    String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(),
+                            entry.puntaje());
                     g.drawString(texto, Constantes.WIDTH / 2 - 150, y);
                     y += 22;
                 }
@@ -182,7 +192,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         g.setFont(new Font("Consolas", Font.PLAIN, 12));
         g.setColor(new Color(255, 255, 255, 100));
         String snd = "FX:" + (soundFxEnabled ? "ON" : "OFF") + " MUS:" + (musicEnabled ? "ON" : "OFF")
-            + " Q=FX M=MUS CTRL=GLOBAL \\=FULL";
+                + " Q=FX M=MUS CTRL=GLOBAL \\=FULL";
         g.drawString(snd, 10, Constantes.HEIGHT - 10);
     }
 
@@ -230,6 +240,8 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         heroe.setInputManager(input);
         heroe.setNivel(nivel);
         heroe.setNivelOroTotal(nivel.totalOro);
+        String skin = menu.getSkinPersonaje() == 0 ? "original" : "alternativo";
+        heroe.setSkin(skin);
         Entidades.clear();
         guardias = new ArrayList<>();
         for (var l : nivel.ladrillos)
@@ -246,12 +258,14 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             Guardia g = new Guardia(sp[0], sp[1], nivel.getTile_size());
             g.setHeroe(heroe);
             g.setNivel(nivel);
+            g.setSkin(skin);
             guardias.add(g);
             Entidades.add(g);
         }
         heroe.setGuardias(guardias);
         Entidades.add(heroe);
     }
+
     @Override
     protected void actualizarLogicaJuego() {
         if (estado == EstadoJuego.MENU) {
@@ -260,58 +274,59 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
                 configManager.guardar();
                 return;
             }
-            if (input.isMenuUpPressed() || input.isWPressed()) {
-                menu.setSeleccion(Math.max(0, menu.getSeleccion() - 1));
-            }
-            if (input.isMenuDownPressed() || input.isSPressed()) {
-                menu.setSeleccion(Math.min(2, menu.getSeleccion() + 1));
-            }
+            if (input.isMenuUpPressed() || input.isWPressed())
+                menu.navegarMainMenu(-1);
+            if (input.isMenuDownPressed() || input.isSPressed())
+                menu.navegarMainMenu(1);
             if (input.isEnterPressed()) {
-                if (menu.getSeleccion() == 2) { GameLoop.terminarJuego(); return; }
-                if (menu.getSeleccion() == 1) { menu.setConfigMode(true); return; }
+                if (menu.getSeleccion() == 2) {
+                    GameLoop.terminarJuego();
+                    return;
+                }
+                if (menu.getSeleccion() == 1) {
+                    menu.setConfigMode(true);
+                    return;
+                }
                 crearPartida();
             }
             return;
         }
-
+        
         if (estado == EstadoJuego.PAUSA) {
-        if (input.isPPressed()) { 
-            estado = EstadoJuego.JUGANDO;
-            fxPlayer.repetir("LaBestiaPop"); 
-        } else if (input.isEnterPressed()) { 
-            estado = EstadoJuego.MENU;
-        }
-        return;
-        }   
-        if (estado == EstadoJuego.GAME_OVER) {
-            if (input.isEnterPressed()) {
+            if (input.isPPressed()) {
+                estado = EstadoJuego.JUGANDO;
+                fxPlayer.repetir("CancionFondoLodeRunner");
+            } else if (input.isEnterPressed()) {
                 estado = EstadoJuego.MENU;
-                musicaIniciada = false;
+                fxPlayer.detener("CancionFondoLodeRunner");
+
             }
             return;
         }
-
-        if (estado == EstadoJuego.VICTORIA) {
+        if (estado == EstadoJuego.GAME_OVER || estado == EstadoJuego.VICTORIA) {
             if (input.isEnterPressed()) {
                 estado = EstadoJuego.MENU;
                 musicaIniciada = false;
+                fxPlayer.detener("CancionFondoLodeRunner");
             }
             return;
         }
-
-        if (estado != EstadoJuego.JUGANDO || heroe == null || NivelActual == null) return;
+        if (estado != EstadoJuego.JUGANDO || heroe == null || NivelActual == null)
+            return;
 
         gestionarMusica();
         Nivel nivelActual = (Nivel) this.NivelActual;
 
         heroe.mover();
-        if (camara != null) camara.seguirJugador(heroe, nivelActual);
+        if (camara != null)
+            camara.seguirJugador(heroe, nivelActual);
 
         nivelActual.actualizar();
         tiempoNivel++;
 
         for (Guardia g : guardias) {
-            if (g != null) g.mover();
+            if (g != null)
+                g.mover();
         }
 
         heroe.verificarCaidaEnAgujero();
@@ -319,7 +334,8 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         heroe.verificarColisionGuardias();
 
         for (Guardia g : guardias) {
-            if (g == null) continue;
+            if (g == null)
+                continue;
             g.intentarRecolectarOro();
             if (g.manejarColisionAgujero(nivelActual.agujeros, guardias)) {
                 puntosJ1 += 200;
@@ -333,18 +349,20 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         }
 
         if (nivelActual.escapeLadderActiva) {
-            int htx = (int)((heroe.getX() + nivelActual.getTile_size() / 2) / nivelActual.getTile_size());
-            int hty = (int)((heroe.getY() + nivelActual.getTile_size() / 2) / nivelActual.getTile_size());
+            int htx = (int) ((heroe.getX() + nivelActual.getTile_size() / 2) / nivelActual.getTile_size());
+            int hty = (int) ((heroe.getY() + nivelActual.getTile_size() / 2) / nivelActual.getTile_size());
             if (htx == nivelActual.escapeLadderX && hty == nivelActual.escapeLadderY) {
                 int bonusTiempo = Math.max(0, (nivelActual.tiempoLimite * 60 - tiempoNivel) / 6);
                 puntosJ1 += 500 + bonusTiempo;
                 heroe.setVidas(heroe.getVidas() + 1);
-                if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
+                if (soundEnabled && soundFxEnabled)
+                    fxPlayer.reproducir("empieza");
                 nivelActual.finalizarNivel();
                 nivelIdx++;
                 if (nivelIdx >= niveles.size()) {
                     rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx, puntosJ1);
-                    if (menu != null) menu.recargarRanking();
+                    if (menu != null)
+                        menu.recargarRanking();
                     estado = EstadoJuego.VICTORIA;
                     fxPlayer.detener("CancionFondoLodeRunner");
                     return;
@@ -368,7 +386,8 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
 
     @Override
     public void onHeroDeath() {
-        if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
+        if (soundEnabled && soundFxEnabled)
+            fxPlayer.reproducir("empieza");
         Nivel nivelActual = (Nivel) this.NivelActual;
         int vidasGuardadas = heroe.getVidas();
         nivelActual.finalizarNivel();
@@ -380,7 +399,8 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
     public void onGameOver() {
         if (!rankingRegistrado) {
             rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx + 1, puntosJ1);
-            if (menu != null) menu.recargarRanking();
+            if (menu != null)
+                menu.recargarRanking();
             rankingRegistrado = true;
         }
         heroe.desaparecer();
@@ -391,25 +411,29 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
     @Override
     public void onCoinCollected() {
         puntosJ1 += 100;
-        if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("punto");
+        if (soundEnabled && soundFxEnabled)
+            fxPlayer.reproducir("punto");
     }
 
     @Override
     public void onDig() {
-        if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("paleta");
+        if (soundEnabled && soundFxEnabled)
+            fxPlayer.reproducir("paleta");
     }
 
     @Override
-    public String getGanador() { return nombreJugadorPrincipal; } // retorna nombre del ganador
+    public String getGanador() {
+        return nombreJugadorPrincipal;
+    } // retorna nombre del ganador
 
     @Override
-    public String getPerdedor() { return nombreJugadorPrincipal; } // retorna nombre del perdedor
+    public String getPerdedor() {
+        return nombreJugadorPrincipal;
+    } // retorna nombre del perdedor
 
     // asigna el nombre del jugador principal
     public void setNombreJugador(String nombre) {
         this.nombreJugadorPrincipal = nombre;
     }
 
-   
-    
 }
