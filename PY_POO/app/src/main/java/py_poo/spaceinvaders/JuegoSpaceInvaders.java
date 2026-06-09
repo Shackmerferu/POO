@@ -3,15 +3,14 @@ package py_poo.spaceinvaders;
 import java.awt.Graphics;
 import java.util.HashMap;
 
+import py_poo.audio.FXPlayer;
+import py_poo.core.Constantes;
 import py_poo.core.GameLoop;
 import py_poo.engine.EstadoJuego;
 import py_poo.engine.VideoJuego;
 import py_poo.entities.ObjetoGrafico;
 import py_poo.input.InputManager;
 import py_poo.ranking.RankingManager;
-import py_poo.ui.MenuPrincipal;
-import py_poo.audio.FXPlayer;
-import py_poo.core.Constantes;
 
 public class JuegoSpaceInvaders extends VideoJuego {
     private FXPlayer fxPlayer;
@@ -361,8 +360,8 @@ protected void actualizarLogicaJuego() {
     }
    
     private String[] skinsNave = {
-        "imagenes/Space Invaders/Invaders/space__0006_Player.png",
-        "imagenes/Space Invaders/Invaders/space__0007_UFO.png" // Skin alternativa
+        "imagenes/Space Invaders/Invaders/normal.png",
+        "imagenes/Space Invaders/Invaders/moderno.png" // Skin alternativa
     };
 
     private String[] skinsLaser = {
