@@ -346,7 +346,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
                     rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx, puntosJ1);
                     if (menu != null) menu.recargarRanking();
                     estado = EstadoJuego.VICTORIA;
-                    fxPlayer.detener("La Bestia Pop.mp3");
+                    fxPlayer.detener("CancionFondoLodeRunner");
                     return;
                 }
                 cargarNivelActual();
@@ -357,11 +357,11 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
     private void gestionarMusica() {
         if (soundEnabled && musicEnabled) {
             if (!musicaIniciada) {
-                fxPlayer.repetir("La Bestia Pop.mp3");
+                fxPlayer.repetir("CancionFondoLodeRunner");
                 musicaIniciada = true;
             }
         } else if (musicaIniciada) {
-            fxPlayer.detener("La Bestia Pop.mp3");
+            fxPlayer.detener("CancionFondoLodeRunner");
             musicaIniciada = false;
         }
     }
@@ -385,7 +385,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         }
         heroe.desaparecer();
         estado = EstadoJuego.GAME_OVER;
-        fxPlayer.detener("La Bestia Pop.mp3");
+        fxPlayer.detener("CancionFondoLodeRunner");
     }
 
     @Override

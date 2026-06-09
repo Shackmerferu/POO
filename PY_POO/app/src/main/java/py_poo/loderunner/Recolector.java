@@ -2,6 +2,7 @@ package py_poo.loderunner;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 
 import py_poo.entities.Agujero;
@@ -26,6 +27,10 @@ public class Recolector extends Personaje {
     private boolean cayendo; // true si está en caída libre
     private boolean cavoEsteFrame; // true si el jugador cavó un ladrillo en este frame (para efectos de sonido)
     private boolean enAire; // true si está en el aire sin soporte bajo los pies
+    private boolean muriendo; // true si está en animación de muerte
+    private int muriendoTimer; // frames que lleva en estado muriendo (timeout de seguridad)
+    private static final int MURIENDO_TIMEOUT = 120; // frames máximos en muriendo (~2 seg)
+    private boolean seMovio; // true si el jugador presionó una tecla de movimiento este frame
     private int tileX, tileY; // coordenadas de tile del spawn (para reiniciar posición)
     private int tileSize; // tamaño en píxeles de cada tile del nivel
     private InputManager input; // gestor de entrada del teclado para leer las teclas del jugador
@@ -37,9 +42,21 @@ public class Recolector extends Personaje {
     private Animacion animCaminando; // animación cuando camina
     private Animacion animEscalera; // animación cuando está en escalera
     private Animacion animBarra; // animación cuando está en barra
+    private Animacion animCayendo; // animación cuando está cayendo
+    private Animacion animMuriendo; // animación cuando está muriendo
+    private Animacion animCavando; // animación cuando está cavando
 
     // RUTAS DE IMAGENES DEL RECOLECTOR - CAMBIAR AQUI
-    private static final String RUTA_PERSONAJE_1 = "imagenes/Lode Runner/personaje (1).png";
+    private static final String RUTA_PERSONAJE_1 = "imagenes/Lode Runner/personajes/caminando (1).png";
+    private static final String RUTA_CAMINANDO = "imagenes/Lode Runner/personajes/caminando (%d).png";
+    private static final String RUTA_ESCALERA = "imagenes/Lode Runner/personajes/escalera (%d).png";
+    private static final String RUTA_BARRA = "imagenes/Lode Runner/personajes/barra (%d).png";
+    private static final String RUTA_CAYENDO = "imagenes/Lode Runner/personajes/cayendo (%d).png";
+    private static final String RUTA_MUERTO = "imagenes/Lode Runner/personajes/muerto (%d).png";
+    private static final String RUTA_CAVANDO = "imagenes/Lode Runner/personajes/cavando (%d).png";
+    
+    private static final int FRAMES_ANIM = 4;
+    private static final int FRAMES_MUERTO = 8;
 
     // Constructor: crea al héroe en la posición (tileX, tileY) con el tamaño de tile dado
     // Inicializa vidas, dirección, oro y carga las animaciones
@@ -59,15 +76,29 @@ public class Recolector extends Personaje {
     // Carga las imágenes de animación del recolector desde los archivos de recursos
     private void cargarAnimaciones() {
         CargadorRecursos cr = new CargadorRecursos();
-        BufferedImage img1 = cr.cargarImagen(RUTA_PERSONAJE_1);
 
+        BufferedImage img1 = cr.cargarImagen(RUTA_PERSONAJE_1);
         if (img1 != null) {
-            Sprite s1 = new Sprite(img1);
-            animParado = new Animacion(List.of(s1), 500);
-            animCaminando = new Animacion(List.of(s1), 150);
-            animEscalera = new Animacion(List.of(s1), 200);
-            animBarra = new Animacion(List.of(s1), 200);
+            animParado = new Animacion(List.of(new Sprite(img1)), 500);
         }
+
+        animCaminando = cargarAnimacion(cr, RUTA_CAMINANDO, FRAMES_ANIM, 150);
+        animEscalera = cargarAnimacion(cr, RUTA_ESCALERA, FRAMES_ANIM, 200);
+        animBarra = cargarAnimacion(cr, RUTA_BARRA, FRAMES_ANIM, 200);
+        animCayendo = cargarAnimacion(cr, RUTA_CAYENDO, FRAMES_ANIM, 200);
+        animMuriendo = cargarAnimacion(cr, RUTA_MUERTO, FRAMES_MUERTO, 200);
+        if (animMuriendo != null) animMuriendo.setRepitiendo(false);
+        animCavando  = cargarAnimacion(cr, RUTA_CAVANDO, FRAMES_ANIM, 200);
+    }
+
+    private Animacion cargarAnimacion(CargadorRecursos cr, String template, int frames, long tiempoMs) {
+        List<Sprite> lista = new ArrayList<>();
+        for (int i = 1; i <= frames; i++) {
+            BufferedImage img = cr.cargarImagen(String.format(template, i));
+            if (img != null) lista.add(new Sprite(img));
+        }
+        if (!lista.isEmpty()) return new Animacion(lista, tiempoMs);
+        return null;
     }
 
     // Asigna el gestor de entrada para leer las teclas del jugador
@@ -95,14 +126,27 @@ public class Recolector extends Personaje {
     public void mover() {
         if (input == null) return;
         cavoEsteFrame = false;
-        if (!cayendo) {
-            if (input.isLeftPressed()) moverIzquierda();
-            if (input.isRightPressed()) moverDerecha();
-            if (input.isUpPressed()) moverArriba();
-            if (input.isDownPressed()) moverAbajo();
+        seMovio = false;
+        if (!cayendo && !muriendo) {
+            if (input.isLeftPressed()) { moverIzquierda(); seMovio = true; }
+            if (input.isRightPressed()) { moverDerecha(); seMovio = true; }
+            if (input.isUpPressed()) { moverArriba(); seMovio = true; }
+            if (input.isDownPressed()) { moverAbajo(); seMovio = true; }
             if (input.isDigPressed()) {
                 if (direccion < 0) cavarIzquierda();
                 else cavarDerecha();
+            }
+        }
+        if (muriendo) {
+            muriendoTimer++;
+            if (animMuriendo == null || animMuriendo.termino() || muriendoTimer >= MURIENDO_TIMEOUT) {
+                muriendo = false;
+                perderVida();
+                if (vidas <= 0) {
+                    if (listener != null) listener.onGameOver();
+                } else {
+                    if (listener != null) listener.onHeroDeath();
+                }
             }
         }
         aplicarGravedad();
@@ -179,6 +223,9 @@ public class Recolector extends Personaje {
         if (animCaminando != null) animCaminando.actualizar();
         if (animEscalera != null) animEscalera.actualizar();
         if (animBarra != null) animBarra.actualizar();
+        if (animCayendo != null) animCayendo.actualizar();
+        if (animCavando != null) animCavando.actualizar();
+        if (animMuriendo != null) animMuriendo.actualizar();
     }
 
     // Mueve al héroe un paso a la izquierda si no hay tile sólido bloqueando
@@ -303,24 +350,25 @@ public class Recolector extends Personaje {
     public boolean cavoEsteFrame() { return cavoEsteFrame; }
 
     public void verificarCaidaEnAgujero() {
-        if (nivel == null) return;
+        if (nivel == null || muriendo) return;
+        int hTx = getTileX();
+        int hTy = (int)((getY() + tileSize - 1) / tileSize);
         for (Agujero a : nivel.agujeros) {
-            if (!getBounds().intersects(a.getBounds())) continue;
+            int aTx = (int)a.getX() / tileSize;
+            int aTy = (int)a.getY() / tileSize;
+            if (hTx != aTx || hTy != aTy) continue;
             if (a.getTiempoRestante() > 1) continue;
             boolean guardiaTapa = false;
             for (Guardia g : guardias) {
-                if (g.enAgujero() && getBounds().intersects(a.getBounds())) {
+                if (g.enAgujero() && g.getTileX() == aTx && g.getTileY() == aTy) {
                     guardiaTapa = true;
                     break;
                 }
             }
             if (guardiaTapa) continue;
-            perderVida();
-            if (vidas <= 0) {
-                if (listener != null) listener.onGameOver();
-            } else {
-                if (listener != null) listener.onHeroDeath();
-            }
+            muriendo = true;
+            muriendoTimer = 0;
+            if (animMuriendo != null) animMuriendo.reiniciar();
             return;
         }
     }
@@ -441,9 +489,12 @@ public class Recolector extends Personaje {
     // Dibuja al héroe con la animación adecuada según su estado (escalera, barra, caminando o quieto)
     public void display(Graphics g) {
         Sprite s = null;
-        if (enEscalera) s = animEscalera != null ? animEscalera.obtenerFrame() : null;
+        if (muriendo) s = animMuriendo != null ? animMuriendo.obtenerFrame() : null;
+        else if (enEscalera) s = animEscalera != null ? animEscalera.obtenerFrame() : null;
         else if (enBarra) s = animBarra != null ? animBarra.obtenerFrame() : null;
-        else if (Math.abs(getX() - (tileX * tileSize)) > 2 || cayendo) s = animCaminando != null ? animCaminando.obtenerFrame() : null;
+        else if (cayendo) s = animCayendo != null ? animCayendo.obtenerFrame() : null;
+        else if (cavoEsteFrame) s = animCavando != null ? animCavando.obtenerFrame() : null;
+        else if (seMovio) s = animCaminando != null ? animCaminando.obtenerFrame() : null;
         else s = animParado != null ? animParado.obtenerFrame() : null;
 
         if (s != null) {
