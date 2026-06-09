@@ -1,4 +1,4 @@
-```mermaid
+
 classDiagram
     %% INTERFACES
     class JuegoLoopable {
@@ -1248,4 +1248,4 @@ classDiagram
     IA_Pong ..> Constantes : usar constantes
 
     RankingManager "1" --> "*" Nivel : persistir nivel
-```
+

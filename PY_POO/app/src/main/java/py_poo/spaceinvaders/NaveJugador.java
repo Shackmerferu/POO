@@ -1,7 +1,5 @@
 package py_poo.spaceinvaders;
 
-import java.awt.Point;
-
 import py_poo.entities.Personaje;
 import py_poo.interfaces.Armado;
 
@@ -17,7 +15,11 @@ public class NaveJugador extends Personaje implements Armado {
         this.vidas= 3;
     }
     
-      
+    @Override
+    public void display(java.awt.Graphics g) {
+        g.drawImage(getSprite(), (int) getX(), (int) getY(), 
+        getWidth(), getHeight(), null);
+    }
    
     @Override
     public Laser Disparar() {
