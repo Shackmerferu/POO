@@ -76,12 +76,10 @@ protected void actualizarLogicaJuego() {
             return;
         }
 
-        if (input.isMenuUpPressed() || input.isWPressed()) {
-            menu.setSeleccion(Math.max(0, menu.getSeleccion() - 1));
-        }
-        if (input.isMenuDownPressed() || input.isSPressed()) {
-            menu.setSeleccion(Math.min(2, menu.getSeleccion() + 1));
-        }
+        if (input.isMenuUpPressed() || input.isWPressed())
+            menu.navegarMainMenu(-1);
+        if (input.isMenuDownPressed() || input.isSPressed())
+            menu.navegarMainMenu(1);
         if (input.isEnterPressed()) {
            int opcionActual = menu.getSeleccion();
             

@@ -45,6 +45,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     };
     private boolean teclasmenuControles = false; 
     private int seleccionOpcinesControles = 0;
+    private long lastMainNavTime;
     private RankingManager rankingManager;
     private List<RankingEntry> topRanking;
 
@@ -65,6 +66,18 @@ public class MenuSpaceInvaders extends MenuPrincipal {
 
     public void setSeleccion(int seleccion) {
         this.seleccion = seleccion;
+    }
+
+    public boolean navegarMainMenu(int direccion) {
+        long now = System.currentTimeMillis();
+        if (now - lastMainNavTime < 150) return false;
+        lastMainNavTime = now;
+        int nueva = seleccion + direccion;
+        if (nueva >= 0 && nueva <= 2) {
+            seleccion = nueva;
+            return true;
+        }
+        return false;
     }
 
     public void recargarRanking() {
