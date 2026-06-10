@@ -64,17 +64,17 @@ public class FXPlayer {
         Clip clip = sonido.get(nombre); // Busca el audio en el diccionario 
 
     if (clip == null) {
-        System.out.println("--> [AUDIO ERROR] Intentaste reproducir '" + nombre + "' pero NO está cargado en el mapa.");
+       // System.out.println("--> [AUDIO ERROR] Intentaste reproducir '" + nombre + "' pero NO está cargado en el mapa.");
         return;
     }
 
-    System.out.println("--> [AUDIO OK] Tocando el sonido: '" + nombre + "' | ¿Está corriendo?: " + clip.isRunning());
+    //System.out.println("--> [AUDIO OK] Tocando el sonido: '" + nombre + "' | ¿Está corriendo?: " + clip.isRunning());
 
     try {
         clip.setFramePosition(0);
         clip.start(); 
     } catch (Exception e) {
-        System.out.println("--> [AUDIO CRASH] Falló el .start() de '" + nombre + "'. Motivo:");
+        //System.out.println("--> [AUDIO CRASH] Falló el .start() de '" + nombre + "'. Motivo:");
         e.printStackTrace();
     }
         if (clip != null) {

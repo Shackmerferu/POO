@@ -57,7 +57,10 @@ public class JuegoSpaceInvaders extends VideoJuego {
         this.fxPlayer.cargarSonidoRecurso("GameOver", "sonidos/SpaceInvader/GameOver.wav");
         this.fxPlayer.cargarSonidoRecurso("CancionSpaceInvaders", "sonidos/SpaceInvader/CancionSpaceInvaders.wav");
         
-      
+        this.fxPlayer.setVolumen("LaserFlota", "medio");
+         this.fxPlayer.setVolumen("Laser", "medio");
+        this.fxPlayer.setVolumen("ExplosionFlota", "medio");
+        this.fxPlayer.setVolumen("ExplosionNaves", "medio");
         this.fxPlayer.setVolumen("CancionSpaceInvaders", "medio");
         this.menu = new MenuSpaceInvaders(this.input, this);
         
@@ -109,15 +112,8 @@ protected void actualizarLogicaJuego() {
         }
        //Movimiento de la nave
         if (navecita != null) {
-            int limiteDerecho = Constantes.WIDTH - navecita.getWidth(); 
-
-            if (input.isLeftPressed() && navecita.getX() > 0) {
-                navecita.setX(navecita.getX() - 5);
+                navecita.Mover(input);
             }
-            if (input.isRightPressed() && navecita.getX() < limiteDerecho) {
-                navecita.setX(navecita.getX() + 5);
-            }
-        }
         //disparo Nave
         if (input.isSpacePressed()) {
            if (disparo == null || disparo.isParaEliminar()) { 
@@ -212,6 +208,7 @@ protected void actualizarLogicaJuego() {
                 Laser disparoEnemigo = new Laser(centroX, origenY, 4, laserEnemigoSkin);
                 if (this.menu.isSonidoActivado()) {
                     this.fxPlayer.reproducir("LaserFlota");
+                    
                 }
                 Entidades.add(disparoEnemigo);  
             }
