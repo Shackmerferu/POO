@@ -382,7 +382,15 @@ public class Guardia extends Personaje {
 
     public void soltarMoneda() {
         if (monedaCargada == null || nivel == null) return;
-        Moneda suelta = new Moneda(getTileX(), getTileY(), tileSize);
+        int tx = getTileX();
+        int ty = getTileY();
+        if (nivel.esSolido(tx, ty)) {
+            int arriba = Math.max(0, ty - 1);
+            if (!nivel.esSolido(tx, arriba)) {
+                ty = arriba;
+            }
+        }
+        Moneda suelta = new Moneda(tx, ty, tileSize);
         nivel.monedas.add(suelta);
         setMonedaCargada(null);
     }
