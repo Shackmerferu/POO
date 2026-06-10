@@ -208,6 +208,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         puntosJ1 = 0; // puntos en cero
         rankingRegistrado = false;
         tiempoNivel = 0; // cronómetro en cero
+        musicaIniciada = false;
         Jugador.clear();
         Jugador.add(new Jugador(nombreJugadorPrincipal));
         estado = EstadoJuego.JUGANDO; // cambia a estado jugando
@@ -217,7 +218,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
 
     // carga el nivel actual, creando héroe, guardias y entidades del mapa
     private void cargarNivelActual() {
-        if (nivelIdx >= 1) {
+        if (nivelIdx >= niveles.size()) {
             estado = EstadoJuego.VICTORIA;
             finalizar(EstadoJuego.VICTORIA, "Ganaste todos los niveles!");
             return;
@@ -303,7 +304,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             }
             return;
         }
-        if (estado == EstadoJuego.GAME_OVER || estado == EstadoJuego.VICTORIA) {
+        if (estado == EstadoJuego.GAME_OVER ) {
             if (input.isEnterPressed()) {
                 estado = EstadoJuego.MENU;
                 musicaIniciada = false;
@@ -311,6 +312,16 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             }
             return;
         }
+        if (estado == EstadoJuego.VICTORIA ) {
+            if (input.isEnterPressed()) {
+                System.out.println("ENTER DETECTADO");
+                estado = EstadoJuego.MENU;
+                musicaIniciada = false;
+                fxPlayer.detener("CancionFondoLodeRunner");
+            }
+            return;
+        }
+        
         if (estado != EstadoJuego.JUGANDO || heroe == null || NivelActual == null)
             return;
 
@@ -365,6 +376,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
                         menu.recargarRanking();
                     estado = EstadoJuego.VICTORIA;
                     fxPlayer.detener("CancionFondoLodeRunner");
+                    musicaIniciada = false;
                     return;
                 }
                 cargarNivelActual();
@@ -406,6 +418,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         heroe.desaparecer();
         estado = EstadoJuego.GAME_OVER;
         fxPlayer.detener("CancionFondoLodeRunner");
+        musicaIniciada = false;
     }
 
     @Override
