@@ -15,7 +15,7 @@ public class NaveNodriza extends ObjetoGrafico {
         this.setPunto(new java.awt.Point(-50, 25));
     }
 
-    public static int puntaje(int contadorDisparos) {
+    public int puntaje(int contadorDisparos) {
        if (contadorDisparos >= 23 && (contadorDisparos - 23) % 15 == 0) {
         return 300; 
     }  else{

@@ -3,10 +3,8 @@ package py_poo.spaceinvaders;
 import java.util.ArrayList;
 import java.util.List;
 
-import py_poo.entities.Bala;
 import py_poo.graphics.Animacion;
 import py_poo.graphics.Sprite;
-import py_poo.interfaces.Armado;
 
 public class EnemigoC extends Enemigo {
     private static Animacion animacionFlota(int skin){

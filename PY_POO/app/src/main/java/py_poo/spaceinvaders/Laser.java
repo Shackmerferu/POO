@@ -1,17 +1,23 @@
 package py_poo.spaceinvaders;
 
-import py_poo.entities.Bala;
 
-public class Laser extends Bala {
+import py_poo.entities.ObjetoGrafico;
+import py_poo.interfaces.Movible;
+
+public class Laser extends ObjetoGrafico implements Movible {
    private int velocidad; 
     public Laser(int X , int  Y, int velocidad, String sprite ){
-        super();
+        
         this.setSprite(sprite);
         this.setDimension(new java.awt.Dimension(5, 15));
         this.setPunto(new java.awt.Point(X, Y));
         this.velocidad = velocidad;
     }
     
+
+    public void Mover(){
+        
+    }
     public int getVelocidad() {
         return velocidad;
     }

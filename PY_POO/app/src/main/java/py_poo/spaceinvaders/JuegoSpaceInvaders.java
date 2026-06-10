@@ -35,7 +35,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
         if (rankingRegistrado) {
             return;
         }
-        String jugador = (nombreJugadorPrincipal != null && !nombreJugadorPrincipal.isBlank()) ? nombreJugadorPrincipal : "Toni";
+        String jugador = (nombreJugadorPrincipal != null && !nombreJugadorPrincipal.isBlank()) ? nombreJugadorPrincipal : "Heroe del Gin";
     
         rankingManager.agregarPuntaje(jugador, "Space Invaders", (this.nivelDeFlota + 1), this.puntaje);
     

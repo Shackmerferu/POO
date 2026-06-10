@@ -217,7 +217,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
 
     // carga el nivel actual, creando héroe, guardias y entidades del mapa
     private void cargarNivelActual() {
-        if (nivelIdx >= niveles.size()) {
+        if (nivelIdx >= 1) {
             estado = EstadoJuego.VICTORIA;
             finalizar(EstadoJuego.VICTORIA, "Ganaste todos los niveles!");
             return;

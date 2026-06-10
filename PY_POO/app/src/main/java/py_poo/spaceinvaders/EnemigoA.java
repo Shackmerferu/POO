@@ -3,7 +3,6 @@ package py_poo.spaceinvaders;
 import java.util.ArrayList;
 import java.util.List;
 
-import py_poo.entities.Bala;
 import py_poo.graphics.Animacion;
 import py_poo.graphics.Sprite;
 import py_poo.interfaces.Armado;
@@ -31,7 +30,7 @@ public class EnemigoA extends Enemigo implements Armado{
 
     
     @Override //disparar, solo 1 clase de enemigos puede
-    public Bala Disparar() {
+    public Laser Disparar() {
        int centroX = (int) this.getX() + (this.getWidth() / 2) - 2; 
         
        
