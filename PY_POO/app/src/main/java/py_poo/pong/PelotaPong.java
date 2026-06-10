@@ -63,7 +63,7 @@ public class PelotaPong extends ObjetoGrafico {
 
         //  Asignamos un ángulo de rebote según el segmento golpeado.
         // Si pega en las puntas rebota muy inclinado (80 o -80 grados). Si pega al medio rebota casi recto (10 o -10 grados).
-        double[] angulosGrados = {-80, -55, -35, -10, 10, 35, 55, 80};
+        double[] angulosGrados = {-60, -40, -25, -10, 10, 25, 40, 60};
 
 
         double anguloRad = Math.toRadians(angulosGrados[segmento]);

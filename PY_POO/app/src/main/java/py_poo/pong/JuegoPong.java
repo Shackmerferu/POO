@@ -181,9 +181,9 @@ public class JuegoPong extends VideoJuego {
 
     @Override
     protected void actualizarLogicaJuego() {
-        // ESTRUCTURA DE CONTROL ESTRICTA MEDIANTE IF / ELSE IF (Evita solapamientos entre fotogramas)
 
-        // 1. Estado: MENÚ PRINCIPAL
+
+        //  Estado: MENÚ PRINCIPAL
         if (this.estado == EstadoJuego.MENU) {
             if (menu.isConfigMode()) {
                 menu.actualizarConfig();
@@ -209,7 +209,7 @@ public class JuegoPong extends VideoJuego {
                 crearPartida();
             }
         }
-        // 2. Estado: FIN DE PARTIDA
+        //  Estado: FIN DE PARTIDA
         else if (this.estado == EstadoJuego.GAME_OVER) {
             if (input.isEnterPressed()) {
                 if (fxPlayer != null) {
@@ -221,7 +221,7 @@ public class JuegoPong extends VideoJuego {
                 this.estado = EstadoJuego.MENU; // Cambia el estado sin destruir la instancia del menú
             }
         }
-        // 3. Estado: EN PARTIDA
+        //  Estado: EN PARTIDA
         else if (this.estado == EstadoJuego.JUGANDO) {
             if (paleta1 != null) paleta1.Mover();
             if (modoIA) {

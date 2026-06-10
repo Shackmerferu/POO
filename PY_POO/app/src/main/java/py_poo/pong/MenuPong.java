@@ -81,6 +81,9 @@ public class MenuPong extends MenuPrincipal {
             if (now - lastConfigKeyTime < 120) return;
             for (int code = 0; code < 256; code++) {
                 if (input.isKeyPressed(code)) {
+                    if (code == java.awt.event.KeyEvent.VK_ENTER) {
+                        continue; 
+                    }
                     KeyBindings.set(actions[configActionIndex], code);
                     lastConfigKeyTime = now;
                     configActionIndex = -1;
