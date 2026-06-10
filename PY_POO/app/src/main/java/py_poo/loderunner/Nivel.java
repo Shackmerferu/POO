@@ -244,6 +244,9 @@ public class Nivel {
         for (Escalera e : escaleras) {
             if (!listaRender.contains(e)) listaRender.add(e);
         }
+        for (Moneda m : monedas) {
+            if (!listaRender.contains(m)) listaRender.add(m);
+        }
         if (puertaSalida != null && !listaRender.contains(puertaSalida)) {
             listaRender.add(puertaSalida);
         }
@@ -251,6 +254,7 @@ public class Nivel {
             (e instanceof ParticulaLadrillo && !particulas.contains(e))
             || (e instanceof Agujero && !agujeros.contains(e))
             || (e instanceof Escalera && !escaleras.contains(e))
+            || (e instanceof Moneda && !monedas.contains(e))
             || (e instanceof Puerta && e != puertaSalida));
     }
 
