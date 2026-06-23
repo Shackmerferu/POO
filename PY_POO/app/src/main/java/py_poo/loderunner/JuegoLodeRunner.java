@@ -21,23 +21,27 @@ import py_poo.utils.CargadorRecursos;
 
 public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
 
-    private InputManager input; // gestor de entrada del jugador
-    private MenuLodeRunner menu; // menú principal del juego
-    private Recolector heroe; // personaje del jugador
-    private List<Guardia> guardias; // lista de guardias enemigos
-    private List<Nivel> niveles; // lista de niveles del juego
-    private int nivelIdx; // índice del nivel actual
-    private int puntosJ1; // puntos acumulados del jugador
-    private boolean rankingRegistrado; // true si ya se registró el puntaje
-    private int tiempoNivel; // contador de tiempo transcurrido en el nivel
-    private BufferedImage fondo; // imagen de fondo
-    private FXPlayer fxPlayer; // reproductor de efectos de sonido
-    private boolean musicaIniciada; // true si la música ya empezó
-
-    // constructor: establece nombre del juego
     public JuegoLodeRunner() {
+        super("Lode Runner", Constantes.WIDTH, Constantes.HEIGHT);
         this.Nombre = "Lode Runner";
     }
+
+    private InputManager input;
+    private MenuLodeRunner menu;
+    private Recolector heroe;
+    private List<Guardia> guardias;
+    private List<Nivel> niveles;
+    private int nivelIdx;
+    private int puntosJ1;
+    private boolean rankingRegistrado;
+    private int tiempoNivel;
+    private BufferedImage fondo;
+    private FXPlayer fxPlayer;
+    private boolean musicaIniciada;
+
+    // VARIABLES DE RANKING AGREGADAS
+    private RankingManager rankingManager;
+    private List<RankingEntry> topRankingLodeRunner;
 
     @Override
     // inicia el juego: configura input, menú, collision manager y carga recursos

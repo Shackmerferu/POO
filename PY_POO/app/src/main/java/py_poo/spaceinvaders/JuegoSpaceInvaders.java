@@ -14,6 +14,11 @@ import py_poo.audio.FXPlayer;
 import py_poo.core.Constantes;
 
 public class JuegoSpaceInvaders extends VideoJuego {
+
+    public JuegoSpaceInvaders() {
+        super("Space Invaders", Constantes.WIDTH, Constantes.HEIGHT);
+    }
+
     private FXPlayer fxPlayer;
     private InputManager input;
     private MenuSpaceInvaders menu;

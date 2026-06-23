@@ -44,20 +44,32 @@ public class MenuPong extends MenuPrincipal {
         this.topRanking = rankingManager.cargarDetalleTop("Pong%", 10);
     }
 
-    //  GETTERS Y SETTERS BÁSICOS
-    public int getSeleccion() {
-        return seleccion;
+    // --- GETTERS Y SETTERS BÁSICOS ---
+    public int getSeleccion() { return seleccion; }
+    public void setSeleccion(int seleccion) { this.seleccion = seleccion; }
+    public boolean isConfigMode() { return configMode; }
+    public int getSkinPaleta1() { return skinPaletas1; }
+    public void setSkinPaleta1(int skin) { this.skinPaletas1 = skin; }
+
+    public int getSkinPaleta2() { return skinPaletas2; }
+    public void setSkinPaleta2(int skin) { this.skinPaletas2 = skin; }
+    private long lastMainNavTime;
+
+    public boolean navegarMainMenu(int direccion) {
+        long now = System.currentTimeMillis();
+        if (now - lastMainNavTime < 150) return false;
+        lastMainNavTime = now;
+        int nueva = seleccion + direccion;
+        if (nueva >= 0 && nueva <= 3) {
+            seleccion = nueva;
+            return true;
+        }
+        return false;
     }
 
-    public void setSeleccion(int seleccion) {
-        this.seleccion = seleccion;
+    public void recargarRanking() {
+        this.topRanking = rankingManager.cargarDetalleTop("Pong%", 10);
     }
-
-    public boolean isConfigMode() {
-        return configMode;
-    }
-
-    // Activa o desactiva la pantalla de configuración y resetea sus valores
     public void setConfigMode(boolean configMode) {
         this.configMode = configMode;
         configSelected = 0;       // Vuelve a la primera opción
