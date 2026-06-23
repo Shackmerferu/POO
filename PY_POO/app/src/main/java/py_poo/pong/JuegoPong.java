@@ -17,6 +17,11 @@ import py_poo.input.InputManager;
 import py_poo.utils.CargadorRecursos;
 
 public class JuegoPong extends VideoJuego {
+
+    public JuegoPong() {
+        super("Pong", Constantes.WIDTH, Constantes.HEIGHT);
+    }
+
     private boolean OpJuego;
     private InputManager input;
     private MenuPong menu;
@@ -190,10 +195,10 @@ public class JuegoPong extends VideoJuego {
                 return;
             }
             if (input.isMenuUpPressed() || input.isWPressed()) {
-                menu.setSeleccion(Math.max(0, menu.getSeleccion() - 1));
+                menu.navegarMainMenu(-1);
             }
             if (input.isMenuDownPressed() || input.isSPressed()) {
-                menu.setSeleccion(Math.min(3, menu.getSeleccion() + 1));
+                menu.navegarMainMenu(1);
             }
             if (input.isEnterPressed()) {
                 if (menu.getSeleccion() == 3) {

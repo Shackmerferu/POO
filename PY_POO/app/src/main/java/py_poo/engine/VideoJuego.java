@@ -1,37 +1,41 @@
 package py_poo.engine;
 
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.entropyinteractive.JGame;
+import com.entropyinteractive.Keyboard;
+import com.entropyinteractive.Mouse;
+import com.entropyinteractive.MouseWheel;
+
 import py_poo.config.ConfigManager;
-import py_poo.core.GameLoop;
+import py_poo.core.Constantes;
 import py_poo.entities.ObjetoGrafico;
 import py_poo.input.InputManager;
-import py_poo.interfaces.JuegoLoopable;
 import py_poo.loderunner.Nivel;
 import py_poo.ranking.RankingManager;
 
-// clase padre que utilizamos para los 3 juegos
-public abstract class VideoJuego implements JuegoLoopable {
+public abstract class VideoJuego extends JGame {
+    private static VideoJuego instancia;
+    private static double deltaTime;
+    private boolean isFullscreen;
 
-
-    // ayuda memoria
-    // Usamos 'protected' para que los juegos hijos puedan leer y modificar estas variables directamente.
     protected String Nombre;
-    protected boolean Activo;                 // Si es false, el GameLoop deja de actualizar este juego
-    protected EstadoJuego estado;             // Máquina de estados: MENU, JUGANDO, PAUSA, GAME_OVER
+    protected boolean Activo;
+    protected EstadoJuego estado;
     protected List<Integer> Puntuacion;
     protected Nivel NivelActual;
-    protected List<ObjetoGrafico> Entidades;  // Lista  de todo lo que se dibuja en pantalla
-
-    // Configuraciones gráficas y de hardware
-    private int ResX;
-    private int ResY;
+    protected List<ObjetoGrafico> Entidades;
     protected boolean Fullscreen;
     protected List<Jugador> Jugador;
     protected String Resultado;
-
-    // Herramientas utilizadas en los juegos (Bases de datos, Teclado, Sonido, Cámara)
     protected RankingManager rankingManager = new RankingManager();
     protected String nombreJugadorPrincipal;
     protected InputManager input;
@@ -41,16 +45,116 @@ public abstract class VideoJuego implements JuegoLoopable {
     protected ConfigManager configManager = new ConfigManager();
     protected Camara camara;
 
-    // "Anti-rebotes" para teclas globales (Evita que presionar Pausa una vez parpadee el juego 60 veces)
     private boolean lastBackslashState;
     private boolean lastPauseState;
     private boolean lastQState;
     private boolean lastMState;
 
+    public VideoJuego(String title, int width, int height) {
+        super(title, width, height);
+        instancia = this;
+    }
+
+    public static double getDeltaTime() {
+        return deltaTime;
+    }
+
+    public static Keyboard getTeclado() {
+        return instancia != null ? instancia.getKeyboard() : null;
+    }
+
+    public static Mouse getRaton() {
+        return instancia != null ? instancia.getMouse() : null;
+    }
+
+    public static MouseWheel getRuedaRaton() {
+        return instancia != null ? instancia.getMouseWheel() : null;
+    }
+
+    public static void terminarJuego() {
+        if (instancia != null) {
+            instancia.stop();
+        }
+    }
+
+    public void toggleFullscreen() {
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        Frame window = null;
+        for (Frame f : Frame.getFrames()) {
+            if (f.isVisible() && f.getWidth() > 100 && f.getHeight() > 100) {
+                window = f;
+                break;
+            }
+        }
+        if (window == null) return;
+        if (isFullscreen) {
+            gd.setFullScreenWindow(null);
+            window.setSize(Constantes.WIDTH, Constantes.HEIGHT);
+            window.setLocationRelativeTo(null);
+            isFullscreen = false;
+        } else {
+            gd.setFullScreenWindow(window);
+            isFullscreen = true;
+        }
+    }
+
+    public static void toggleFullscreenStatic() {
+        if (instancia != null) {
+            instancia.toggleFullscreen();
+        }
+    }
+
+    public static boolean isFullscreen() {
+        return instancia != null && instancia.isFullscreen;
+    }
+
+    @Override
+    public void gameStartup() {
+        iniciar();
+        for (Frame f : Frame.getFrames()) {
+            if (f.isVisible()) {
+                f.addWindowListener(new WindowListener() {
+                    public void windowClosing(WindowEvent e) {
+                        terminarJuego();
+                    }
+                    public void windowOpened(WindowEvent e) {}
+                    public void windowClosed(WindowEvent e) {}
+                    public void windowIconified(WindowEvent e) {}
+                    public void windowDeiconified(WindowEvent e) {}
+                    public void windowActivated(WindowEvent e) {}
+                    public void windowDeactivated(WindowEvent e) {}
+                });
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void gameUpdate(double delta) {
+        deltaTime = delta;
+        actualizar();
+    }
+
+    @Override
+    public void gameDraw(Graphics2D g) {
+        double sx = (double) getWidth() / Constantes.WIDTH;
+        double sy = (double) getHeight() / Constantes.HEIGHT;
+        g.scale(sx, sy);
+        renderizar(g);
+    }
+
+    @Override
+    public void gameShutdown() {
+        finalizar();
+    }
+
+    public void run(int fps) {
+        super.run(1.0 / fps);
+    }
 
     public void iniciar() {
         this.Activo = true;
-        this.estado = EstadoJuego.MENU; // Todos los juegos arrancan en su propio menú
+        this.estado = EstadoJuego.MENU;
         this.Entidades = new ArrayList<>();
         this.Puntuacion = new ArrayList<>();
         this.Jugador = new ArrayList<>();
@@ -58,26 +162,21 @@ public abstract class VideoJuego implements JuegoLoopable {
 
         this.camara = new Camara();
 
-        // Carga las configuraciones guardadas en disco (Sonido y Pantalla completa)
         configManager.cargar();
         this.soundEnabled = configManager.isSoundEnabled();
         this.soundFxEnabled = configManager.isSoundFxEnabled();
         this.musicEnabled = configManager.isMusicEnabled();
 
-        // Si el jugador había dejado el juego en pantalla completa, lo restaura
-        if (configManager.isFullscreen() && !GameLoop.isFullscreen()) {
-            GameLoop.toggleFullscreenStatic();
+        if (configManager.isFullscreen() && !VideoJuego.isFullscreen()) {
+            VideoJuego.toggleFullscreenStatic();
         }
     }
 
-
     public void actualizar() {
-        if (!Activo) { return; } // Si el juego se cerró, corta la ejecución por seguridad
+        if (!Activo) { return; }
 
-        manejarControlesGlobales(); // Lee las teclas que funcionan en cualquier momento (Pausa, ESC, Volumen)
+        manejarControlesGlobales();
 
-        // MÁQUINA DE ESTADOS: Dependiendo de en qué pantalla estemos, delega el trabajo
-        // al método abstracto 'actualizarLogicaJuego()' que cada juego hijo programó a su manera.
         switch (estado) {
             case MENU:
             case JUGANDO:
@@ -91,25 +190,21 @@ public abstract class VideoJuego implements JuegoLoopable {
         }
     }
 
-
     private void manejarControlesGlobales() {
         if (input == null) return;
 
-        // TECLA P: Pausa / Reanudar
         boolean pNow = input.isPPressed();
         if (pNow && !lastPauseState && (estado == EstadoJuego.JUGANDO || estado == EstadoJuego.PAUSA)) {
             pausa();
         }
         lastPauseState = pNow;
 
-        // TECLA ESC: Volver al menú principal del juego actual
         if (input.isEscapePressed()) {
             if (estado == EstadoJuego.JUGANDO || estado == EstadoJuego.PAUSA) {
                 reiniciar();
             }
         }
 
-        // TECLA Q: Mutear Efectos
         boolean qNow = input.isQPressed();
         if (qNow && !lastQState) {
             soundFxEnabled = !soundFxEnabled;
@@ -117,7 +212,6 @@ public abstract class VideoJuego implements JuegoLoopable {
         }
         lastQState = qNow;
 
-        // TECLA M: Mutear Música
         boolean mNow = input.isMPressed();
         if (mNow && !lastMState) {
             musicEnabled = !musicEnabled;
@@ -125,16 +219,14 @@ public abstract class VideoJuego implements JuegoLoopable {
         }
         lastMState = mNow;
 
-        // TECLA \ : Alternar Pantalla Completa
         boolean backslashNow = input.isBackslashPressed();
         if (backslashNow && !lastBackslashState) {
-            GameLoop.toggleFullscreenStatic();
-            configManager.setFullscreen(GameLoop.isFullscreen());
-            configManager.guardar(); // Guarda la preferencia en el archivo de config
+            VideoJuego.toggleFullscreenStatic();
+            configManager.setFullscreen(VideoJuego.isFullscreen());
+            configManager.guardar();
         }
         lastBackslashState = backslashNow;
     }
-
 
     public void finalizar() {
         finalizar(EstadoJuego.GAME_OVER, "Juego cerro repentinamente");
@@ -145,7 +237,6 @@ public abstract class VideoJuego implements JuegoLoopable {
         this.estado = estadoFinal;
         this.Resultado = resultado;
 
-        //  Guarda automáticamente los puntajes en SQLite al terminar
         if (Jugador!=null && Puntuacion!=null){
             for (int i = 0; i < Jugador.size(); i++) {
                 String nombre=Jugador.get(i).getNombre();
@@ -154,15 +245,13 @@ public abstract class VideoJuego implements JuegoLoopable {
             }
         }
 
-        // Limpieza de memoria
         if (this.NivelActual != null) {
             this.NivelActual.finalizarNivel();
         }
         if (this.Entidades != null) {
-            this.Entidades.clear(); // Borra todos los enemigos/pelotas de la RAM
+            this.Entidades.clear();
         }
     }
-
 
     protected void pausa() {
         if (!Activo) return;
@@ -182,7 +271,6 @@ public abstract class VideoJuego implements JuegoLoopable {
         this.estado = EstadoJuego.JUGANDO;
     }
 
-
     protected abstract void actualizarLogicaJuego();
     public abstract String getGanador();
     public abstract String getPerdedor();
@@ -201,7 +289,6 @@ public abstract class VideoJuego implements JuegoLoopable {
         iniciar();
     }
 
-
     public void cargarNivel() {
         if (Entidades != null) Entidades.clear();
         if (NivelActual == null) {
@@ -218,26 +305,21 @@ public abstract class VideoJuego implements JuegoLoopable {
         return Resultado;
     }
 
-
-    public void renderizar(java.awt.Graphics g) {
+    public void renderizar(Graphics g) {
         boolean usarCamara = camara != null && (estado == EstadoJuego.JUGANDO || estado == EstadoJuego.PAUSA || estado == EstadoJuego.GAME_OVER);
 
         if (usarCamara) {
-
             g.translate(-camara.getX(), -camara.getY());
         }
 
-        // Pinta todo los objetos
         for (ObjetoGrafico entidad : Entidades) {
             entidad.display(g);
         }
 
         if (usarCamara) {
-
             g.translate(camara.getX(), camara.getY());
         }
     }
-
 
     public List<Integer> getpuntaje() {
         return Puntuacion;
@@ -260,7 +342,6 @@ public abstract class VideoJuego implements JuegoLoopable {
         Puntuacion.clear();
     }
 
-    // --- GETTERS Y SETTERS COMPLEMENTARIOS ---
     public void setNombreJugador(String nombre) {
         this.nombreJugadorPrincipal = nombre;
     }

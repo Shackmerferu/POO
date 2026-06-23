@@ -23,6 +23,11 @@ import py_poo.ranking.RankingManager.RankingEntry;
 
 public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
 
+    public JuegoLodeRunner() {
+        super("Lode Runner", Constantes.WIDTH, Constantes.HEIGHT);
+        this.Nombre = "Lode Runner";
+    }
+
     private InputManager input;
     private MenuLodeRunner menu;
     private Recolector heroe;
@@ -39,10 +44,6 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
     // VARIABLES DE RANKING AGREGADAS
     private RankingManager rankingManager;
     private List<RankingEntry> topRankingLodeRunner;
-
-    public JuegoLodeRunner() {
-        this.Nombre = "Lode Runner";
-    }
 
     @Override
     public void iniciar() {
