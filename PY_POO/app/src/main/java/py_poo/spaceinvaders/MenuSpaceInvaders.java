@@ -23,12 +23,12 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     private int configSelected;
     private int configActionIndex = -1;
     private long lastConfigKeyTime;
-    private boolean pantallaCompleta = false;
+    private boolean pantallaCompleta =false;
     private boolean sonidoActivado = true;
     private int skinNave = 0;
     private int skinInvasores = 0;
     private int skinProyectiles = 0;
-    private int skinNodriza = 0; // MODIFICACIÓN: Nueva variable
+    private int skinNodriza = 0; 
     private int pistaMusical = 0;
     private int velocidad = 1;
     
@@ -153,15 +153,17 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             }
 
             String extra = "";
-            if (configActionIndex == -99 && i == 4) {
-                extra = " - Adquiera el DLC a SOLO 1.99$ (Antes: 5̶.̶0̶0̶$̶)";
-                g.setColor(Color.RED); 
-            } else if (i == 0) extra = pantallaCompleta ? " [PANTALLA COMPLETA]" : " [VENTANA]";
+            if (i == 0) extra = pantallaCompleta ? " [PANTALLA COMPLETA]" : " [VENTANA]";
             else if (i == 1) extra = sonidoActivado ? " [ACTIVADO]" : " [DESACTIVADO]";
             else if (i == 2) extra = skinNave == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
             else if (i == 3) extra = skinInvasores == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
-            else if (i == 4) extra = skinProyectiles == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
-            else if (i == 5) extra = skinNodriza == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]"; // MODIFICACIÓN
+            else if (i == 4) {extra = skinProyectiles == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
+                             if (configActionIndex == -99 && i == configSelected) {
+                                extra += " - ¡DLC a 1.99$! (Antes: 5̶.̶0̶0̶$̶)";
+                                g.setColor(Color.RED);
+                             }
+                            }
+            else if (i == 5) extra = skinNodriza == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]"; 
             else if (i == 6) extra = pistaMusical == 0 ? " [ORIGINAL]" : " [TEMAIKEN]";
             else if (i == 7) {
                 if(velocidad == 0) extra = " [LENTA]";
@@ -331,15 +333,15 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             case 1: sonidoActivado = !sonidoActivado; break;
             case 2: skinNave = (skinNave + 1) % 2; break; 
             case 3: skinInvasores = (skinInvasores + 1) % 2; break;
-            case 4: skinProyectiles = (skinProyectiles + 1) % 2; break;
-            case 5: skinNodriza = (skinNodriza + 1) % 2; break; // AHORA ESTÁ BIEN
-            case 6: pistaMusical = (pistaMusical + 1) % 2; break; // ERA 5
-            case 7: velocidad = (velocidad + 1) % 3; break;       // ERA 6
-            case 8: // ERA 7
+            case 4: skinProyectiles = configActionIndex = -99; break;
+            case 5: skinNodriza = (skinNodriza + 1) % 2; break; 
+            case 6: pistaMusical = (pistaMusical + 1) % 2; break; 
+            case 7: velocidad = (velocidad + 1) % 3; break;       
+            case 8: 
                 teclasmenuControles = true;
                 seleccionOpcinesControles = 0;
                 break; 
-            case 9: // ERA 8
+            case 9: 
                 if (pantallaCompleta) 
                 GameLoop.toggleFullscreenStatic();
                 pantallaCompleta = false; 
@@ -351,7 +353,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
                 pistaMusical = 0; 
                 velocidad = 1;
                 break;
-            case 10: // ERA 9
+            case 10: 
                 configMode = false; 
                 break; 
         }
@@ -374,7 +376,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         return skinInvasores;
     }
 
-    public int getSkinNodriza() { // MODIFICACIÓN
+    public int getSkinNodriza() { 
         return skinNodriza;
     }
 
