@@ -13,6 +13,11 @@ import py_poo.input.InputManager;
 import py_poo.ranking.RankingManager;
 
 public class JuegoSpaceInvaders extends VideoJuego {
+
+    public JuegoSpaceInvaders() {
+        super("Space Invaders", Constantes.WIDTH, Constantes.HEIGHT);
+    }
+
     private FXPlayer fxPlayer;
     private InputManager input;
     private MenuSpaceInvaders menu;

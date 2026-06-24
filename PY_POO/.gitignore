@@ -3,3 +3,4 @@
 *.class
 # Ignore Gradle build output directory
 build
+/app-data/ranking.db

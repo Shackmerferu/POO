@@ -1,5 +1,5 @@
 volumen=100.0
-fullscreen=false
+fullscreen=true
 soundEnabled=true
 soundFxEnabled=true
 musicEnabled=true

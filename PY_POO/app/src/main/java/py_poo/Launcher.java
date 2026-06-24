@@ -47,7 +47,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import py_poo.core.Constantes;
-import py_poo.core.GameLoop;
 import py_poo.engine.VideoJuego;
 import py_poo.loderunner.JuegoLodeRunner;
 import py_poo.pong.JuegoPong;
@@ -739,30 +738,15 @@ public class Launcher extends JFrame {
 
         Launcher.this.setVisible(false);
 
-
-        GameLoop gl = new GameLoop(g.name, Constantes.WIDTH, Constantes.HEIGHT);
-        gl.setVideoJuego(vj);
-
         new Thread(() -> {
             try {
-                
-                gl.run(Constantes.FPS); 
+                vj.run(Constantes.FPS);
             } catch (Exception ex) {
                 ex.printStackTrace();
             } finally {
                 SwingUtilities.invokeLater(() -> Launcher.this.setVisible(true));
             }
         }).start();
-        
-        
-        /*
-        GameLoop gl = new GameLoop(g.name, Constantes.WIDTH, Constantes.HEIGHT);
-        gl.setVideoJuego(vj);
-
-        new Thread(() -> {
-            gl.run(Constantes.FPS);
-            SwingUtilities.invokeLater(() -> Launcher.this.setVisible(true));
-        }).start();*/
     }
 
     private VideoJuego crearJuego(String nombre) {

@@ -17,6 +17,11 @@ import py_poo.input.InputManager;
 import py_poo.utils.CargadorRecursos;
 
 public class JuegoPong extends VideoJuego {
+
+    public JuegoPong() {
+        super("Pong", Constantes.WIDTH, Constantes.HEIGHT);
+    }
+
     private boolean OpJuego;
     private InputManager input;
     private MenuPong menu;
@@ -181,19 +186,19 @@ public class JuegoPong extends VideoJuego {
 
     @Override
     protected void actualizarLogicaJuego() {
-        // ESTRUCTURA DE CONTROL ESTRICTA MEDIANTE IF / ELSE IF (Evita solapamientos entre fotogramas)
 
-        // 1. Estado: MENÚ PRINCIPAL
+
+        //  Estado: MENÚ PRINCIPAL
         if (this.estado == EstadoJuego.MENU) {
             if (menu.isConfigMode()) {
                 menu.actualizarConfig();
                 return;
             }
             if (input.isMenuUpPressed() || input.isWPressed()) {
-                menu.setSeleccion(Math.max(0, menu.getSeleccion() - 1));
+                menu.navegarMainMenu(-1);
             }
             if (input.isMenuDownPressed() || input.isSPressed()) {
-                menu.setSeleccion(Math.min(3, menu.getSeleccion() + 1));
+                menu.navegarMainMenu(1);
             }
             if (input.isEnterPressed()) {
                 if (menu.getSeleccion() == 3) {
@@ -209,7 +214,7 @@ public class JuegoPong extends VideoJuego {
                 crearPartida();
             }
         }
-        // 2. Estado: FIN DE PARTIDA
+        //  Estado: FIN DE PARTIDA
         else if (this.estado == EstadoJuego.GAME_OVER) {
             if (input.isEnterPressed()) {
                 if (fxPlayer != null) {
@@ -221,7 +226,7 @@ public class JuegoPong extends VideoJuego {
                 this.estado = EstadoJuego.MENU; // Cambia el estado sin destruir la instancia del menú
             }
         }
-        // 3. Estado: EN PARTIDA
+        //  Estado: EN PARTIDA
         else if (this.estado == EstadoJuego.JUGANDO) {
             if (paleta1 != null) paleta1.Mover();
             if (modoIA) {

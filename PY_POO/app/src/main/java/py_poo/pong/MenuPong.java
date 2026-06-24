@@ -50,6 +50,20 @@ public class MenuPong extends MenuPrincipal {
 
     public int getSkinPaleta2() { return skinPaletas2; }
     public void setSkinPaleta2(int skin) { this.skinPaletas2 = skin; }
+    private long lastMainNavTime;
+
+    public boolean navegarMainMenu(int direccion) {
+        long now = System.currentTimeMillis();
+        if (now - lastMainNavTime < 150) return false;
+        lastMainNavTime = now;
+        int nueva = seleccion + direccion;
+        if (nueva >= 0 && nueva <= 3) {
+            seleccion = nueva;
+            return true;
+        }
+        return false;
+    }
+
     public void recargarRanking() {
         this.topRanking = rankingManager.cargarDetalleTop("Pong%", 10);
     }
@@ -81,6 +95,9 @@ public class MenuPong extends MenuPrincipal {
             if (now - lastConfigKeyTime < 120) return;
             for (int code = 0; code < 256; code++) {
                 if (input.isKeyPressed(code)) {
+                    if (code == java.awt.event.KeyEvent.VK_ENTER) {
+                        continue; 
+                    }
                     KeyBindings.set(actions[configActionIndex], code);
                     lastConfigKeyTime = now;
                     configActionIndex = -1;

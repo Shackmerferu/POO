@@ -18,34 +18,41 @@ import py_poo.engine.VideoJuego;
 import py_poo.input.InputManager;
 import py_poo.interfaces.GameEventListener;
 import py_poo.utils.CargadorRecursos;
+import py_poo.ranking.RankingManager;
+import py_poo.ranking.RankingManager.RankingEntry;
 
 public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
 
-    private InputManager input; // gestor de entrada del jugador
-    private MenuLodeRunner menu; // menú principal del juego
-    private Recolector heroe; // personaje del jugador
-    private List<Guardia> guardias; // lista de guardias enemigos
-    private List<Nivel> niveles; // lista de niveles del juego
-    private int nivelIdx; // índice del nivel actual
-    private int puntosJ1; // puntos acumulados del jugador
-    private boolean rankingRegistrado; // true si ya se registró el puntaje
-    private int tiempoNivel; // contador de tiempo transcurrido en el nivel
-    private BufferedImage fondo; // imagen de fondo
-    private FXPlayer fxPlayer; // reproductor de efectos de sonido
-    private boolean musicaIniciada; // true si la música ya empezó
-
-    // constructor: establece nombre del juego
     public JuegoLodeRunner() {
+        super("Lode Runner", Constantes.WIDTH, Constantes.HEIGHT);
         this.Nombre = "Lode Runner";
     }
 
+    private InputManager input;
+    private MenuLodeRunner menu;
+    private Recolector heroe;
+    private List<Guardia> guardias;
+    private List<Nivel> niveles;
+    private int nivelIdx;
+    private int puntosJ1;
+    private boolean rankingRegistrado;
+    private int tiempoNivel;
+    private BufferedImage fondo;
+    private FXPlayer fxPlayer;
+    private boolean musicaIniciada;
+
+    // VARIABLES DE RANKING AGREGADAS
+    private RankingManager rankingManager;
+    private List<RankingEntry> topRankingLodeRunner;
+
     @Override
-    // inicia el juego: configura input, menú, collision manager y carga recursos
     public void iniciar() {
         super.iniciar();
         this.input = new InputManager();
         super.input = this.input;
         this.menu = new MenuLodeRunner(input, null);
+        this.rankingManager = new RankingManager(); // Inicializamos el gestor para evitar crasheos
+
         this.puntosJ1 = 0;
         this.rankingRegistrado = false;
         this.estado = EstadoJuego.MENU;
@@ -54,9 +61,9 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         this.fondo = cr.cargarImagen("imagenes/Lode Runner/fondo negro.png");
 
         this.fxPlayer = new FXPlayer();
-        this.fxPlayer.cargarSonidoRecurso("punto", "sonidos/punto.wav"); // sonido al recoger oro
-        this.fxPlayer.cargarSonidoRecurso("paleta", "sonidos/paleta.wav"); // sonido al cavar
-        this.fxPlayer.cargarSonidoRecurso("Empieza", "sonidos/Empieza.wav"); // sonido de evento
+        this.fxPlayer.cargarSonidoRecurso("punto", "sonidos/punto.wav");
+        this.fxPlayer.cargarSonidoRecurso("paleta", "sonidos/paleta.wav");
+        this.fxPlayer.cargarSonidoRecurso("Empieza", "sonidos/Empieza.wav");
         this.fxPlayer.cargarSonidoRecurso("CancionFondoLodeRunner", "sonidos/LodeRunner/CancionFondoLodeRunner.wav");
         this.fxPlayer.setVolumen("CancionFondoLodeRunner", "medio");
     }
@@ -69,13 +76,11 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         super.reiniciar();
     }
 
-    // pausa el juego
     public void pause() {
         estado = EstadoJuego.PAUSA;
     }
 
     @Override
-    // renderiza todos los elementos del juego en pantalla
     public void renderizar(Graphics g) {
         Graphics2D g2d = (g instanceof Graphics2D) ? (Graphics2D) g : null;
         if (g2d != null) {
@@ -133,17 +138,16 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             g.setColor(Color.CYAN);
             g.drawString("--- TOP 10 ---", Constantes.WIDTH / 2 - 70, 260);
 
-            var top = new py_poo.ranking.RankingManager().cargarDetalleTop("Lode%", 10);
             g.setFont(new Font("Consolas", Font.PLAIN, 14));
             g.setColor(Color.WHITE);
             int y = 290;
-            if (top == null || top.isEmpty()) {
+            // Usamos la lista de la RAM, no consultamos SQLite aquí
+            if (topRankingLodeRunner == null || topRankingLodeRunner.isEmpty()) {
                 g.drawString("Aún no hay puntajes.", Constantes.WIDTH / 2 - 80, y);
             } else {
-                for (int i = 0; i < top.size(); i++) {
-                    var entry = top.get(i);
-                    String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(),
-                            entry.puntaje());
+                for (int i = 0; i < topRankingLodeRunner.size(); i++) {
+                    var entry = topRankingLodeRunner.get(i);
+                    String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
                     g.drawString(texto, Constantes.WIDTH / 2 - 150, y);
                     y += 22;
                 }
@@ -168,17 +172,16 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             g.setColor(Color.CYAN);
             g.drawString("--- TOP 10 ---", Constantes.WIDTH / 2 - 70, 260);
 
-            var top = new py_poo.ranking.RankingManager().cargarDetalleTop("Lode%", 10);
             g.setFont(new Font("Consolas", Font.PLAIN, 14));
             g.setColor(Color.WHITE);
             int y = 290;
-            if (top == null || top.isEmpty()) {
+            // Usamos la lista de la RAM
+            if (topRankingLodeRunner == null || topRankingLodeRunner.isEmpty()) {
                 g.drawString("Aún no hay puntajes.", Constantes.WIDTH / 2 - 80, y);
             } else {
-                for (int i = 0; i < top.size(); i++) {
-                    var entry = top.get(i);
-                    String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(),
-                            entry.puntaje());
+                for (int i = 0; i < topRankingLodeRunner.size(); i++) {
+                    var entry = topRankingLodeRunner.get(i);
+                    String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
                     g.drawString(texto, Constantes.WIDTH / 2 - 150, y);
                     y += 22;
                 }
@@ -197,30 +200,39 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
     }
 
     @Override
-    // crea una nueva partida, inicializa niveles y carga el primer nivel
     protected void crearPartida() {
         niveles = new ArrayList<>();
         niveles.add(new Nivel1());
         niveles.add(new Nivel2());
         niveles.add(new Nivel3());
 
-        nivelIdx = 0; // empieza en nivel 1
-        puntosJ1 = 0; // puntos en cero
+        nivelIdx = 0;
+        puntosJ1 = 0;
         rankingRegistrado = false;
-        tiempoNivel = 0; // cronómetro en cero
-        musicaIniciada = false;
+        tiempoNivel = 0;
+
+        String jugadorAsegurado = (nombreJugadorPrincipal != null && !nombreJugadorPrincipal.isBlank()) ? nombreJugadorPrincipal : "Jugador 1";
         Jugador.clear();
-        Jugador.add(new Jugador(nombreJugadorPrincipal));
-        estado = EstadoJuego.JUGANDO; // cambia a estado jugando
+        Jugador.add(new Jugador(jugadorAsegurado));
+        estado = EstadoJuego.JUGANDO;
         fxPlayer.repetir("CancionFondoLodeRunner");
-        cargarNivelActual(); // carga el primer nivel
+        cargarNivelActual();
     }
 
-    // carga el nivel actual, creando héroe, guardias y entidades del mapa
     private void cargarNivelActual() {
         if (nivelIdx >= niveles.size()) {
             estado = EstadoJuego.VICTORIA;
-            finalizar(EstadoJuego.VICTORIA, "Ganaste todos los niveles!");
+            if (estado == EstadoJuego.VICTORIA) {
+                if (input.isEnterPressed()) {
+                    if (fxPlayer != null) {
+                        fxPlayer.detener("fondo"); // Detiene la pista musical de forma efectiva
+                    }
+                    if (menu != null) {
+                        menu.recargarRanking(); // Refresca los nuevos puntajes desde la base de datos
+                    }
+                    this.estado = EstadoJuego.MENU; // Cambia el estado sin destruir la instancia del menú
+                }
+            }
             return;
         }
 
@@ -245,16 +257,12 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         heroe.setSkin(skin);
         Entidades.clear();
         guardias = new ArrayList<>();
-        for (var l : nivel.ladrillos)
-            Entidades.add(l);
-        for (var l : nivel.ladrillosIrrompibles)
-            Entidades.add(l);
-        for (var e : nivel.escaleras)
-            Entidades.add(e);
-        for (var b : nivel.barras)
-            Entidades.add(b);
-        for (var m : nivel.monedas)
-            Entidades.add(m);
+        for (var l : nivel.ladrillos) Entidades.add(l);
+        for (var l : nivel.ladrillosIrrompibles) Entidades.add(l);
+        for (var e : nivel.escaleras) Entidades.add(e);
+        for (var b : nivel.barras) Entidades.add(b);
+        for (var m : nivel.monedas) Entidades.add(m);
+
         for (int[] sp : nivel.spawnGuardias) {
             Guardia g = new Guardia(sp[0], sp[1], nivel.getTile_size());
             g.setHeroe(heroe);
@@ -275,10 +283,8 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
                 configManager.guardar();
                 return;
             }
-            if (input.isMenuUpPressed() || input.isWPressed())
-                menu.navegarMainMenu(-1);
-            if (input.isMenuDownPressed() || input.isSPressed())
-                menu.navegarMainMenu(1);
+            if (input.isMenuUpPressed() || input.isWPressed()) menu.navegarMainMenu(-1);
+            if (input.isMenuDownPressed() || input.isSPressed()) menu.navegarMainMenu(1);
             if (input.isEnterPressed()) {
                 if (menu.getSeleccion() == 2) {
                     GameLoop.terminarJuego();
@@ -292,19 +298,20 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             }
             return;
         }
-        
+
         if (estado == EstadoJuego.PAUSA) {
             if (input.isPPressed()) {
                 estado = EstadoJuego.JUGANDO;
                 fxPlayer.repetir("CancionFondoLodeRunner");
-            } else if (input.isEnterPressed()) {
+            } else if (input.isEscapePressed()) {
                 estado = EstadoJuego.MENU;
+                musicaIniciada = false;
                 fxPlayer.detener("CancionFondoLodeRunner");
+            }
+            return;
+        }
 
-            }
-            return;
-        }
-        if (estado == EstadoJuego.GAME_OVER ) {
+        if (estado == EstadoJuego.GAME_OVER || estado == EstadoJuego.VICTORIA) {
             if (input.isEnterPressed()) {
                 estado = EstadoJuego.MENU;
                 musicaIniciada = false;
@@ -312,32 +319,20 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             }
             return;
         }
-        if (estado == EstadoJuego.VICTORIA ) {
-            if (input.isEnterPressed()) {
-                System.out.println("ENTER DETECTADO");
-                estado = EstadoJuego.MENU;
-                musicaIniciada = false;
-                fxPlayer.detener("CancionFondoLodeRunner");
-            }
-            return;
-        }
-        
-        if (estado != EstadoJuego.JUGANDO || heroe == null || NivelActual == null)
-            return;
+
+        if (estado != EstadoJuego.JUGANDO || heroe == null || NivelActual == null) return;
 
         gestionarMusica();
         Nivel nivelActual = (Nivel) this.NivelActual;
 
         heroe.mover();
-        if (camara != null)
-            camara.seguirJugador(heroe, nivelActual);
+        if (camara != null) camara.seguirJugador(heroe, nivelActual);
 
         nivelActual.actualizar();
         tiempoNivel++;
 
         for (Guardia g : guardias) {
-            if (g != null)
-                g.mover();
+            if (g != null) g.mover();
         }
 
         heroe.verificarCaidaEnAgujero();
@@ -345,8 +340,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         heroe.verificarColisionGuardias();
 
         for (Guardia g : guardias) {
-            if (g == null)
-                continue;
+            if (g == null) continue;
             g.intentarRecolectarOro();
             if (g.manejarColisionAgujero(nivelActual.agujeros, guardias)) {
                 puntosJ1 += 200;
@@ -366,17 +360,20 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
                 int bonusTiempo = Math.max(0, (nivelActual.tiempoLimite * 60 - tiempoNivel) / 6);
                 puntosJ1 += 500 + bonusTiempo;
                 heroe.setVidas(heroe.getVidas() + 1);
-                if (soundEnabled && soundFxEnabled)
-                    fxPlayer.reproducir("empieza");
+                if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
                 nivelActual.finalizarNivel();
                 nivelIdx++;
+
                 if (nivelIdx >= niveles.size()) {
-                    rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx, puntosJ1);
-                    if (menu != null)
-                        menu.recargarRanking();
+                    String jugador = (nombreJugadorPrincipal != null && !nombreJugadorPrincipal.isBlank()) ? nombreJugadorPrincipal : "Jugador 1";
+                    rankingManager.agregarPuntaje(jugador, "Lode Runner", nivelIdx, puntosJ1);
+                    if (menu != null) menu.recargarRanking();
+
+                    // Cargamos a la RAM el top 10 solo una vez
+                    topRankingLodeRunner = rankingManager.cargarDetalleTop("Lode%", 10);
+
                     estado = EstadoJuego.VICTORIA;
                     fxPlayer.detener("CancionFondoLodeRunner");
-                    musicaIniciada = false;
                     return;
                 }
                 cargarNivelActual();
@@ -398,8 +395,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
 
     @Override
     public void onHeroDeath() {
-        if (soundEnabled && soundFxEnabled)
-            fxPlayer.reproducir("empieza");
+        if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
         Nivel nivelActual = (Nivel) this.NivelActual;
         int vidasGuardadas = heroe.getVidas();
         nivelActual.finalizarNivel();
@@ -410,43 +406,42 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
     @Override
     public void onGameOver() {
         if (!rankingRegistrado) {
-            rankingManager.agregarPuntaje(nombreJugadorPrincipal, "Lode Runner", nivelIdx + 1, puntosJ1);
-            if (menu != null)
-                menu.recargarRanking();
+            String jugador = (nombreJugadorPrincipal != null && !nombreJugadorPrincipal.isBlank()) ? nombreJugadorPrincipal : "Jugador 1";
+            rankingManager.agregarPuntaje(jugador, "Lode Runner", nivelIdx + 1, puntosJ1);
+            if (menu != null) menu.recargarRanking();
             rankingRegistrado = true;
         }
         heroe.desaparecer();
+
+        // Cargamos a la RAM el top 10 solo una vez
+        topRankingLodeRunner = rankingManager.cargarDetalleTop("Lode%", 10);
+
         estado = EstadoJuego.GAME_OVER;
         fxPlayer.detener("CancionFondoLodeRunner");
-        musicaIniciada = false;
     }
 
     @Override
     public void onCoinCollected() {
         puntosJ1 += 100;
-        if (soundEnabled && soundFxEnabled)
-            fxPlayer.reproducir("punto");
+        if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("punto");
     }
 
     @Override
     public void onDig() {
-        if (soundEnabled && soundFxEnabled)
-            fxPlayer.reproducir("paleta");
+        if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("paleta");
     }
 
     @Override
     public String getGanador() {
         return nombreJugadorPrincipal;
-    } // retorna nombre del ganador
+    }
 
     @Override
     public String getPerdedor() {
         return nombreJugadorPrincipal;
-    } // retorna nombre del perdedor
+    }
 
-    // asigna el nombre del jugador principal
     public void setNombreJugador(String nombre) {
         this.nombreJugadorPrincipal = nombre;
     }
-
 }
