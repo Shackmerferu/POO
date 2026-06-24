@@ -28,9 +28,12 @@ public class MenuPong extends MenuPrincipal {
     private RankingManager rankingManager;
     private List<RankingEntry> topRanking;
 
-    // --- SKINS ---
-    private int skinPaletas1 = 0;
-    private int skinPaletas2 = 0;
+    // --- CONFIGURACIÓN INDEPENDIENTE ---
+    private int skinPaleta1 = 0;
+    private int skinPaleta2 = 0;
+    private int puntosMaxIndex = 0; // 0 -> 11pts, 1 -> 15pts, 2 -> 21pts
+    private int volumenIndex = 0;   // 0 -> bajo, 1 -> medio, 2 -> alto
+
     // --- CONSTRUCTOR ---
     public MenuPong(InputManager input, Object mouse) {
         super("Pong", "Menú Principal", Color.BLACK, "Jugar", "Salir");
@@ -45,28 +48,34 @@ public class MenuPong extends MenuPrincipal {
     public int getSeleccion() { return seleccion; }
     public void setSeleccion(int seleccion) { this.seleccion = seleccion; }
     public boolean isConfigMode() { return configMode; }
-    public int getSkinPaleta1() { return skinPaletas1; }
-    public void setSkinPaleta1(int skin) { this.skinPaletas1 = skin; }
 
-    public int getSkinPaleta2() { return skinPaletas2; }
-    public void setSkinPaleta2(int skin) { this.skinPaletas2 = skin; }
-    private long lastMainNavTime;
+    // GETTERS Y SETTERS PARA MEMORIA
+    public int getSkinPaleta1() { return skinPaleta1; }
+    public void setSkinPaleta1(int skin) { this.skinPaleta1 = skin; }
 
-    public boolean navegarMainMenu(int direccion) {
-        long now = System.currentTimeMillis();
-        if (now - lastMainNavTime < 150) return false;
-        lastMainNavTime = now;
-        int nueva = seleccion + direccion;
-        if (nueva >= 0 && nueva <= 3) {
-            seleccion = nueva;
-            return true;
-        }
-        return false;
+    public int getSkinPaleta2() { return skinPaleta2; }
+    public void setSkinPaleta2(int skin) { this.skinPaleta2 = skin; }
+
+    public int getPuntosMaxIndex() { return puntosMaxIndex; }
+    public void setPuntosMaxIndex(int p) { this.puntosMaxIndex = p; }
+
+    public int getVolumenIndex() { return volumenIndex; }
+    public void setVolumenIndex(int v) { this.volumenIndex = v; }
+
+    // Devuelve el valor real en números según lo elegido en el menú
+    public int getPuntosMax() {
+        if (puntosMaxIndex == 0) return 11;
+        if (puntosMaxIndex == 1) return 15;
+        return 21;
     }
 
-    public void recargarRanking() {
-        this.topRanking = rankingManager.cargarDetalleTop("Pong%", 10);
+    // Devuelve el texto exacto que el FXPlayer necesita
+    public String getVolumenString() {
+        if (volumenIndex == 0) return "bajo";
+        if (volumenIndex == 1) return "medio";
+        return "alto";
     }
+
     public void setConfigMode(boolean configMode) {
         this.configMode = configMode;
         configSelected = 0;
@@ -74,30 +83,30 @@ public class MenuPong extends MenuPrincipal {
         lastConfigKeyTime = System.currentTimeMillis();
     }
 
+    public void recargarRanking() {
+        this.topRanking = rankingManager.cargarDetalleTop("Pong%", 10);
+    }
+
     public void actualizar() {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // LÓGICA DE CONFIGURACIÓN (SKINS + TECLAS)
+    // LÓGICA DE CONFIGURACIÓN
     // ═══════════════════════════════════════════════════════════════
     public void actualizarConfig() {
         long now = System.currentTimeMillis();
         String[] actions = KeyBindings.getActionNames();
 
-        // Ahora solo hay 1 opción (Skin) antes de la lista de teclas
-        int offsetTeclas = 2;
+        // Ahora hay 4 opciones antes de la lista de teclas (Skin 1, Skin 2, Puntos, Volumen)
+        int offsetTeclas = 4;
         int indexReset = offsetTeclas + actions.length; // Posición de "RESET VALORES"
         int indexVolver = indexReset + 1; // Posición de "VOLVER"
         int totalOpciones = indexVolver + 1;
 
-        // 1. Si está esperando que toquemos una tecla nueva...
         if (configActionIndex >= 0) {
             if (now - lastConfigKeyTime < 120) return;
             for (int code = 0; code < 256; code++) {
                 if (input.isKeyPressed(code)) {
-                    if (code == java.awt.event.KeyEvent.VK_ENTER) {
-                        continue; 
-                    }
                     KeyBindings.set(actions[configActionIndex], code);
                     lastConfigKeyTime = now;
                     configActionIndex = -1;
@@ -107,7 +116,6 @@ public class MenuPong extends MenuPrincipal {
             return;
         }
 
-        // 2. Navegación arriba y abajo
         if (now - lastConfigKeyTime > 120) {
             if (input.isMenuUpPressed() || input.isWPressed()) {
                 configSelected--;
@@ -121,20 +129,27 @@ public class MenuPong extends MenuPrincipal {
             }
         }
 
-        // 3. Selección al apretar ENTER
         if (input.isEnterPressed() && (now - lastConfigKeyTime > 150)) {
             lastConfigKeyTime = now;
 
             if (configSelected == 0) {
-                skinPaletas1 = (skinPaletas1 + 1) % 3; // Skin J1
+                skinPaleta1 = (skinPaleta1 + 1) % 3;
             } else if (configSelected == 1) {
-                skinPaletas2 = (skinPaletas2 + 1) % 3; // Skin J2
+                skinPaleta2 = (skinPaleta2 + 1) % 3;
+            } else if (configSelected == 2) {
+                puntosMaxIndex = (puntosMaxIndex + 1) % 3;
+            } else if (configSelected == 3) {
+                volumenIndex = (volumenIndex + 1) % 3; // Alternar volumen
             } else if (configSelected >= offsetTeclas && configSelected < indexReset) {
                 configActionIndex = configSelected - offsetTeclas;
             } else if (configSelected == indexReset) {
-                skinPaletas1 = 0;
-                skinPaletas2 = 0;
+                // RESET VALORES
+                skinPaleta1 = 0;
+                skinPaleta2 = 0;
+                puntosMaxIndex = 0;
+                volumenIndex = 0;
             } else if (configSelected == indexVolver) {
+                // VOLVER
                 configMode = false;
             }
         }
@@ -146,20 +161,19 @@ public class MenuPong extends MenuPrincipal {
 
         g.setFont(new Font("Consolas", Font.BOLD, 28));
         g.setColor(Color.CYAN);
-        g.drawString("CONFIGURACIÓN", 280, 60);
+        g.drawString("CONFIGURACIÓN", 280, 50);
 
         g.setFont(new Font("Consolas", Font.PLAIN, 18));
 
         String[] actions = KeyBindings.getActionNames();
-        int offsetTeclas = 2; // Solo Skin antes de las teclas
+        int offsetTeclas = 4;
         int indexReset = offsetTeclas + actions.length;
         int indexVolver = indexReset + 1;
 
-        // Bucle para dibujar todas las opciones dinámicamente
         for (int i = 0; i <= indexVolver; i++) {
-            int y = 110 + i * 28;
+            // Ajustamos un poco la altura (y) para que todo quepa bien
+            int y = 90 + i * 26;
 
-            // Dibujar cursor
             if (i == configSelected) {
                 g.setColor(Color.YELLOW);
                 g.drawString("> ", 150, y);
@@ -167,14 +181,21 @@ public class MenuPong extends MenuPrincipal {
                 g.setColor(Color.WHITE);
             }
 
-            // Textos según la opción
             if (i == 0) {
-                String extra = skinPaletas1 == 0 ? "[ORIGINAL]" : (skinPaletas1 == 1 ? "[SAMURAI]" : "[LUNAR]");
+                String extra = skinPaleta1 == 0 ? "[ORIGINAL]" : (skinPaleta1 == 1 ? "[ALTERNA 1]" : "[ALTERNA 2]");
                 g.drawString("Skin Jugador 1: " + extra, 180, y);
             }
             else if (i == 1) {
-                String extra = skinPaletas2 == 0 ? "[ORIGINAL]" : (skinPaletas2 == 1 ? "[SAMURAI]" : "[LUNAR]");
+                String extra = skinPaleta2 == 0 ? "[ORIGINAL]" : (skinPaleta2 == 1 ? "[ALTERNA 1]" : "[ALTERNA 2]");
                 g.drawString("Skin Jugador 2: " + extra, 180, y);
+            }
+            else if (i == 2) {
+                String extra = puntosMaxIndex == 0 ? "[11]" : (puntosMaxIndex == 1 ? "[15]" : "[21]");
+                g.drawString("Puntos para ganar: " + extra, 180, y);
+            }
+            else if (i == 3) {
+                String extra = volumenIndex == 0 ? "[BAJO]" : (volumenIndex == 1 ? "[MEDIO]" : "[ALTO]");
+                g.drawString("Volumen Música: " + extra, 180, y);
             }
             else if (i >= offsetTeclas && i < indexReset) {
                 int actionIdx = i - offsetTeclas;
@@ -201,9 +222,6 @@ public class MenuPong extends MenuPrincipal {
         g.drawString("Flechas: mover  |  Enter: cambiar / configurar  |  Esc: volver", 180, 560);
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // RENDERIZADO DEL MENÚ PRINCIPAL
-    // ═══════════════════════════════════════════════════════════════
     public void dibujar(Graphics g) {
         if (isConfigMode()) {
             dibujarConfig(g);
@@ -217,7 +235,7 @@ public class MenuPong extends MenuPrincipal {
         g.setColor(Color.GREEN);
         g.drawString("ARCADE PONG", 260, 100);
 
-        String[] opciones = {"1 JUGADOR (VS IA)", "2 JUGADORES", "CONFIG", "SALIR"};
+        String[] opciones = {"1 JUGADOR (VS IA)", "2 JUGADORES", "CONFIGURACIÓN", "SALIR"};
         g.setFont(new Font("Consolas", Font.PLAIN, 20));
         for (int i = 0; i < opciones.length; i++) {
             if (i == seleccion) {
@@ -232,9 +250,8 @@ public class MenuPong extends MenuPrincipal {
         g.setFont(new Font("Consolas", Font.PLAIN, 14));
         g.setColor(Color.GRAY);
         g.drawString("W/S o Flechas para mover | ENTER para seleccionar", 100, 420);
-        g.drawString("Controles: W/S (J1)  |  Flechas Arriba/Abajo (J2)", 100, 440);
+        g.drawString("Controles configurables en el menú de Opciones", 100, 440);
 
-        // Ranking
         g.setFont(new Font("Consolas", Font.BOLD, 22));
         g.setColor(Color.CYAN);
         g.drawString("--- TOP 10 RANKING ---", 450, 180);
@@ -248,12 +265,8 @@ public class MenuPong extends MenuPrincipal {
             int y = 220;
             for (int i = 0; i < topRanking.size(); i++) {
                 RankingEntry entry = topRanking.get(i);
-
                 String detalle = entry.juego().replace("Pong", "").trim();
-                if (detalle.isEmpty()) {
-                    detalle = entry.puntaje() + " pts";
-                }
-
+                if (detalle.isEmpty()) detalle = entry.puntaje() + " pts";
                 String texto = String.format("%d. %s  %s", (i + 1), entry.jugador(), detalle);
                 g.drawString(texto, 450, y);
                 y += 20;

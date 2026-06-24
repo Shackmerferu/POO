@@ -48,10 +48,23 @@ public class JuegoPong extends VideoJuego {
 
     @Override
     public void iniciar() {
+        // TRUCO DE MEMORIA: Guardamos las elecciones antes de que el motor reinicie el menú
+        int viejaSkin1 = (this.menu != null) ? this.menu.getSkinPaleta1() : 0;
+        int viejaSkin2 = (this.menu != null) ? this.menu.getSkinPaleta2() : 0;
+        int viejosPuntos = (this.menu != null) ? this.menu.getPuntosMaxIndex() : 0;
+        int viejoVolumen = (this.menu != null) ? this.menu.getVolumenIndex() : 0;
+
         super.iniciar();
         this.input = new InputManager();
         super.input = this.input;
         this.menu = new MenuPong(input, null);
+
+        // Le devolvemos la memoria al menú nuevo
+        this.menu.setSkinPaleta1(viejaSkin1);
+        this.menu.setSkinPaleta2(viejaSkin2);
+        this.menu.setPuntosMaxIndex(viejosPuntos);
+        this.menu.setVolumenIndex(viejoVolumen);
+
         this.collisionManager = new CollisionManager();
 
         // Inicia el sonido y carga los archivos
@@ -60,7 +73,6 @@ public class JuegoPong extends VideoJuego {
         this.fxPlayer.cargarSonidoRecurso("punto", "sonidos/punto.wav");
         this.fxPlayer.cargarSonidoRecurso("inicio", "sonidos/Empieza.wav");
         this.fxPlayer.cargarSonidoRecurso("fondo", "sonidos/SoundTrack.wav");
-        this.fxPlayer.setVolumen("fondo", "bajo");
 
         this.puntosJ1 = 0;
         this.puntosJ2 = 0;
@@ -144,6 +156,9 @@ public class JuegoPong extends VideoJuego {
         paleta2 = new Paleta(input, 2);
         paleta2.ResetearPOS();
 
+        // Leemos la configuración de puntos del menú
+        this.PUNTOS_MAX = menu.getPuntosMax();
+
         // Aplicamos las skins desde las variables persistentes del menú
         int skinJ1 = menu.getSkinPaleta1();
         if (skinJ1 == 1) {
@@ -173,8 +188,15 @@ public class JuegoPong extends VideoJuego {
 
         if (soundEnabled) {
             fxPlayer.reproducir("inicio");
+
+            // 1. Detenemos cualquier pista que haya quedado sonando
             fxPlayer.detener("fondo");
+
+            // 2. Encendemos la música en bucle
             fxPlayer.repetir("fondo");
+
+            // 3. Modificamos el volumen con la pista ya activa
+            fxPlayer.setVolumen("fondo", menu.getVolumenString());
         }
     }
 
@@ -194,12 +216,14 @@ public class JuegoPong extends VideoJuego {
                 menu.actualizarConfig();
                 return;
             }
+
             if (input.isMenuUpPressed() || input.isWPressed()) {
-                menu.navegarMainMenu(-1);
+                menu.setSeleccion(Math.max(0, menu.getSeleccion() - 1));
             }
             if (input.isMenuDownPressed() || input.isSPressed()) {
-                menu.navegarMainMenu(1);
+                menu.setSeleccion(Math.min(3, menu.getSeleccion() + 1));
             }
+            // ------------------------------------------------------
             if (input.isEnterPressed()) {
                 if (menu.getSeleccion() == 3) {
                     if (fxPlayer != null) fxPlayer.detener("fondo");
@@ -213,6 +237,7 @@ public class JuegoPong extends VideoJuego {
                 modoIA = (menu.getSeleccion() == 0);
                 crearPartida();
             }
+
         }
         //  Estado: FIN DE PARTIDA
         else if (this.estado == EstadoJuego.GAME_OVER) {
@@ -284,7 +309,7 @@ public class JuegoPong extends VideoJuego {
         rankingRegistrado = true;
     }
 
-       @Override
+    @Override
     protected void reiniciar() {
         if (fxPlayer != null) {
             fxPlayer.detener("fondo");

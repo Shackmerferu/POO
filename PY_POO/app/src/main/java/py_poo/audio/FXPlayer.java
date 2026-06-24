@@ -112,7 +112,7 @@ public class FXPlayer {
                 case "medio":
                     gainControl.setValue(-10.0f); // Reduce moderadamente el volumen
                     break;
-                case "fuerte":
+                case "alto":
                 default:
                     gainControl.setValue(0.0f);   // 0.0 dB es el volumen original del archivo .wav sin alteraciones
                     break;
