@@ -191,15 +191,13 @@ protected void actualizarLogicaJuego() {
         //Nave Nodriza desarrollo completo
         if (this.platoVolador == null) {
             if (Math.random() < 0.0001) { 
-                this.platoVolador = new NaveNodriza();
+                this.platoVolador = new NaveNodriza(skinNodriza[menu.getSkinNodriza()]);
                 Entidades.add(this.platoVolador);
             }
-        } else {
-            if (this.platoVolador.isParaEliminar()) {
-                this.platoVolador = null;
-            }
+        } else if (this.platoVolador.isParaEliminar()) {
+            this.platoVolador = null;
         }
-            //Tiros de flota bichos
+        //Tiros de flota bichos
         for (Enemigo bicho : flotaE.values()) {
             if (!bicho.isParaEliminar() && Math.random() < 0.0001) {
                 int centroX = (int) bicho.getX() + (bicho.getWidth() / 2); 
@@ -392,6 +390,11 @@ protected void actualizarLogicaJuego() {
         "imagenes/Space Invaders/Projectiles/ProjectileA_1.png",
         "imagenes/Space Invaders/Projectiles/ProjectileB_4.png" // Skin alternativa
     };
+    
+    private final String[] skinNodriza = {
+        "imagenes/Space Invaders/Invaders/space__0007_UFO.png",
+        "imagenes/Space Invaders/Invaders/Invaders_nuevo/UFO_N.png"
+    };
 
     @Override
     protected void crearPartida() {
@@ -402,6 +405,7 @@ protected void actualizarLogicaJuego() {
 
         String naveSkin = skinsNave[menu.getSkinNave()];
         String laserSkin = skinsLaser[menu.getSkinProyectiles()];
+        String nodrizaSkin = skinNodriza[menu.getSkinNodriza()];
 
         this.navecita = new NaveJugador(380, 500, naveSkin, laserSkin);
         Entidades.add(navecita);
@@ -433,3 +437,4 @@ protected void actualizarLogicaJuego() {
         return Nombre;
     }
 }
+

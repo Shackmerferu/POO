@@ -26,6 +26,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     private boolean pantallaCompleta = false;
     private boolean sonidoActivado = true;
     private int skinNave = 0;
+    private int skinNodriza = 0;
     private int skinInvasores = 0;
     private int skinProyectiles = 0;
     private int pistaMusical = 0;
@@ -161,8 +162,9 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             else if (i == 2) extra = skinNave == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
             else if (i == 3) extra = skinInvasores == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
             else if (i == 4) extra = skinProyectiles == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
-            else if (i == 5) extra = pistaMusical == 0 ? " [ORIGINAL]" : " [TEMAIKEN]";
-            else if (i == 6) {
+            else if (i == 5) extra = skinNodriza == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
+            else if (i == 6) extra = pistaMusical == 0 ? " [ORIGINAL]" : " [TEMAIKEN]";
+            else if (i == 7) {
                 if(velocidad == 0) extra = " [LENTA]";
                 else if(velocidad == 1) extra = " [MEDIA]";
                 else extra = " [RAPIDA]";
@@ -333,14 +335,15 @@ public class MenuSpaceInvaders extends MenuPrincipal {
                 case 1: sonidoActivado = !sonidoActivado; break;
                 case 2: skinNave = (skinNave + 1) % 2; break; 
                 case 3: skinInvasores = (skinInvasores + 1) % 2; break;
-                case 4: configActionIndex = -99; break;
-                case 5: pistaMusical = (pistaMusical + 1) % 2; break;
-                case 6: velocidad = (velocidad + 1) % 3; break; 
-                case 7: 
+                case 4: skinNodriza = (skinNodriza + 1) % 2; break;
+                case 5: skinProyectiles = (skinProyectiles + 1) % 2; break;
+                case 6: pistaMusical = (pistaMusical + 1) % 2; break;
+                case 7: velocidad = (velocidad + 1) % 3; break; 
+                case 8: 
                     teclasmenuControles = true;
                     seleccionOpcinesControles = 0;
                     break; 
-                case 8:
+                case 9:
                     if (pantallaCompleta) {
                         GameLoop.toggleFullscreenStatic();
                     }
@@ -348,8 +351,9 @@ public class MenuSpaceInvaders extends MenuPrincipal {
                     sonidoActivado = true;
                     skinNave = 0; skinInvasores = 0; skinProyectiles = 0;
                     pistaMusical = 0; velocidad = 1;
+                    skinNodriza = 0;
                     break;
-                case 9: 
+                case 10: 
                     configMode = false; 
                     break; 
             }
@@ -370,6 +374,10 @@ public class MenuSpaceInvaders extends MenuPrincipal {
 
     public int getSkinInvasores() {
         return skinInvasores;
+    }
+
+    public int getSkinNodriza() {
+        return skinNodriza;
     }
 
     public int getSkinProyectiles() {

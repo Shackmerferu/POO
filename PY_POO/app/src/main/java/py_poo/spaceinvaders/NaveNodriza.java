@@ -8,9 +8,9 @@ public class NaveNodriza extends ObjetoGrafico {
 
     private static Random random = new Random();
     private int velocidad=2;
-    public NaveNodriza() {
+    public NaveNodriza(String ruta) {
         super();
-        this.setSprite("imagenes/Space Invaders/Invaders/space__0007_UFO.png");
+        this.setSprite(ruta);
         this.setDimension(new java.awt.Dimension(50,30));
         this.setPunto(new java.awt.Point(-50, 25));
     }
