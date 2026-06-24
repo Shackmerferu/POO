@@ -26,15 +26,15 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     private boolean pantallaCompleta = false;
     private boolean sonidoActivado = true;
     private int skinNave = 0;
-    private int skinNodriza = 0;
     private int skinInvasores = 0;
     private int skinProyectiles = 0;
+    private int skinNodriza = 0; // MODIFICACIÓN: Nueva variable
     private int pistaMusical = 0;
     private int velocidad = 1;
     
     private final String[] opcionesConfig = {
         "Modo Pantalla", "Sonido General", "Skin Nave", "Skin Invasores",
-        "Skin Proyectiles", "Pista Musical", "Velocidad Invasores",
+        "Skin Proyectiles", "Skin Nodriza", "Pista Musical", "Velocidad Invasores", // MODIFICACIÓN: Opción agregada
         "Configurar Teclas", "RESET VALORES", "VOLVER"
     };
     private String[] opcionesControles = {
@@ -153,8 +153,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             }
 
             String extra = "";
-            if (configActionIndex == -99 && i == configSelected) {
-               
+            if (configActionIndex == -99 && i == 4) {
                 extra = " - Adquiera el DLC a SOLO 1.99$ (Antes: 5̶.̶0̶0̶$̶)";
                 g.setColor(Color.RED); 
             } else if (i == 0) extra = pantallaCompleta ? " [PANTALLA COMPLETA]" : " [VENTANA]";
@@ -162,7 +161,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             else if (i == 2) extra = skinNave == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
             else if (i == 3) extra = skinInvasores == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
             else if (i == 4) extra = skinProyectiles == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
-            else if (i == 5) extra = skinNodriza == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
+            else if (i == 5) extra = skinNodriza == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]"; // MODIFICACIÓN
             else if (i == 6) extra = pistaMusical == 0 ? " [ORIGINAL]" : " [TEMAIKEN]";
             else if (i == 7) {
                 if(velocidad == 0) extra = " [LENTA]";
@@ -182,58 +181,58 @@ public class MenuSpaceInvaders extends MenuPrincipal {
        if (isConfigMode()) {
             dibujarConfig(g); 
             return;           
-        }
-        
-        g.setColor(new Color(25, 27, 34));
-        g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
+       }
+       
+       g.setColor(new Color(25, 27, 34));
+       g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
 
-        g.setFont(new Font("Consolas", Font.BOLD, 45));
-        g.setColor(new Color(255, 210, 60));
-        g.drawString("SPACE INVADERS", Constantes.WIDTH / 2 - 200, 100);
+       g.setFont(new Font("Consolas", Font.BOLD, 45));
+       g.setColor(new Color(255, 210, 60));
+       g.drawString("SPACE INVADERS", Constantes.WIDTH / 2 - 200, 100);
 
-        String[] opciones = {"JUGAR", "CONFIG", "SALIR"};
-        g.setFont(new Font("Consolas", Font.PLAIN, 20));
+       String[] opciones = {"JUGAR", "CONFIG", "SALIR"};
+       g.setFont(new Font("Consolas", Font.PLAIN, 20));
 
-        for (int i = 0; i < opciones.length; i++) {
-            if (i == seleccion) {
-                g.setColor(Color.YELLOW);
-                g.drawString("> " + opciones[i], 100, 200 + i * 35);
-            } else {
-                g.setColor(Color.WHITE);
-                g.drawString("  " + opciones[i], 100, 200 + i * 35);
-            }
-        }
+       for (int i = 0; i < opciones.length; i++) {
+           if (i == seleccion) {
+               g.setColor(Color.YELLOW);
+               g.drawString("> " + opciones[i], 100, 200 + i * 35);
+           } else {
+               g.setColor(Color.WHITE);
+               g.drawString("  " + opciones[i], 100, 200 + i * 35);
+           }
+       }
 
-        g.setFont(new Font("Consolas", Font.PLAIN, 14));
-        g.setColor(Color.GRAY);
-        g.drawString("W/S o Flechas para mover | ENTER para seleccionar", 100, 420);
+       g.setFont(new Font("Consolas", Font.PLAIN, 14));
+       g.setColor(Color.GRAY);
+       g.drawString("W/S o Flechas para mover | ENTER para seleccionar", 100, 420);
 
-        g.setFont(new Font("Consolas", Font.PLAIN, 12));
-        g.setColor(new Color(230, 140, 60));
-        g.drawString("Controles:", 100, 450);
-        g.setColor(new Color(180, 180, 180));
-        g.drawString("Moverse: ◄ / ► o Flechas", 100, 470);
-        g.drawString("Disparo: ESPACIO", 100, 485);
-        g.drawString("P: Pausa Local", 100, 500);
-        g.drawString("Esc: Volver al Menú", 100, 515);
+       g.setFont(new Font("Consolas", Font.PLAIN, 12));
+       g.setColor(new Color(230, 140, 60));
+       g.drawString("Controles:", 100, 450);
+       g.setColor(new Color(180, 180, 180));
+       g.drawString("Moverse: ◄ / ► o Flechas", 100, 470);
+       g.drawString("Disparo: ESPACIO", 100, 485);
+       g.drawString("P: Pausa Local", 100, 500);
+       g.drawString("Esc: Volver al Menú", 100, 515);
 
-        g.setFont(new Font("Consolas", Font.BOLD, 22));
-        g.setColor(Color.CYAN);
-        g.drawString("--- TOP 10 RANKING ---", 450, 180);
+       g.setFont(new Font("Consolas", Font.BOLD, 22));
+       g.setColor(Color.CYAN);
+       g.drawString("--- TOP 10 RANKING ---", 450, 180);
 
-        g.setFont(new Font("Consolas", Font.PLAIN, 14));
-        g.setColor(Color.WHITE);
-        if (topRanking == null || topRanking.isEmpty()) {
-            g.drawString("Aún no hay puntajes.", 450, 220);
-        } else {
-            int y = 220;
-            for (int i = 0; i < topRanking.size(); i++) {
-                RankingEntry entry = topRanking.get(i);
-                String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
-                g.drawString(texto, 450, y);
-                y += 20;
-            }
-        }
+       g.setFont(new Font("Consolas", Font.PLAIN, 14));
+       g.setColor(Color.WHITE);
+       if (topRanking == null || topRanking.isEmpty()) {
+           g.drawString("Aún no hay puntajes.", 450, 220);
+       } else {
+           int y = 220;
+           for (int i = 0; i < topRanking.size(); i++) {
+               RankingEntry entry = topRanking.get(i);
+               String texto = String.format("%d. %s  N%d  %d pts", (i + 1), entry.jugador(), entry.Nivel(), entry.puntaje());
+               g.drawString(texto, 450, y);
+               y += 20;
+           }
+       }
     }
 
     public void setConfigMode(boolean configMode) {
@@ -326,37 +325,36 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         }
 
         if (input.isEnterPressed() && (now - lastConfigKeyTime > 150)) {
-            lastConfigKeyTime = now;
-            switch(configSelected) {
-                case 0:
-                    pantallaCompleta = !pantallaCompleta;
-                    GameLoop.toggleFullscreenStatic();
-                    break;
-                case 1: sonidoActivado = !sonidoActivado; break;
-                case 2: skinNave = (skinNave + 1) % 2; break; 
-                case 3: skinInvasores = (skinInvasores + 1) % 2; break;
-                case 4: skinNodriza = (skinNodriza + 1) % 2; break;
-                case 5: skinProyectiles = (skinProyectiles + 1) % 2; break;
-                case 6: pistaMusical = (pistaMusical + 1) % 2; break;
-                case 7: velocidad = (velocidad + 1) % 3; break; 
-                case 8: 
-                    teclasmenuControles = true;
-                    seleccionOpcinesControles = 0;
-                    break; 
-                case 9:
-                    if (pantallaCompleta) {
-                        GameLoop.toggleFullscreenStatic();
-                    }
-                    pantallaCompleta = false;
-                    sonidoActivado = true;
-                    skinNave = 0; skinInvasores = 0; skinProyectiles = 0;
-                    pistaMusical = 0; velocidad = 1;
-                    skinNodriza = 0;
-                    break;
-                case 10: 
-                    configMode = false; 
-                    break; 
-            }
+          lastConfigKeyTime = now;
+        switch(configSelected) {
+            case 0: pantallaCompleta = !pantallaCompleta; GameLoop.toggleFullscreenStatic(); break;
+            case 1: sonidoActivado = !sonidoActivado; break;
+            case 2: skinNave = (skinNave + 1) % 2; break; 
+            case 3: skinInvasores = (skinInvasores + 1) % 2; break;
+            case 4: skinProyectiles = (skinProyectiles + 1) % 2; break;
+            case 5: skinNodriza = (skinNodriza + 1) % 2; break; // AHORA ESTÁ BIEN
+            case 6: pistaMusical = (pistaMusical + 1) % 2; break; // ERA 5
+            case 7: velocidad = (velocidad + 1) % 3; break;       // ERA 6
+            case 8: // ERA 7
+                teclasmenuControles = true;
+                seleccionOpcinesControles = 0;
+                break; 
+            case 9: // ERA 8
+                if (pantallaCompleta) 
+                GameLoop.toggleFullscreenStatic();
+                pantallaCompleta = false; 
+                sonidoActivado = true;
+                skinNave = 0; 
+                skinInvasores = 0; 
+                skinProyectiles = 0;
+                skinNodriza = 0; 
+                pistaMusical = 0; 
+                velocidad = 1;
+                break;
+            case 10: // ERA 9
+                configMode = false; 
+                break; 
+        }
         }
     }
 
@@ -376,7 +374,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         return skinInvasores;
     }
 
-    public int getSkinNodriza() {
+    public int getSkinNodriza() { // MODIFICACIÓN
         return skinNodriza;
     }
 
