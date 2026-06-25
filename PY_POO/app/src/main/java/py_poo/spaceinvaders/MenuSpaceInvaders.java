@@ -23,28 +23,33 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     private int configSelected;
     private int configActionIndex = -1;
     private long lastConfigKeyTime;
+
+    // --- VARIABLES DE CONFIGURACIÓN ---
     private boolean pantallaCompleta = false;
     private boolean sonidoActivado = true;
+    private int volumenIndex = 0;   // 0 -> bajo, 1 -> medio, 2 -> alto
     private int skinNave = 0;
     private int skinNodriza = 0;
     private int skinInvasores = 0;
     private int skinProyectiles = 0;
     private int pistaMusical = 0;
     private int velocidad = 1;
-    
+
+    // ARREGLADO: Se agregó "Volumen Música" y "Skin Nodriza" que faltaba visualmente
     private final String[] opcionesConfig = {
-        "Modo Pantalla", "Sonido General", "Skin Nave", "Skin Invasores",
-        "Skin Proyectiles", "Pista Musical", "Velocidad Invasores",
-        "Configurar Teclas", "RESET VALORES", "VOLVER"
+            "Modo Pantalla", "Sonido General", "Volumen Música", "Skin Nave", "Skin Invasores",
+            "Skin Nodriza", "Skin Proyectiles", "Pista Musical", "Velocidad Invasores",
+            "Configurar Teclas", "RESET VALORES", "VOLVER"
     };
+
     private String[] opcionesControles = {
-        "Mover Izquierda",
-        "Mover Derecha",
-        "Disparar",
-        "Pausa",
-        "Volver"
+            "Mover Izquierda",
+            "Mover Derecha",
+            "Disparar",
+            "Pausa",
+            "Volver"
     };
-    private boolean teclasmenuControles = false; 
+    private boolean teclasmenuControles = false;
     private int seleccionOpcinesControles = 0;
     private long lastMainNavTime;
     private RankingManager rankingManager;
@@ -56,17 +61,22 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         this.juego = juego;
         this.seleccion = 0;
         this.ultimoTiempo = System.currentTimeMillis();
-        
+
         this.rankingManager = new RankingManager();
         this.topRanking = rankingManager.cargarDetalleTop("Space%", 10);
     }
 
-    public int getSeleccion() {
-        return seleccion;
-    }
+    public int getSeleccion() { return seleccion; }
+    public void setSeleccion(int seleccion) { this.seleccion = seleccion; }
 
-    public void setSeleccion(int seleccion) {
-        this.seleccion = seleccion;
+    // --- GETTERS Y SETTERS DE VOLUMEN ---
+    public int getVolumenIndex() { return volumenIndex; }
+    public void setVolumenIndex(int v) { this.volumenIndex = v; }
+
+    public String getVolumenString() {
+        if (volumenIndex == 0) return "bajo";
+        if (volumenIndex == 1) return "medio";
+        return "alto";
     }
 
     public boolean navegarMainMenu(int direccion) {
@@ -84,7 +94,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     public void recargarRanking() {
         this.topRanking = rankingManager.cargarDetalleTop("Space%", 10);
     }
-    
+
     @Override
     public void setVisible(boolean b) {
         super.setVisible(false);
@@ -94,7 +104,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
     @Override
     public void actualizar() {
     }
-    
+
     public void dibujarConfig(Graphics g) {
         g.setColor(new Color(0, 0, 0, 200));
         g.fillRect(0, 0, 800, 600);
@@ -139,11 +149,12 @@ public class MenuSpaceInvaders extends MenuPrincipal {
 
         g.setFont(new Font("Consolas", Font.BOLD, 28));
         g.setColor(Color.CYAN);
-        g.drawString("CONFIGURACIÓN", 280, 60);
+        g.drawString("CONFIGURACIÓN", 280, 50);
 
         g.setFont(new Font("Consolas", Font.PLAIN, 18));
         for (int i = 0; i < opcionesConfig.length; i++) {
-            int y = 110 + i * 40;
+            // Reduje un poco el multiplicador (de 40 a 32) para que entren los 12 elementos
+            int y = 90 + i * 32;
 
             if (i == configSelected) {
                 g.setColor(Color.YELLOW);
@@ -154,17 +165,17 @@ public class MenuSpaceInvaders extends MenuPrincipal {
 
             String extra = "";
             if (configActionIndex == -99 && i == configSelected) {
-               
                 extra = " - Adquiera el DLC a SOLO 1.99$ (Antes: 5̶.̶0̶0̶$̶)";
-                g.setColor(Color.RED); 
+                g.setColor(Color.RED);
             } else if (i == 0) extra = pantallaCompleta ? " [PANTALLA COMPLETA]" : " [VENTANA]";
             else if (i == 1) extra = sonidoActivado ? " [ACTIVADO]" : " [DESACTIVADO]";
-            else if (i == 2) extra = skinNave == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
-            else if (i == 3) extra = skinInvasores == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
-            else if (i == 4) extra = skinProyectiles == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
+            else if (i == 2) extra = volumenIndex == 0 ? " [BAJO]" : (volumenIndex == 1 ? " [MEDIO]" : " [ALTO]");
+            else if (i == 3) extra = skinNave == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
+            else if (i == 4) extra = skinInvasores == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
             else if (i == 5) extra = skinNodriza == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
-            else if (i == 6) extra = pistaMusical == 0 ? " [ORIGINAL]" : " [TEMAIKEN]";
-            else if (i == 7) {
+            else if (i == 6) extra = skinProyectiles == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
+            else if (i == 7) extra = pistaMusical == 0 ? " [ORIGINAL]" : " [TEMAIKEN]";
+            else if (i == 8) {
                 if(velocidad == 0) extra = " [LENTA]";
                 else if(velocidad == 1) extra = " [MEDIA]";
                 else extra = " [RAPIDA]";
@@ -177,13 +188,13 @@ public class MenuSpaceInvaders extends MenuPrincipal {
         g.setColor(Color.GRAY);
         g.drawString("Flechas: mover  |  Enter: cambiar/seleccionar  |  Esc: volver", 180, 560);
     }
-    
+
     public void dibujar(Graphics g) {
-       if (isConfigMode()) {
-            dibujarConfig(g); 
-            return;           
+        if (isConfigMode()) {
+            dibujarConfig(g);
+            return;
         }
-        
+
         g.setColor(new Color(25, 27, 34));
         g.fillRect(0, 0, Constantes.WIDTH, Constantes.HEIGHT);
 
@@ -260,12 +271,12 @@ public class MenuSpaceInvaders extends MenuPrincipal {
                 if (now - lastConfigKeyTime < 150) return;
                 for (int code = 0; code < 256; code++) {
                     if (code == java.awt.event.KeyEvent.VK_ENTER) {
-                        continue; 
-                    }   
+                        continue;
+                    }
                     if (input.isKeyPressed(code)) {
                         KeyBindings.set(KeyBindings.getActionNames()[configActionIndex], code);
                         lastConfigKeyTime = now;
-                        configActionIndex = -1; 
+                        configActionIndex = -1;
                         break;
                     }
                 }
@@ -300,12 +311,12 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             if (now - lastConfigKeyTime < 120) return;
             for (int code = 0; code < 256; code++) {
                 if (code == java.awt.event.KeyEvent.VK_ENTER) {
-                    continue; 
+                    continue;
                 }
                 if (input.isKeyPressed(code)) {
                     KeyBindings.set(KeyBindings.getActionNames()[configActionIndex], code);
                     lastConfigKeyTime = now;
-                    configActionIndex = -1; 
+                    configActionIndex = -1;
                     break;
                 }
             }
@@ -333,29 +344,31 @@ public class MenuSpaceInvaders extends MenuPrincipal {
                     GameLoop.toggleFullscreenStatic();
                     break;
                 case 1: sonidoActivado = !sonidoActivado; break;
-                case 2: skinNave = (skinNave + 1) % 2; break; 
-                case 3: skinInvasores = (skinInvasores + 1) % 2; break;
-                case 4: skinNodriza = (skinNodriza + 1) % 2; break;
-                case 5: skinProyectiles = (skinProyectiles + 1) % 2; break;
-                case 6: pistaMusical = (pistaMusical + 1) % 2; break;
-                case 7: velocidad = (velocidad + 1) % 3; break; 
-                case 8: 
+                case 2: volumenIndex = (volumenIndex + 1) % 3; break; // NUEVA LÓGICA DE VOLUMEN
+                case 3: skinNave = (skinNave + 1) % 2; break;
+                case 4: skinInvasores = (skinInvasores + 1) % 2; break;
+                case 5: skinNodriza = (skinNodriza + 1) % 2; break;
+                case 6: skinProyectiles = (skinProyectiles + 1) % 2; break;
+                case 7: pistaMusical = (pistaMusical + 1) % 2; break;
+                case 8: velocidad = (velocidad + 1) % 3; break;
+                case 9:
                     teclasmenuControles = true;
                     seleccionOpcinesControles = 0;
-                    break; 
-                case 9:
+                    break;
+                case 10:
                     if (pantallaCompleta) {
                         GameLoop.toggleFullscreenStatic();
                     }
                     pantallaCompleta = false;
                     sonidoActivado = true;
+                    volumenIndex = 0; // Se resetea el volumen
                     skinNave = 0; skinInvasores = 0; skinProyectiles = 0;
                     pistaMusical = 0; velocidad = 1;
                     skinNodriza = 0;
                     break;
-                case 10: 
-                    configMode = false; 
-                    break; 
+                case 11:
+                    configMode = false;
+                    break;
             }
         }
     }

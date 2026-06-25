@@ -39,7 +39,6 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
     private int tiempoNivel;
     private BufferedImage fondo;
     private FXPlayer fxPlayer;
-    private boolean musicaIniciada;
 
     // VARIABLES DE RANKING AGREGADAS
     private RankingManager rankingManager;
@@ -47,11 +46,18 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
 
     @Override
     public void iniciar() {
+        // TRUCO DE MEMORIA: Guardamos la elección antes de que el motor reinicie
+        int viejoVolumen = (this.menu != null) ? this.menu.getVolumenIndex() : 0;
+
         super.iniciar();
         this.input = new InputManager();
         super.input = this.input;
         this.menu = new MenuLodeRunner(input, null);
-        this.rankingManager = new RankingManager(); // Inicializamos el gestor para evitar crasheos
+
+        // Le devolvemos la memoria al menú nuevo
+        this.menu.setVolumenIndex(viejoVolumen);
+
+        this.rankingManager = new RankingManager();
 
         this.puntosJ1 = 0;
         this.rankingRegistrado = false;
@@ -65,7 +71,12 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         this.fxPlayer.cargarSonidoRecurso("paleta", "sonidos/paleta.wav");
         this.fxPlayer.cargarSonidoRecurso("Empieza", "sonidos/Empieza.wav");
         this.fxPlayer.cargarSonidoRecurso("CancionFondoLodeRunner", "sonidos/LodeRunner/CancionFondoLodeRunner.wav");
-        this.fxPlayer.setVolumen("CancionFondoLodeRunner", "medio");
+
+        // Asignamos el volumen inicial de la memoria a los efectos
+        String volumenEfectos = this.menu.getVolumenString();
+        this.fxPlayer.setVolumen("punto", volumenEfectos);
+        this.fxPlayer.setVolumen("paleta", volumenEfectos);
+        this.fxPlayer.setVolumen("Empieza", volumenEfectos);
     }
 
     @Override
@@ -141,7 +152,6 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             g.setFont(new Font("Consolas", Font.PLAIN, 14));
             g.setColor(Color.WHITE);
             int y = 290;
-            // Usamos la lista de la RAM, no consultamos SQLite aquí
             if (topRankingLodeRunner == null || topRankingLodeRunner.isEmpty()) {
                 g.drawString("Aún no hay puntajes.", Constantes.WIDTH / 2 - 80, y);
             } else {
@@ -175,7 +185,6 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             g.setFont(new Font("Consolas", Font.PLAIN, 14));
             g.setColor(Color.WHITE);
             int y = 290;
-            // Usamos la lista de la RAM
             if (topRankingLodeRunner == null || topRankingLodeRunner.isEmpty()) {
                 g.drawString("Aún no hay puntajes.", Constantes.WIDTH / 2 - 80, y);
             } else {
@@ -194,7 +203,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
 
         g.setFont(new Font("Consolas", Font.PLAIN, 12));
         g.setColor(new Color(255, 255, 255, 100));
-        String snd = "FX:" + (soundFxEnabled ? "ON" : "OFF") + " MUS:" + (musicEnabled ? "ON" : "OFF")
+        String snd = "FX:" + (soundFxEnabled ? "ON" : "OFF") + " MUS:" + (soundEnabled ? "ON" : "OFF")
                 + " Q=FX M=MUS CTRL=GLOBAL \\=FULL";
         g.drawString(snd, 10, Constantes.HEIGHT - 10);
     }
@@ -215,7 +224,14 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         Jugador.clear();
         Jugador.add(new Jugador(jugadorAsegurado));
         estado = EstadoJuego.JUGANDO;
-        fxPlayer.repetir("CancionFondoLodeRunner");
+
+        // ESTRUCTURA FIJA Y SEGURA: Igual que en Pong y Space Invaders
+        if (soundEnabled) {
+            fxPlayer.detener("CancionFondoLodeRunner");
+            fxPlayer.repetir("CancionFondoLodeRunner");
+            fxPlayer.setVolumen("CancionFondoLodeRunner", menu.getVolumenString());
+        }
+
         cargarNivelActual();
     }
 
@@ -225,12 +241,12 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             if (estado == EstadoJuego.VICTORIA) {
                 if (input.isEnterPressed()) {
                     if (fxPlayer != null) {
-                        fxPlayer.detener("fondo"); // Detiene la pista musical de forma efectiva
+                        fxPlayer.detener("CancionFondoLodeRunner");
                     }
                     if (menu != null) {
-                        menu.recargarRanking(); // Refresca los nuevos puntajes desde la base de datos
+                        menu.recargarRanking();
                     }
-                    this.estado = EstadoJuego.MENU; // Cambia el estado sin destruir la instancia del menú
+                    this.estado = EstadoJuego.MENU;
                 }
             }
             return;
@@ -280,6 +296,14 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         if (estado == EstadoJuego.MENU) {
             if (menu.isConfigMode()) {
                 menu.actualizarConfig();
+
+                // Actualizamos música y efectos dinámicamente en el menú
+                String volActualizado = this.menu.getVolumenString();
+                this.fxPlayer.setVolumen("punto", volActualizado);
+                this.fxPlayer.setVolumen("paleta", volActualizado);
+                this.fxPlayer.setVolumen("Empieza", volActualizado);
+                this.fxPlayer.setVolumen("CancionFondoLodeRunner", volActualizado);
+
                 configManager.guardar();
                 return;
             }
@@ -302,10 +326,12 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         if (estado == EstadoJuego.PAUSA) {
             if (input.isPPressed()) {
                 estado = EstadoJuego.JUGANDO;
-                fxPlayer.repetir("CancionFondoLodeRunner");
+                if (soundEnabled) {
+                    fxPlayer.repetir("CancionFondoLodeRunner");
+                    fxPlayer.setVolumen("CancionFondoLodeRunner", menu.getVolumenString());
+                }
             } else if (input.isEscapePressed()) {
                 estado = EstadoJuego.MENU;
-                musicaIniciada = false;
                 fxPlayer.detener("CancionFondoLodeRunner");
             }
             return;
@@ -314,7 +340,6 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         if (estado == EstadoJuego.GAME_OVER || estado == EstadoJuego.VICTORIA) {
             if (input.isEnterPressed()) {
                 estado = EstadoJuego.MENU;
-                musicaIniciada = false;
                 fxPlayer.detener("CancionFondoLodeRunner");
             }
             return;
@@ -322,7 +347,6 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
 
         if (estado != EstadoJuego.JUGANDO || heroe == null || NivelActual == null) return;
 
-        gestionarMusica();
         Nivel nivelActual = (Nivel) this.NivelActual;
 
         heroe.mover();
@@ -369,7 +393,6 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
                     rankingManager.agregarPuntaje(jugador, "Lode Runner", nivelIdx, puntosJ1);
                     if (menu != null) menu.recargarRanking();
 
-                    // Cargamos a la RAM el top 10 solo una vez
                     topRankingLodeRunner = rankingManager.cargarDetalleTop("Lode%", 10);
 
                     estado = EstadoJuego.VICTORIA;
@@ -378,18 +401,6 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
                 }
                 cargarNivelActual();
             }
-        }
-    }
-
-    private void gestionarMusica() {
-        if (soundEnabled && musicEnabled) {
-            if (!musicaIniciada) {
-                fxPlayer.repetir("CancionFondoLodeRunner");
-                musicaIniciada = true;
-            }
-        } else if (musicaIniciada) {
-            fxPlayer.detener("CancionFondoLodeRunner");
-            musicaIniciada = false;
         }
     }
 
@@ -413,7 +424,6 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
         }
         heroe.desaparecer();
 
-        // Cargamos a la RAM el top 10 solo una vez
         topRankingLodeRunner = rankingManager.cargarDetalleTop("Lode%", 10);
 
         estado = EstadoJuego.GAME_OVER;

@@ -18,29 +18,32 @@ public class MenuLodeRunner extends MenuPrincipal {
     private List<RankingEntry> topRanking;
 
     private int skinPersonaje = 0;
+    private int volumenIndex = 0; // 0 -> bajo, 1 -> medio, 2 -> alto
+
     private boolean teclasmenuControles = false;
     private int seleccionOpcionesControles = 0;
 
     private final String[] opcionesConfig = {
-        "Skin Personaje",
-        "Configurar Teclas",
-        "RESET VALORES",
-        "VOLVER"
+            "Skin Personaje",
+            "Volumen Música", // NUEVA OPCIÓN AGREGADA
+            "Configurar Teclas",
+            "RESET VALORES",
+            "VOLVER"
     };
 
     private final String[] opcionesControles = {
-        "Mover Arriba (W)",
-        "Mover Abajo (S)",
-        "Mover Izquierda",
-        "Mover Derecha",
-        "Cavar (X)",
-        "Pausa (P)",
-        "Menú (ESC)",
-        "Volver"
+            "Mover Arriba (W)",
+            "Mover Abajo (S)",
+            "Mover Izquierda",
+            "Mover Derecha",
+            "Cavar (X)",
+            "Pausa (P)",
+            "Menú (ESC)",
+            "Volver"
     };
 
     private static final String[] ACCIONES_CONTROLES = {
-        "J1_UP", "J1_DOWN", "LEFT", "RIGHT", "DIG", "PAUSE", "RESET"
+            "J1_UP", "J1_DOWN", "LEFT", "RIGHT", "DIG", "PAUSE", "RESET"
     };
 
     private final int DELAY = 150;
@@ -56,8 +59,17 @@ public class MenuLodeRunner extends MenuPrincipal {
     }
 
     public int getSeleccion() { return seleccion; }
-
     public void setSeleccion(int seleccion) { this.seleccion = seleccion; }
+
+    // --- GETTERS Y SETTERS DE VOLUMEN ---
+    public int getVolumenIndex() { return volumenIndex; }
+    public void setVolumenIndex(int v) { this.volumenIndex = v; }
+
+    public String getVolumenString() {
+        if (volumenIndex == 0) return "bajo";
+        if (volumenIndex == 1) return "medio";
+        return "alto";
+    }
 
     public void recargarRanking() {
         this.topRanking = rankingManager.cargarDetalleTop("Lode%", 10);
@@ -207,6 +219,7 @@ public class MenuLodeRunner extends MenuPrincipal {
 
             String extra = "";
             if (i == 0) extra = skinPersonaje == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";
+            else if (i == 1) extra = volumenIndex == 0 ? " [BAJO]" : (volumenIndex == 1 ? " [MEDIO]" : " [ALTO]");
 
             g.drawString(opcionesConfig[i] + extra, 180, y);
         }
@@ -292,13 +305,17 @@ public class MenuLodeRunner extends MenuPrincipal {
                     skinPersonaje = (skinPersonaje + 1) % 2;
                     break;
                 case 1:
+                    volumenIndex = (volumenIndex + 1) % 3; // Lógica de volumen
+                    break;
+                case 2:
                     teclasmenuControles = true;
                     seleccionOpcionesControles = 0;
                     break;
-                case 2:
-                    skinPersonaje = 0;
-                    break;
                 case 3:
+                    skinPersonaje = 0;
+                    volumenIndex = 0; // Resetear volumen también
+                    break;
+                case 4:
                     configMode = false;
                     break;
             }
