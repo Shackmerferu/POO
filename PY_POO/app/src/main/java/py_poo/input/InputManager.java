@@ -2,7 +2,7 @@ package py_poo.input;
 
 import com.entropyinteractive.Keyboard;
 import py_poo.config.KeyBindings;
-import py_poo.core.GameLoop;
+import py_poo.engine.VideoJuego;
 
 public class InputManager {
     private long lastEnterTime;
@@ -11,7 +11,7 @@ public class InputManager {
     private static final long COOLDOWN_MS = 120;
 
     public boolean isKeyPressed(int keyCode) {
-        Keyboard kb = GameLoop.getTeclado();
+        Keyboard kb = VideoJuego.getTeclado();
         return kb != null && kb.isKeyPressed(keyCode);
     }
 

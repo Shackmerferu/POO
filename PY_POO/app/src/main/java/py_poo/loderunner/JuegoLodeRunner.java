@@ -11,7 +11,7 @@ import java.util.List;
 
 import py_poo.audio.FXPlayer;
 import py_poo.core.Constantes;
-import py_poo.core.GameLoop;
+import py_poo.engine.VideoJuego;
 import py_poo.engine.EstadoJuego;
 import py_poo.engine.Jugador;
 import py_poo.engine.VideoJuego;
@@ -311,7 +311,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             if (input.isMenuDownPressed() || input.isSPressed()) menu.navegarMainMenu(1);
             if (input.isEnterPressed()) {
                 if (menu.getSeleccion() == 2) {
-                    GameLoop.terminarJuego();
+                    VideoJuego.terminarJuego();
                     return;
                 }
                 if (menu.getSeleccion() == 1) {

@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import py_poo.audio.FXPlayer;
 import py_poo.core.Constantes;
-import py_poo.core.GameLoop;
+import py_poo.engine.VideoJuego;
 import py_poo.engine.EstadoJuego;
 import py_poo.engine.VideoJuego;
 import py_poo.entities.ObjetoGrafico;
@@ -119,7 +119,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
                     menu.setConfigMode(true);
                 }
                 else if (opcionActual == 2) {
-                    GameLoop.terminarJuego();
+                    VideoJuego.terminarJuego();
                 }
             }
             return;

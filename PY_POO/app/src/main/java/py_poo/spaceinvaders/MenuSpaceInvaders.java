@@ -7,7 +7,7 @@ import java.util.List;
 
 import py_poo.config.KeyBindings;
 import py_poo.core.Constantes;
-import py_poo.core.GameLoop;
+import py_poo.engine.VideoJuego;
 import py_poo.input.InputManager;
 import py_poo.ranking.RankingManager;
 import py_poo.ranking.RankingManager.RankingEntry;
@@ -341,7 +341,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             switch(configSelected) {
                 case 0:
                     pantallaCompleta = !pantallaCompleta;
-                    GameLoop.toggleFullscreenStatic();
+                    VideoJuego.toggleFullscreenStatic();
                     break;
                 case 1: sonidoActivado = !sonidoActivado; break;
                 case 2: volumenIndex = (volumenIndex + 1) % 3; break; // NUEVA LÓGICA DE VOLUMEN
@@ -357,7 +357,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
                     break;
                 case 10:
                     if (pantallaCompleta) {
-                        GameLoop.toggleFullscreenStatic();
+                        VideoJuego.toggleFullscreenStatic();
                     }
                     pantallaCompleta = false;
                     sonidoActivado = true;

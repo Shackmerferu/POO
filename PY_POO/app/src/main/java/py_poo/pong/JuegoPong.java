@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 import py_poo.audio.FXPlayer;
 import py_poo.collision.CollisionManager;
 import py_poo.core.Constantes;
-import py_poo.core.GameLoop;
+import py_poo.engine.VideoJuego;
 import py_poo.engine.EstadoJuego;
 import py_poo.engine.VideoJuego;
 import py_poo.input.InputManager;
@@ -227,7 +227,7 @@ public class JuegoPong extends VideoJuego {
             if (input.isEnterPressed()) {
                 if (menu.getSeleccion() == 3) {
                     if (fxPlayer != null) fxPlayer.detener("fondo");
-                    GameLoop.terminarJuego();
+                    VideoJuego.terminarJuego();
                     return;
                 }
                 if (menu.getSeleccion() == 2) {
