@@ -1,8 +1,6 @@
 package py_poo.spaceinvaders;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.util.HashMap;
 
 import py_poo.audio.FXPlayer;
@@ -49,32 +47,9 @@ public class JuegoSpaceInvaders extends VideoJuego {
         rankingRegistrado = true;
     }
 
-    private ObjetoGrafico crearExplosion(int x, int y, int tipo) {
-        return new ObjetoGrafico() {
-            private final long creadoEn = System.currentTimeMillis();
-
-            {
-                setDimension(new Dimension(30, 30));
-                setPunto(new Point(x, y));
-                if (tipo == 1) {
-                    setSprite("imagenes/Space Invaders/Invaders/space__0009_EnemyExplosion.png");
-                } else if (tipo == 2) {
-                    setSprite("imagenes/Space Invaders/Invaders/space__0010_PlayerExplosion.png");
-                }
-            }
-
-            @Override
-            public void actualizar() {
-                if (System.currentTimeMillis() - creadoEn > 150) {
-                    marcarParaEliminar();
-                }
-            }
-        };
-    }
-
     @Override
     public void iniciar() {
-        // TRUCO DE MEMORIA: Guardamos la elección antes de que el motor reinicie
+       
         int viejoVolumen = (this.menu != null) ? this.menu.getVolumenIndex() : 0;
 
         super.iniciar();
@@ -272,7 +247,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
 
                     if (laser.getVelocidad() < 0 && !laser.isParaEliminar()) {
                         if (platoVolador != null && !platoVolador.isParaEliminar() && laser.getBounds().intersects(platoVolador.getBounds())) {
-                            Entidades.add(crearExplosion((int)platoVolador.getX(), (int)platoVolador.getY(), 1));
+                            Entidades.add(platoVolador.crearExplosion((int) platoVolador.getX(), (int) platoVolador.getY()));
                             platoVolador.marcarParaEliminar();
                             this.puntaje += this.platoVolador.puntaje(this.contadorDisparos);
                             laser.marcarParaEliminar();
@@ -280,7 +255,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
                         }
                         for (Enemigo bicho : flotaE.values()) {
                             if (!bicho.isParaEliminar() && laser.getBounds().intersects(bicho.getBounds())) {
-                                Entidades.add(crearExplosion((int)bicho.getX(), (int)bicho.getY(), 1));
+                                Entidades.add(bicho.crearExplosion((int) bicho.getX(), (int) bicho.getY()));
                                 bicho.marcarParaEliminar();
                                 if (this.menu.isSonidoActivado()) {
                                     this.fxPlayer.reproducir("ExplosionFlota");
@@ -295,7 +270,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
 
                     } else if (laser.getVelocidad() > 0 && !laser.isParaEliminar()) {
                         if (navecita != null && laser.getBounds().intersects(navecita.getBounds())) {
-                            Entidades.add(crearExplosion((int)navecita.getX(), (int)navecita.getY(), 2));
+                            Entidades.add(navecita.crearExplosion((int) navecita.getX(), (int) navecita.getY()));
                             laser.marcarParaEliminar();
                             navecita.recibirDanio(1);
                             if (navecita.getVidas() > 0) {

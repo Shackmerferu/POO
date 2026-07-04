@@ -167,7 +167,7 @@ public class MenuSpaceInvaders extends MenuPrincipal {
             if (configActionIndex == -99 && i == configSelected) {
                 extra = " - Adquiera el DLC a SOLO 1.99$ (Antes: 5̶.̶0̶0̶$̶)";
                 g.setColor(Color.RED);
-            } else if (i == 0) extra = pantallaCompleta ? " [PANTALLA COMPLETA]" : " [VENTANA]";
+            } else if (i == 0) extra = pantallaCompleta ? " [VENTANA] " : " [PANTALLA COMPLETA]";
             else if (i == 1) extra = sonidoActivado ? " [ACTIVADO]" : " [DESACTIVADO]";
             else if (i == 2) extra = volumenIndex == 0 ? " [BAJO]" : (volumenIndex == 1 ? " [MEDIO]" : " [ALTO]");
             else if (i == 3) extra = skinNave == 0 ? " [ORIGINAL]" : " [ALTERNATIVA]";

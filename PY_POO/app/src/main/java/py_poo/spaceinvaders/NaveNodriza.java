@@ -2,9 +2,11 @@ package py_poo.spaceinvaders;
 
 import java.util.Random;
 
-import py_poo.entities.ObjetoGrafico;
 import py_poo.core.Constantes;
-public class NaveNodriza extends ObjetoGrafico {
+import py_poo.entities.ObjetoGrafico;
+import py_poo.entities.Personaje;
+
+public class NaveNodriza extends Personaje {
 
     private static Random random = new Random();
     private int velocidad=2;
@@ -29,6 +31,11 @@ public class NaveNodriza extends ObjetoGrafico {
         if (this.getX()>Constantes.WIDTH){
             this.marcarParaEliminar();
         }
+    }
+
+    @Override
+    public ObjetoGrafico crearExplosion(int x, int y) {
+        return crearExplosionConRuta(x, y, "imagenes/Space Invaders/Invaders/space__0009_EnemyExplosion.png");
     }
 
 }

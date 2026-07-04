@@ -19,7 +19,7 @@ public class EnemigoC extends Enemigo {
 
         return new Animacion(fotograma,200);
     }
-
+    
     public EnemigoC(int X, int Y, int skinInvasores) {
         super(X, Y,animacionFlota(skinInvasores));
         this.puntosxKill = 10; 

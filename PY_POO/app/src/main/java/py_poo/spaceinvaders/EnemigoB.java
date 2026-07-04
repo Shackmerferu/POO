@@ -21,7 +21,7 @@ public class EnemigoB extends Enemigo {
 
         return new Animacion(fotograma,200);
     }
-    
+  
     
     public EnemigoB(int X, int Y, int skinInvasores) {
         super(X, Y, animacionFlota(skinInvasores));

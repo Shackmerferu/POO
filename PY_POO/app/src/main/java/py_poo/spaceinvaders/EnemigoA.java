@@ -20,7 +20,7 @@ public class EnemigoA extends Enemigo implements Armado{
         }
         return new Animacion(fotograma,200);
     }
-
+   
     
     
     public EnemigoA(int X, int Y, int skinInvasores) {
