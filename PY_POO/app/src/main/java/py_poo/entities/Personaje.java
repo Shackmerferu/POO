@@ -2,10 +2,12 @@ package py_poo.entities;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.util.List;
 
 public abstract class Personaje extends ObjetoGrafico {
     protected int vidas;
     protected int direccion;
+    private List<ObjetoGrafico> entidadesEscena;
 
     public void mover() {
     }
@@ -26,16 +28,22 @@ public abstract class Personaje extends ObjetoGrafico {
         this.vidas += cantidad;
     }
 
-    public abstract ObjetoGrafico crearExplosion(int x, int y);
+    public void setEntidadesEscena(List<ObjetoGrafico> entidadesEscena) {
+        this.entidadesEscena = entidadesEscena;
+    }
 
-    protected ObjetoGrafico crearExplosionConRuta(int x, int y, String ruta) {
-        return new ObjetoGrafico() {
+    public void crearExplosion(int x, int y) {
+        if (entidadesEscena == null) {
+            return;
+        }
+
+        ObjetoGrafico explosion = new ObjetoGrafico() {
             private final long creadoEn = System.currentTimeMillis();
 
             {
                 setDimension(new Dimension(30, 30));
                 setPunto(new Point(x, y));
-                setSprite(ruta);
+                setSprite(getRutaExplosion());
             }
 
             @Override
@@ -45,5 +53,11 @@ public abstract class Personaje extends ObjetoGrafico {
                 }
             }
         };
+
+        entidadesEscena.add(explosion);
+    }
+
+    protected String getRutaExplosion() {
+        return null;
     }
 }

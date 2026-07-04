@@ -247,7 +247,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
 
                     if (laser.getVelocidad() < 0 && !laser.isParaEliminar()) {
                         if (platoVolador != null && !platoVolador.isParaEliminar() && laser.getBounds().intersects(platoVolador.getBounds())) {
-                            Entidades.add(platoVolador.crearExplosion((int) platoVolador.getX(), (int) platoVolador.getY()));
+                            platoVolador.crearExplosion((int) platoVolador.getX(), (int) platoVolador.getY());
                             platoVolador.marcarParaEliminar();
                             this.puntaje += this.platoVolador.puntaje(this.contadorDisparos);
                             laser.marcarParaEliminar();
@@ -255,7 +255,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
                         }
                         for (Enemigo bicho : flotaE.values()) {
                             if (!bicho.isParaEliminar() && laser.getBounds().intersects(bicho.getBounds())) {
-                                Entidades.add(bicho.crearExplosion((int) bicho.getX(), (int) bicho.getY()));
+                                bicho.crearExplosion((int) bicho.getX(), (int) bicho.getY());
                                 bicho.marcarParaEliminar();
                                 if (this.menu.isSonidoActivado()) {
                                     this.fxPlayer.reproducir("ExplosionFlota");
@@ -270,7 +270,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
 
                     } else if (laser.getVelocidad() > 0 && !laser.isParaEliminar()) {
                         if (navecita != null && laser.getBounds().intersects(navecita.getBounds())) {
-                            Entidades.add(navecita.crearExplosion((int) navecita.getX(), (int) navecita.getY()));
+                            navecita.crearExplosion((int) navecita.getX(), (int) navecita.getY());
                             laser.marcarParaEliminar();
                             navecita.recibirDanio(1);
                             if (navecita.getVidas() > 0) {
@@ -436,6 +436,7 @@ public class JuegoSpaceInvaders extends VideoJuego {
         String nodrizaSkin = skinNodriza[menu.getSkinNodriza()];
 
         this.navecita = new NaveJugador(380, 500, naveSkin, laserSkin);
+        this.navecita.setEntidadesEscena(Entidades);
         Entidades.add(navecita);
         this.rankingRegistrado = false;
         this.nivelDeFlota = 0;

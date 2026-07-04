@@ -3,7 +3,6 @@ package py_poo.spaceinvaders;
 import java.util.Random;
 
 import py_poo.core.Constantes;
-import py_poo.entities.ObjetoGrafico;
 import py_poo.entities.Personaje;
 
 public class NaveNodriza extends Personaje {
@@ -34,8 +33,13 @@ public class NaveNodriza extends Personaje {
     }
 
     @Override
-    public ObjetoGrafico crearExplosion(int x, int y) {
-        return crearExplosionConRuta(x, y, "imagenes/Space Invaders/Invaders/space__0009_EnemyExplosion.png");
+    public void crearExplosion(int x, int y) {
+        super.crearExplosion(x, y);
+    }
+
+    @Override
+    protected String getRutaExplosion() {
+        return "imagenes/Space Invaders/Invaders/space__0009_EnemyExplosion.png";
     }
 
 }

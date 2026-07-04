@@ -1,7 +1,6 @@
 package py_poo.spaceinvaders;
 
 import py_poo.core.Constantes;
-import py_poo.entities.ObjetoGrafico;
 import py_poo.entities.Personaje;
 import py_poo.interfaces.Armado;
 import py_poo.input.InputManager;
@@ -46,7 +45,12 @@ public class NaveJugador extends Personaje implements Armado {
     }
 
     @Override
-    public ObjetoGrafico crearExplosion(int x, int y) {
-        return crearExplosionConRuta(x, y, "imagenes/Space Invaders/Invaders/space__0010_PlayerExplosion.png");
+    public void crearExplosion(int x, int y) {
+        super.crearExplosion(x, y);
+    }
+
+    @Override
+    protected String getRutaExplosion() {
+        return "imagenes/Space Invaders/Invaders/space__0010_PlayerExplosion.png";
     }
 }

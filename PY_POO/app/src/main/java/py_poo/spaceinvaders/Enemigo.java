@@ -2,7 +2,6 @@ package py_poo.spaceinvaders;
 
 import java.awt.Graphics;
 
-import py_poo.entities.ObjetoGrafico;
 import py_poo.entities.Personaje;
 import py_poo.graphics.Animacion;
 
@@ -36,7 +35,12 @@ public class Enemigo extends Personaje {
     }
 
     @Override
-    public ObjetoGrafico crearExplosion(int x, int y) {
-        return crearExplosionConRuta(x, y, "imagenes/Space Invaders/Invaders/space__0009_EnemyExplosion.png");
+    public void crearExplosion(int x, int y) {
+        super.crearExplosion(x, y);
+    }
+
+    @Override
+    protected String getRutaExplosion() {
+        return "imagenes/Space Invaders/Invaders/space__0009_EnemyExplosion.png";
     }
 }

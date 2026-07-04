@@ -30,6 +30,7 @@ public class NivelSpaceInvaders {
               
                 String clave = i + "," + j; 
                 flotaE.put(clave, bicho);
+                bicho.setEntidadesEscena(Entidades);
                 Entidades.add(bicho);
             }
         }

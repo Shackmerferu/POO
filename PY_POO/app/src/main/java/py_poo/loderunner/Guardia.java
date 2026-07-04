@@ -8,6 +8,7 @@ import java.util.List;
 
 import py_poo.entities.Agujero;
 import py_poo.entities.Moneda;
+import py_poo.entities.ObjetoGrafico;
 import py_poo.entities.Personaje;
 import py_poo.graphics.Animacion;
 import py_poo.graphics.Sprite;
@@ -514,4 +515,5 @@ public class Guardia extends Personaje {
             g.drawImage(sprite, (int)getX(), (int)getY(), tileSize, tileSize, null);
         }
     }
+
 }
