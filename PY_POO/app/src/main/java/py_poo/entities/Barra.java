@@ -16,8 +16,7 @@ public class Barra extends Bloque {
 
     public Barra(int tileX, int tileY, int tileSize) {
         this.tileSize = tileSize;
-        this.punto = new java.awt.Point(tileX * tileSize, tileY * tileSize);
-        this.dimension = new java.awt.Dimension(tileSize, tileSize);
+        this.bounds = new java.awt.Rectangle(tileX * tileSize, tileY * tileSize, tileSize, tileSize);
         cargarSprite();
     }
 
@@ -35,9 +34,9 @@ public class Barra extends Bloque {
     @Override
     public void display(Graphics g) {
         if (spriteBarra != null) {
-            spriteBarra.dibujar(g, punto.x, punto.y, tileSize, tileSize);
+            spriteBarra.dibujar(g, bounds.x, bounds.y, tileSize, tileSize);
         } else if (sprite != null) {
-            g.drawImage(sprite, punto.x, punto.y, tileSize, tileSize, null);
+            g.drawImage(sprite, bounds.x, bounds.y, tileSize, tileSize, null);
         }
     }
 }

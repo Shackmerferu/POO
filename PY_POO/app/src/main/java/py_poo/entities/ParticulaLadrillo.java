@@ -17,8 +17,7 @@ public class ParticulaLadrillo extends ObjetoGrafico {
     public ParticulaLadrillo(int x, int y, int tileSize) {
         this.tileSize = tileSize;
         this.activo = true;
-        this.punto = new java.awt.Point(x, y);
-        this.dimension = new java.awt.Dimension(tileSize, tileSize);
+        this.bounds = new java.awt.Rectangle(x, y, tileSize, tileSize);
         cargarAnimacion();
     }
 
@@ -47,6 +46,6 @@ public class ParticulaLadrillo extends ObjetoGrafico {
     @Override
     public void display(Graphics g) {
         if (!activo || animacion == null) return;
-        animacion.dibujar(g, punto.x, punto.y, tileSize, tileSize);
+        animacion.dibujar(g, bounds.x, bounds.y, tileSize, tileSize);
     }
 }

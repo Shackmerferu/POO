@@ -11,6 +11,7 @@ import py_poo.entities.Personaje;
 import py_poo.graphics.Animacion;
 import py_poo.graphics.Sprite;
 import py_poo.input.InputManager;
+import py_poo.interfaces.GameEvent;
 import py_poo.interfaces.GameEventListener;
 import py_poo.utils.CargadorRecursos;
 
@@ -68,10 +69,8 @@ public class Recolector extends Personaje {
         this.vidas = VIDAS_INICIALES;
         this.direccion = 1;
         this.oroRecolectado = 0;
-        this.dimension = new java.awt.Dimension(16, 16);
         this.cargarAnimaciones();
-        setX(tileX * tileSize);
-        setY(tileY * tileSize);
+        this.bounds = new java.awt.Rectangle(tileX * tileSize, tileY * tileSize, 16, 16);
     }
 
     // Carga las imágenes de animación del recolector desde los archivos de recursos
@@ -156,11 +155,7 @@ public class Recolector extends Personaje {
             if (animMuriendo == null || animMuriendo.termino() || muriendoTimer >= MURIENDO_TIMEOUT) {
                 muriendo = false;
                 perderVida();
-                if (vidas <= 0) {
-                    if (listener != null) listener.onGameOver();
-                } else {
-                    if (listener != null) listener.onHeroDeath();
-                }
+                if (listener != null) listener.onEvent(GameEvent.HERO_DEATH);
             }
         }
         aplicarGravedad();
@@ -307,7 +302,7 @@ public class Recolector extends Personaje {
         int tyPies = (int)(getY() + tileSize) / tileSize;
         if (nivel.cavarEn(getTileX() - 1, tyPies)) {
             cavoEsteFrame = true;
-            if (listener != null) listener.onDig();
+            if (listener != null) listener.onEvent(GameEvent.DIG);
         }
     }
 
@@ -316,7 +311,7 @@ public class Recolector extends Personaje {
         int tyPies = (int)(getY() + tileSize) / tileSize;
         if (nivel.cavarEn(getTileX() + 1, tyPies)) {
             cavoEsteFrame = true;
-            if (listener != null) listener.onDig();
+            if (listener != null) listener.onEvent(GameEvent.DIG);
         }
     }
 
@@ -404,19 +399,11 @@ public class Recolector extends Personaje {
                     setY(g.getY() - getHeight());
                 } else {
                     perderVida();
-                    if (vidas <= 0) {
-                        if (listener != null) listener.onGameOver();
-                    } else {
-                        if (listener != null) listener.onHeroDeath();
-                    }
+                    if (listener != null) listener.onEvent(GameEvent.HERO_DEATH);
                 }
             } else {
                 perderVida();
-                if (vidas <= 0) {
-                    if (listener != null) listener.onGameOver();
-                } else {
-                    if (listener != null) listener.onHeroDeath();
-                }
+                if (listener != null) listener.onEvent(GameEvent.HERO_DEATH);
             }
             return;
         }
@@ -428,7 +415,7 @@ public class Recolector extends Personaje {
             if (!m.isRecolectada() && getBounds().intersects(m.getBounds())) {
                 m.recolectar();
                 oroRecolectado++;
-                if (listener != null) listener.onCoinCollected();
+                if (listener != null) listener.onEvent(GameEvent.COIN_COLLECTED);
                 return;
             }
         }

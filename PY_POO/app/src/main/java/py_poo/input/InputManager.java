@@ -82,7 +82,8 @@ public class InputManager {
 
     public boolean isMenuUpPressed() {
         long now = System.currentTimeMillis();
-        if (isKeyPressed(KeyBindings.get("UP")) && (now - lastMenuUpTime >= COOLDOWN_MS)) {
+        if ((isKeyPressed(KeyBindings.get("UP")) || isKeyPressed(KeyBindings.get("J1_UP")))
+            && (now - lastMenuUpTime >= COOLDOWN_MS)) {
             lastMenuUpTime = now;
             return true;
         }
@@ -91,7 +92,8 @@ public class InputManager {
 
     public boolean isMenuDownPressed() {
         long now = System.currentTimeMillis();
-        if (isKeyPressed(KeyBindings.get("DOWN")) && (now - lastMenuDownTime >= COOLDOWN_MS)) {
+        if ((isKeyPressed(KeyBindings.get("DOWN")) || isKeyPressed(KeyBindings.get("J1_DOWN")))
+            && (now - lastMenuDownTime >= COOLDOWN_MS)) {
             lastMenuDownTime = now;
             return true;
         }

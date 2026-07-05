@@ -12,8 +12,7 @@ public class NaveJugador extends Personaje implements Armado {
         super();
         this.setSprite(naveSkin);
         this.laserSkin = laserSkin;
-        this.setDimension(dimension = new java.awt.Dimension(40, 30));
-        this.setPunto(punto = new java.awt.Point(X, Y));
+        this.bounds = new java.awt.Rectangle(X, Y, 40, 30);
         this.vidas = 3;
     }
     

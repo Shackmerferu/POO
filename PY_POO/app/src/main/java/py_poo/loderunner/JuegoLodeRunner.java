@@ -16,6 +16,8 @@ import py_poo.engine.EstadoJuego;
 import py_poo.engine.Jugador;
 import py_poo.engine.VideoJuego;
 import py_poo.input.InputManager;
+import py_poo.interfaces.EventResult;
+import py_poo.interfaces.GameEvent;
 import py_poo.interfaces.GameEventListener;
 import py_poo.utils.CargadorRecursos;
 import py_poo.ranking.RankingManager;
@@ -405,40 +407,39 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
     }
 
     @Override
-    public void onHeroDeath() {
-        if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
-        Nivel nivelActual = (Nivel) this.NivelActual;
-        int vidasGuardadas = heroe.getVidas();
-        nivelActual.finalizarNivel();
-        cargarNivelActual();
-        heroe.setVidas(vidasGuardadas);
-    }
-
-    @Override
-    public void onGameOver() {
-        if (!rankingRegistrado) {
-            String jugador = (nombreJugadorPrincipal != null && !nombreJugadorPrincipal.isBlank()) ? nombreJugadorPrincipal : "Jugador 1";
-            rankingManager.agregarPuntaje(jugador, "Lode Runner", nivelIdx + 1, puntosJ1);
-            if (menu != null) menu.recargarRanking();
-            rankingRegistrado = true;
+    public EventResult onEvent(GameEvent event) {
+        switch (event) {
+            case HERO_DEATH:
+                if (heroe.getVidas() <= 0) {
+                    if (!rankingRegistrado) {
+                        String jugador = (nombreJugadorPrincipal != null && !nombreJugadorPrincipal.isBlank()) ? nombreJugadorPrincipal : "Jugador 1";
+                        rankingManager.agregarPuntaje(jugador, "Lode Runner", nivelIdx + 1, puntosJ1);
+                        if (menu != null) menu.recargarRanking();
+                        rankingRegistrado = true;
+                    }
+                    heroe.desaparecer();
+                    topRankingLodeRunner = rankingManager.cargarDetalleTop("Lode%", 10);
+                    estado = EstadoJuego.GAME_OVER;
+                    fxPlayer.detener("CancionFondoLodeRunner");
+                    return EventResult.GAME_OVER;
+                } else {
+                    if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
+                    Nivel nivelActual = (Nivel) this.NivelActual;
+                    int vidasGuardadas = heroe.getVidas();
+                    nivelActual.finalizarNivel();
+                    cargarNivelActual();
+                    heroe.setVidas(vidasGuardadas);
+                    return EventResult.CONTINUE;
+                }
+            case COIN_COLLECTED:
+                puntosJ1 += 100;
+                if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("punto");
+                return EventResult.CONTINUE;
+            case DIG:
+                if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("paleta");
+                return EventResult.CONTINUE;
         }
-        heroe.desaparecer();
-
-        topRankingLodeRunner = rankingManager.cargarDetalleTop("Lode%", 10);
-
-        estado = EstadoJuego.GAME_OVER;
-        fxPlayer.detener("CancionFondoLodeRunner");
-    }
-
-    @Override
-    public void onCoinCollected() {
-        puntosJ1 += 100;
-        if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("punto");
-    }
-
-    @Override
-    public void onDig() {
-        if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("paleta");
+        return EventResult.CONTINUE;
     }
 
     @Override

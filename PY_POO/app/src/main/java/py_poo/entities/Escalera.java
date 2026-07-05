@@ -20,8 +20,7 @@ public class Escalera extends Bloque {
 
     public Escalera(int tileX, int tileY, int tileSize) {
         this.tileSize = tileSize;
-        this.punto = new java.awt.Point(tileX * tileSize, tileY * tileSize);
-        this.dimension = new java.awt.Dimension(tileSize, tileSize);
+        this.bounds = new java.awt.Rectangle(tileX * tileSize, tileY * tileSize, tileSize, tileSize);
         cargarAnimacion();
     }
 
@@ -38,9 +37,9 @@ public class Escalera extends Bloque {
     @Override
     public void display(Graphics g) {
         if (animacion != null) {
-            animacion.dibujar(g, punto.x, punto.y, tileSize, tileSize);
+            animacion.dibujar(g, bounds.x, bounds.y, tileSize, tileSize);
         } else if (sprite != null) {
-            g.drawImage(sprite, punto.x, punto.y, tileSize, tileSize, null);
+            g.drawImage(sprite, bounds.x, bounds.y, tileSize, tileSize, null);
         }
     }
 }

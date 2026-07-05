@@ -17,8 +17,7 @@ public class Puerta extends ObjetoGrafico {
     public Puerta(int tileX, int tileY, int tileSize) {
         this.tileSize = tileSize;
         this.visible = false;
-        this.punto = new java.awt.Point(tileX * tileSize, tileY * tileSize);
-        this.dimension = new java.awt.Dimension(tileSize, tileSize);
+        this.bounds = new java.awt.Rectangle(tileX * tileSize, tileY * tileSize, tileSize, tileSize);
         cargarSprite();
     }
 
@@ -38,9 +37,9 @@ public class Puerta extends ObjetoGrafico {
     public void display(Graphics g) {
         if (!visible) return;
         if (spritePuerta != null) {
-            spritePuerta.dibujar(g, punto.x, punto.y, tileSize, tileSize);
+            spritePuerta.dibujar(g, bounds.x, bounds.y, tileSize, tileSize);
         } else if (sprite != null) {
-            g.drawImage(sprite, punto.x, punto.y, tileSize, tileSize, null);
+            g.drawImage(sprite, bounds.x, bounds.y, tileSize, tileSize, null);
         }
     }
 }

@@ -24,8 +24,7 @@ public class Ladrillo extends Bloque {
         this.irrompible = irrompible;
         this.estado = Estado.NORMAL;
         this.destruible = !irrompible;
-        this.punto = new java.awt.Point(x * tileSize, y * tileSize);
-        this.dimension = new java.awt.Dimension(tileSize, tileSize);
+        this.bounds = new java.awt.Rectangle(x * tileSize, y * tileSize, tileSize, tileSize);
         cargarAnimaciones();
     }
 
@@ -101,13 +100,13 @@ public class Ladrillo extends Bloque {
     public void display(Graphics g) {
         switch (estado) {
             case NORMAL:
-                if (animNormal != null) animNormal.dibujar(g, punto.x, punto.y, tileSize, tileSize);
+                if (animNormal != null) animNormal.dibujar(g, bounds.x, bounds.y, tileSize, tileSize);
                 break;
             case BREAKING:
-                if (animBreaking != null) animBreaking.dibujar(g, punto.x, punto.y, tileSize, tileSize);
+                if (animBreaking != null) animBreaking.dibujar(g, bounds.x, bounds.y, tileSize, tileSize);
                 break;
             case REGENERATING:
-                if (animRegen != null) animRegen.dibujar(g, punto.x, punto.y, tileSize, tileSize);
+                if (animRegen != null) animRegen.dibujar(g, bounds.x, bounds.y, tileSize, tileSize);
                 break;
             case ROTO:
                 break;

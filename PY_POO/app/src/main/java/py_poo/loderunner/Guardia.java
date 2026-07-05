@@ -61,9 +61,7 @@ public class Guardia extends Personaje {
         this.vidas = 1;
         this.direccion = -1;
         this.monedaCargada = null;
-        this.dimension = new java.awt.Dimension(tileSize, tileSize);
-        setX(tileX * tileSize);
-        setY(tileY * tileSize);
+        this.bounds = new java.awt.Rectangle(tileX * tileSize, tileY * tileSize, tileSize, tileSize);
         cargarAnimaciones();
     }
 

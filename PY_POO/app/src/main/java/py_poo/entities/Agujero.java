@@ -19,8 +19,7 @@ public class Agujero extends Bloque {
 
     // Constructor con posición y ladrillo asociado (para regeneración al cerrarse)
     public Agujero(int x, int y, Ladrillo asociado) {
-        this.punto = new java.awt.Point(x, y);
-        this.dimension = new java.awt.Dimension(40, 40);
+        this.bounds = new java.awt.Rectangle(x, y, 40, 40);
         this.abierto = true;
         this.contador = 0;
         this.ladrilloAsociado = asociado;
@@ -34,7 +33,7 @@ public class Agujero extends Bloque {
     public void display(Graphics g) {
         if (!abierto) return;
         g.setColor(new Color(0, 0, 0, 180));
-        g.fillRect(punto.x, punto.y, dimension.width, dimension.height);
+        g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
     }
 
     // Avanza el contador del agujero un frame; si llega al límite, lo cierra

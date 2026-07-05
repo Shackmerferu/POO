@@ -8,7 +8,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import py_poo.audio.FXPlayer;
-import py_poo.collision.CollisionManager;
 import py_poo.core.Constantes;
 import py_poo.engine.VideoJuego;
 import py_poo.engine.EstadoJuego;
@@ -28,7 +27,6 @@ public class JuegoPong extends VideoJuego {
     private Paleta paleta1;
     private Paleta paleta2;
     private PelotaPong pelota;
-    private CollisionManager collisionManager;
     private FXPlayer fxPlayer;
     private int puntosJ1;         // puntaje jugador 1
     private int puntosJ2;         // puntaje jugador 2
@@ -64,8 +62,6 @@ public class JuegoPong extends VideoJuego {
         this.menu.setSkinPaleta2(viejaSkin2);
         this.menu.setPuntosMaxIndex(viejosPuntos);
         this.menu.setVolumenIndex(viejoVolumen);
-
-        this.collisionManager = new CollisionManager();
 
         // Inicia el sonido y carga los archivos
         this.fxPlayer = new FXPlayer();
@@ -217,10 +213,10 @@ public class JuegoPong extends VideoJuego {
                 return;
             }
 
-            if (input.isMenuUpPressed() || input.isWPressed()) {
+            if (input.isMenuUpPressed()) {
                 menu.setSeleccion(Math.max(0, menu.getSeleccion() - 1));
             }
-            if (input.isMenuDownPressed() || input.isSPressed()) {
+            if (input.isMenuDownPressed()) {
                 menu.setSeleccion(Math.min(3, menu.getSeleccion() + 1));
             }
             // ------------------------------------------------------
@@ -264,11 +260,11 @@ public class JuegoPong extends VideoJuego {
                 pelota.mover();
                 pelota.rebotarParedes();
 
-                if (collisionManager.colisiona(pelota, paleta1)) {
+                if (pelota.getBounds().intersects(paleta1.getBounds())) {
                     pelota.rebotarPaleta(paleta1);
                     if (soundEnabled) fxPlayer.reproducir("rebote");
                 }
-                if (collisionManager.colisiona(pelota, paleta2)) {
+                if (pelota.getBounds().intersects(paleta2.getBounds())) {
                     pelota.rebotarPaleta(paleta2);
                     if (soundEnabled) fxPlayer.reproducir("rebote");
                 }
