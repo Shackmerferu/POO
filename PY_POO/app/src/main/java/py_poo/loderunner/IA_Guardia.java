@@ -9,11 +9,11 @@ public class IA_Guardia {
     private int contadorCambio; // contador de frames para temporizar cambios de comportamiento
 
     private static final int CAMBIO_CADENCIA = 60; // frames entre cambios de dirección al vagar (~1 segundo a 60fps)
-    private static final int CAMPO_VISION = 200; // alcance en píxeles para detectar al héroe y comenzar a perseguirlo
+    private static final int CAMPO_VISION = 200; // alcance en píxeles para detectar al recolector y comenzar a perseguirlo
 
     // Enumeración de todos los estados de comportamiento que puede tener un guardia
     public enum Comportamiento {
-        PERSEGUIR,   // persigue activamente al héroe
+        PERSEGUIR,   // persigue activamente al recolector
         VAGAR,       // deambula aleatoriamente por el nivel
         ATRAPADO,    // cayó en un agujero y no puede moverse
         REAPARECER,  // está siendo reposicionado tras estar atrapado
@@ -38,16 +38,16 @@ public class IA_Guardia {
         this.estado = Comportamiento.VAGAR;
     }
 
-    // Calcula y retorna el movimiento que debe realizar el guardia según su estado actual y la posición del héroe
+    // Calcula y retorna el movimiento que debe realizar el guardia según su estado actual y la posición del recolector
     // Retorna: -1 = izquierda, 1 = derecha, -2 = arriba, 2 = abajo, 0 = quieto
-    public int calcularMovimiento(int guardiaX, int guardiaY, int heroeX, int heroeY,
+    public int calcularMovimiento(int guardiaX, int guardiaY, int recolectorX, int recolectorY,
                                    boolean puedeIzq, boolean puedeDer,
                                    boolean puedeSubir, boolean puedeBajar,
                                    boolean enEscalera, boolean enBarra) {
         contadorCambio++;
 
-        boolean heroeEnRango = Math.abs(guardiaX - heroeX) < CAMPO_VISION
-                            && Math.abs(guardiaY - heroeY) < CAMPO_VISION;
+        boolean recolectorEnRango = Math.abs(guardiaX - recolectorX) < CAMPO_VISION
+                            && Math.abs(guardiaY - recolectorY) < CAMPO_VISION;
 
         switch (estado) {
             case ATRAPADO:
@@ -71,37 +71,37 @@ public class IA_Guardia {
                 return 0;
 
             case PERSEGUIR:
-                if (!heroeEnRango && contadorCambio % CAMBIO_CADENCIA == 0 && rand.nextDouble() < 0.7) {
+                if (!recolectorEnRango && contadorCambio % CAMBIO_CADENCIA == 0 && rand.nextDouble() < 0.7) {
                     estado = Comportamiento.VAGAR;
                 }
                 if (estado == Comportamiento.VAGAR) {
-                    return calcularVagar(guardiaX, guardiaY, heroeX, heroeY,
+                    return calcularVagar(guardiaX, guardiaY, recolectorX, recolectorY,
                                         puedeIzq, puedeDer, puedeSubir, puedeBajar,
                                         enEscalera, enBarra);
                 }
-                return calcularPersecucion(guardiaX, guardiaY, heroeX, heroeY,
+                return calcularPersecucion(guardiaX, guardiaY, recolectorX, recolectorY,
                                            puedeIzq, puedeDer, puedeSubir, puedeBajar,
                                            enEscalera, enBarra);
 
             case VAGAR:
             default:
-                if (heroeEnRango) {
+                if (recolectorEnRango) {
                     estado = Comportamiento.PERSEGUIR;
                 } else if (contadorCambio % CAMBIO_CADENCIA == 0 && rand.nextDouble() < 0.3) {
                     estado = Comportamiento.PERSEGUIR;
                 }
                 if (estado == Comportamiento.PERSEGUIR) {
-                    return calcularPersecucion(guardiaX, guardiaY, heroeX, heroeY,
+                    return calcularPersecucion(guardiaX, guardiaY, recolectorX, recolectorY,
                                               puedeIzq, puedeDer, puedeSubir, puedeBajar,
                                               enEscalera, enBarra);
                 }
-                return calcularVagar(guardiaX, guardiaY, heroeX, heroeY,
+                return calcularVagar(guardiaX, guardiaY, recolectorX, recolectorY,
                                      puedeIzq, puedeDer, puedeSubir, puedeBajar,
                                      enEscalera, enBarra);
         }
     }
 
-    // Calcula el movimiento de persecución: se acerca al héroe priorizando vertical si está en escalera/barra
+    // Calcula el movimiento de persecución: se acerca al recolector priorizando vertical si está en escalera/barra
     private int calcularPersecucion(int gx, int gy, int hx, int hy,
                                      boolean izq, boolean der,
                                      boolean subir, boolean bajar,
@@ -192,7 +192,7 @@ public class IA_Guardia {
         estado = Comportamiento.PERSEGUIR;
     }
 
-    // Retorna true si el guardia está actualmente persiguiendo al héroe
+    // Retorna true si el guardia está actualmente persiguiendo al recolector
     public boolean isPersiguiendo() {
         return estado == Comportamiento.PERSEGUIR;
     }

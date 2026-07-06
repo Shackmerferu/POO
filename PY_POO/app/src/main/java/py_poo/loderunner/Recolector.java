@@ -15,10 +15,10 @@ import py_poo.interfaces.GameEvent;
 import py_poo.interfaces.GameEventListener;
 import py_poo.utils.CargadorRecursos;
 
-// Personaje principal del juego controlado por el jugador (héroe).
+// Personaje principal del juego controlado por el jugador (recolector).
 // Puede moverse, cavar agujeros, recolectar oro y morir si un guardia lo toca o un agujero se cierra sobre él.
 public class Recolector extends Personaje {
-    public static final int VELOCIDAD = 2; // velocidad de movimiento del héroe (píxeles por frame)
+    public static final int VELOCIDAD = 2; // velocidad de movimiento del recolector (píxeles por frame)
     public static final int VIDAS_INICIALES = 5; // cantidad de vidas con las que empieza cada partida
 
     private int oroRecolectado; // contador de monedas recolectadas en el nivel actual
@@ -60,7 +60,7 @@ public class Recolector extends Personaje {
     private static final int FRAMES_ANIM = 4;
     private static final int FRAMES_MUERTO = 8;
 
-    // Constructor: crea al héroe en la posición (tileX, tileY) con el tamaño de tile dado
+    // Constructor: crea al recolector en la posición (tileX, tileY) con el tamaño de tile dado
     // Inicializa vidas, dirección, oro y carga las animaciones
     public Recolector(int tileX, int tileY, int tileSize) {
         this.tileX = tileX;
@@ -119,7 +119,7 @@ public class Recolector extends Personaje {
         this.input = input;
     }
 
-    // Asigna el nivel actual al héroe
+    // Asigna el nivel actual al recolector
     public void setNivel(Nivel nivel) {
         this.nivel = nivel;
     }
@@ -163,8 +163,8 @@ public class Recolector extends Personaje {
         actualizar();
     }
 
-    // Aplica gravedad al héroe: si está cayendo baja; si no tiene soporte empieza a caer
-    // Si durante la caída la cabeza encuentra una barra, el héroe se agarra de ella
+    // Aplica gravedad al recolector: si está cayendo baja; si no tiene soporte empieza a caer
+    // Si durante la caída la cabeza encuentra una barra, el recolector se agarra de ella
     private void aplicarGravedad() {
         if (nivel == null) return;
         int txL = (int)getX() / tileSize;
@@ -206,8 +206,8 @@ public class Recolector extends Personaje {
         return false;
     }
 
-    // Detecta si el héroe está sobre escalera, barra o en el aire, actualizando los flags
-    // La barra se detecta cuando la CABEZA del héroe está a su nivel (no los pies)
+    // Detecta si el recolector está sobre escalera, barra o en el aire, actualizando los flags
+    // La barra se detecta cuando la CABEZA del recolector está a su nivel (no los pies)
     private void detectarPlataforma() {
         if (nivel == null) return;
         int txL = (int)getX() / tileSize;
@@ -226,7 +226,7 @@ public class Recolector extends Personaje {
             && !tieneSoporte(txR, tyPies2);
     }
 
-    // Actualiza todas las animaciones del héroe cada frame
+    // Actualiza todas las animaciones del recolector cada frame
     public void actualizar() {
         if (animParado != null) animParado.actualizar();
         if (animCaminando != null) animCaminando.actualizar();
@@ -237,7 +237,7 @@ public class Recolector extends Personaje {
         if (animMuriendo != null) animMuriendo.actualizar();
     }
 
-    // Mueve al héroe un paso a la izquierda si no hay tile sólido bloqueando
+    // Mueve al recolector un paso a la izquierda si no hay tile sólido bloqueando
     public void moverIzquierda() {
         if (cayendo || nivel == null) return;
         double newX = getX() - VELOCIDAD;
@@ -249,7 +249,7 @@ public class Recolector extends Personaje {
         setX(newX);
     }
 
-    // Mueve al héroe un paso a la derecha si no hay tile sólido bloqueando
+    // Mueve al recolector un paso a la derecha si no hay tile sólido bloqueando
     public void moverDerecha() {
         if (cayendo || nivel == null) return;
         double newX = getX() + VELOCIDAD;
@@ -261,7 +261,7 @@ public class Recolector extends Personaje {
         setX(newX);
     }
 
-    // Sube al héroe por una escalera o barra si es posible
+    // Sube al recolector por una escalera o barra si es posible
     public void moverArriba() {
         if (!enEscalera || cayendo || nivel == null) return;
         int tx = getTileX();
@@ -276,7 +276,7 @@ public class Recolector extends Personaje {
         }
     }
 
-    // Baja al héroe por escalera o lo agarra a una si camina al borde de una
+    // Baja al recolector por escalera o lo agarra a una si camina al borde de una
     public void moverAbajo() {
         if (cayendo || nivel == null) return;
         int tx = getTileX();
@@ -296,7 +296,7 @@ public class Recolector extends Personaje {
         }
     }
 
-    // Cava un ladrillo a la izquierda del héroe si es posible
+    // Cava un ladrillo a la izquierda del recolector si es posible
     public void cavarIzquierda() {
         if (enEscalera || enBarra || cayendo || nivel == null) return;
         int tyPies = (int)(getY() + tileSize) / tileSize;
@@ -320,7 +320,7 @@ public class Recolector extends Personaje {
         oroRecolectado++;
     }
 
-    // Reinicia la posición del héroe a su tile de spawn, cancelando caídas y estados
+    // Reinicia la posición del recolector a su tile de spawn, cancelando caídas y estados
     public void reiniciarPosicion() {
         setX(tileX * tileSize);
         setY(tileY * tileSize);
@@ -351,7 +351,7 @@ public class Recolector extends Personaje {
         return nivelOroTotal;
     }
 
-    // True si el héroe ya recolectó todo el oro del nivel
+    // True si el recolector ya recolectó todo el oro del nivel
     public boolean nivelCompleto() {
         return oroRecolectado >= nivelOroTotal;
     }
@@ -360,12 +360,12 @@ public class Recolector extends Personaje {
 
     public void verificarCaidaEnAgujero() {
         if (nivel == null || muriendo) return;
-        int hTx = getTileX();
-        int hTy = (int)((getY() + tileSize - 1) / tileSize);
+        int rTx = getTileX();
+        int rTy = (int)((getY() + tileSize - 1) / tileSize);
         for (Agujero a : nivel.agujeros) {
             int aTx = (int)a.getX() / tileSize;
             int aTy = (int)a.getY() / tileSize;
-            if (hTx != aTx || hTy != aTy) continue;
+            if (rTx != aTx || rTy != aTy) continue;
             if (a.getTiempoRestante() > 1) continue;
             boolean guardiaTapa = false;
             for (Guardia g : guardias) {
@@ -388,12 +388,12 @@ public class Recolector extends Personaje {
             if (!getBounds().intersects(g.getBounds())) continue;
             if (g.enAgujero() || g.getIA().isSaliendo()) continue;
             boolean puedeBajar = input.isDownPressed() || input.isSPressed();
-            boolean heroearriba = getY() + getHeight() <= g.getY() + g.getHeight() + 5;
+            boolean recolectorArriba = getY() + getHeight() <= g.getY() + g.getHeight() + 5;
             boolean hayAgujeroAbierto = false;
             for (Agujero a : nivel.agujeros) {
                 if (a.isAbierto()) { hayAgujeroAbierto = true; break; }
             }
-            if (heroearriba && hayAgujeroAbierto && !puedeBajar) {
+            if (recolectorArriba && hayAgujeroAbierto && !puedeBajar) {
                 int headTy = (int)(getY() - 1) / nivel.getTile_size();
                 if (headTy >= 0 && !nivel.esSolido(getTileX(), headTy)) {
                     setY(g.getY() - getHeight());
@@ -430,7 +430,7 @@ public class Recolector extends Personaje {
     public boolean isEnAire() { return enAire; }
     public void setEnAire(boolean v) { this.enAire = v; }
 
-    // Verifica si el héroe está sobre un agujero completamente abierto (tiempoRestante >= 120)
+    // Verifica si el recolector está sobre un agujero completamente abierto (tiempoRestante >= 120)
     // Los agujeros con guardia dentro o cerrándose (< 120) se consideran seguros
     public boolean estaEnAgujero() {
         if (nivel == null) return false;
@@ -487,7 +487,7 @@ public class Recolector extends Personaje {
     public int getTileY() { return (int)((getY() + tileSize / 2) / tileSize); }
 
     @Override
-    // Dibuja al héroe con la animación adecuada según su estado (escalera, barra, caminando o quieto)
+    // Dibuja al recolector con la animación adecuada según su estado (escalera, barra, caminando o quieto)
     public void display(Graphics g) {
         Sprite s = null;
         if (muriendo) s = animMuriendo != null ? animMuriendo.obtenerFrame() : null;

@@ -14,12 +14,12 @@ import py_poo.graphics.Animacion;
 import py_poo.graphics.Sprite;
 import py_poo.utils.CargadorRecursos;
 
-// Guardia enemigo que patrulla el nivel, puede caer en agujeros, recolectar oro y perseguir al héroe
+// Guardia enemigo que patrulla el nivel, puede caer en agujeros, recolectar oro y perseguir al recolector
 public class Guardia extends Personaje {
-    public static final double VELOCIDAD = 1.5; // velocidad de movimiento del guardia (más lento que el héroe)
+    public static final double VELOCIDAD = 1.5; // velocidad de movimiento del guardia (más lento que el recolector)
 
     private IA_Guardia ia; // inteligencia artificial que decide sus movimientos y estados
-    private Recolector heroe; // referencia al héroe para perseguirlo
+    private Recolector recolector; // referencia al recolector para perseguirlo
     private Nivel nivel; // nivel en el que se encuentra para consultar tiles
     private boolean enAgujero; // true si está atrapado dentro de un agujero
     private boolean enEscalera; // true si está pisando una escalera
@@ -168,13 +168,13 @@ public class Guardia extends Personaje {
     }
 
     // Reposiciona al guardia en un tile aleatorio de la fila superior del nivel,
-    // evitando el tile del héroe, paredes sólidas y la puerta
+    // evitando el tile del recolector, paredes sólidas y la puerta
     public void reaparecer() {
-        if (nivel != null && heroe != null) {
+        if (nivel != null && recolector != null) {
             int w = nivel.getAnchoMapa();
             int h = nivel.getAltoMapa();
             if (w > 0 && h > 0) {
-                int hTx = heroe.getTileX();
+                int rTx = recolector.getTileX();
                 int rx, ry;
                 int intentos = 0;
                 do {
@@ -184,7 +184,7 @@ public class Guardia extends Personaje {
                         ry++;
                     }
                     intentos++;
-                } while ((rx == hTx || ry >= h) && intentos < 20);
+                } while ((rx == rTx || ry >= h) && intentos < 20);
                 if (ry < h) {
                     setX(rx * tileSize);
                     setY(ry * tileSize);
@@ -214,7 +214,7 @@ public class Guardia extends Personaje {
 
     public IA_Guardia getIA() { return ia; }
     public boolean isEnEscalera() { return enEscalera; }
-    public void setHeroe(Recolector heroe) { this.heroe = heroe; }
+    public void setRecolector(Recolector recolector) { this.recolector = recolector; }
     public void setNivel(Nivel nivel) { this.nivel = nivel; }
 
     @Override
@@ -228,7 +228,7 @@ public class Guardia extends Personaje {
             actualizar();
             return;
         }
-        if (heroe == null || nivel == null) return;
+        if (recolector == null || nivel == null) return;
 
         if (ia.isSaliendo()) {
             tiempoEsperaEscape--;
@@ -242,8 +242,8 @@ public class Guardia extends Personaje {
         aplicarGravedad();
 
         if (!cayendo) {
-            int hx = (int)heroe.getX();
-            int hy = (int)heroe.getY();
+            int rx = (int)recolector.getX();
+            int ry = (int)recolector.getY();
             int gx = (int)getX();
             int gy = (int)getY();
             int tx = getTileX();
@@ -254,7 +254,7 @@ public class Guardia extends Personaje {
             boolean puedeSubir = nivel.esEscalera(tx, ty - 1);
             boolean puedeBajar = nivel.esEscalera(tx, ty + 1);
 
-            int dir = ia.calcularMovimiento(gx, gy, hx, hy, puedeIzq, puedeDer, puedeSubir, puedeBajar, enEscalera, enBarra);
+            int dir = ia.calcularMovimiento(gx, gy, rx, ry, puedeIzq, puedeDer, puedeSubir, puedeBajar, enEscalera, enBarra);
 
             if (dir == -1) { moverIzquierda(); contadorAtascado = 0; }
             else if (dir == 1) { moverDerecha(); contadorAtascado = 0; }

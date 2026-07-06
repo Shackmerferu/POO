@@ -32,7 +32,7 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
 
     private InputManager input;
     private MenuLodeRunner menu;
-    private Recolector heroe;
+    private Recolector recolector;
     private List<Guardia> guardias;
     private List<Nivel> niveles;
     private int nivelIdx;
@@ -113,12 +113,12 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
 
         super.renderizar(g);
 
-        if (estado == EstadoJuego.JUGANDO && heroe != null) {
+        if (estado == EstadoJuego.JUGANDO && recolector != null) {
             g.setFont(new Font("Consolas", Font.BOLD, 18));
             g.setColor(Color.WHITE);
             g.drawString("NIVEL " + (nivelIdx + 1), 10, 25);
-            g.drawString("ORO: " + heroe.getOroRecolectado() + "/" + heroe.getNivelOroTotal(), 10, 48);
-            g.drawString("VIDAS: " + heroe.getVidas(), 10, 71);
+            g.drawString("ORO: " + recolector.getOroRecolectado() + "/" + recolector.getNivelOroTotal(), 10, 48);
+            g.drawString("VIDAS: " + recolector.getVidas(), 10, 71);
             g.drawString("PUNTOS: " + puntosJ1, 10, 94);
             if (NivelActual != null) {
                 int restante = Math.max(0, NivelActual.tiempoLimite * 60 - tiempoNivel) / 60;
@@ -266,13 +266,13 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             ty = 1;
         }
 
-        heroe = new Recolector(tx, ty, nivel.getTile_size());
-        heroe.setGameEventListener(this);
-        heroe.setInputManager(input);
-        heroe.setNivel(nivel);
-        heroe.setNivelOroTotal(nivel.totalOro);
+        recolector = new Recolector(tx, ty, nivel.getTile_size());
+        recolector.setGameEventListener(this);
+        recolector.setInputManager(input);
+        recolector.setNivel(nivel);
+        recolector.setNivelOroTotal(nivel.totalOro);
         String skin = menu.getSkinPersonaje() == 0 ? "original" : "alternativo";
-        heroe.setSkin(skin);
+        recolector.setSkin(skin);
         Entidades.clear();
         guardias = new ArrayList<>();
         for (var l : nivel.ladrillos) Entidades.add(l);
@@ -283,14 +283,14 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
 
         for (int[] sp : nivel.spawnGuardias) {
             Guardia g = new Guardia(sp[0], sp[1], nivel.getTile_size());
-            g.setHeroe(heroe);
+            g.setRecolector(recolector);
             g.setNivel(nivel);
             g.setSkin(skin);
             guardias.add(g);
             Entidades.add(g);
         }
-        heroe.setGuardias(guardias);
-        Entidades.add(heroe);
+        recolector.setGuardias(guardias);
+        Entidades.add(recolector);
     }
 
     @Override
@@ -347,12 +347,12 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             return;
         }
 
-        if (estado != EstadoJuego.JUGANDO || heroe == null || NivelActual == null) return;
+        if (estado != EstadoJuego.JUGANDO || recolector == null || NivelActual == null) return;
 
         Nivel nivelActual = (Nivel) this.NivelActual;
 
-        heroe.mover();
-        if (camara != null) camara.seguirJugador(heroe, nivelActual);
+        recolector.mover();
+        if (camara != null) camara.seguirJugador(recolector, nivelActual);
 
         nivelActual.actualizar();
         tiempoNivel++;
@@ -361,9 +361,9 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
             if (g != null) g.mover();
         }
 
-        heroe.verificarCaidaEnAgujero();
-        heroe.recolectarMonedas();
-        heroe.verificarColisionGuardias();
+        recolector.verificarCaidaEnAgujero();
+        recolector.recolectarMonedas();
+        recolector.verificarColisionGuardias();
 
         for (Guardia g : guardias) {
             if (g == null) continue;
@@ -375,17 +375,17 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
 
         nivelActual.sincronizarEntidades(Entidades);
 
-        if (heroe.nivelCompleto() && !nivelActual.escapeLadderActiva) {
+        if (recolector.nivelCompleto() && !nivelActual.escapeLadderActiva) {
             nivelActual.activarEscape();
         }
 
         if (nivelActual.escapeLadderActiva) {
-            int htx = (int) ((heroe.getX() + nivelActual.getTile_size() / 2) / nivelActual.getTile_size());
-            int hty = (int) ((heroe.getY() + nivelActual.getTile_size() / 2) / nivelActual.getTile_size());
-            if (htx == nivelActual.escapeLadderX && hty == nivelActual.escapeLadderY) {
+            int rtx = (int) ((recolector.getX() + nivelActual.getTile_size() / 2) / nivelActual.getTile_size());
+            int rty = (int) ((recolector.getY() + nivelActual.getTile_size() / 2) / nivelActual.getTile_size());
+            if (rtx == nivelActual.escapeLadderX && rty == nivelActual.escapeLadderY) {
                 int bonusTiempo = Math.max(0, (nivelActual.tiempoLimite * 60 - tiempoNivel) / 6);
                 puntosJ1 += 500 + bonusTiempo;
-                heroe.setVidas(heroe.getVidas() + 1);
+                recolector.setVidas(recolector.getVidas() + 1);
                 if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
                 nivelActual.finalizarNivel();
                 nivelIdx++;
@@ -410,14 +410,14 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
     public EventResult onEvent(GameEvent event) {
         switch (event) {
             case HERO_DEATH:
-                if (heroe.getVidas() <= 0) {
+                if (recolector.getVidas() <= 0) {
                     if (!rankingRegistrado) {
                         String jugador = (nombreJugadorPrincipal != null && !nombreJugadorPrincipal.isBlank()) ? nombreJugadorPrincipal : "Jugador 1";
                         rankingManager.agregarPuntaje(jugador, "Lode Runner", nivelIdx + 1, puntosJ1);
                         if (menu != null) menu.recargarRanking();
                         rankingRegistrado = true;
                     }
-                    heroe.desaparecer();
+                    recolector.desaparecer();
                     topRankingLodeRunner = rankingManager.cargarDetalleTop("Lode%", 10);
                     estado = EstadoJuego.GAME_OVER;
                     fxPlayer.detener("CancionFondoLodeRunner");
@@ -425,10 +425,10 @@ public class JuegoLodeRunner extends VideoJuego implements GameEventListener {
                 } else {
                     if (soundEnabled && soundFxEnabled) fxPlayer.reproducir("empieza");
                     Nivel nivelActual = (Nivel) this.NivelActual;
-                    int vidasGuardadas = heroe.getVidas();
+                    int vidasGuardadas = recolector.getVidas();
                     nivelActual.finalizarNivel();
                     cargarNivelActual();
-                    heroe.setVidas(vidasGuardadas);
+                    recolector.setVidas(vidasGuardadas);
                     return EventResult.CONTINUE;
                 }
             case COIN_COLLECTED:
