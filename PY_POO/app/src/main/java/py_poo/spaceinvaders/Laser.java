@@ -9,8 +9,7 @@ public class Laser extends ObjetoGrafico implements Movible {
     public Laser(int X , int  Y, int velocidad, String sprite ){
         
         this.setSprite(sprite);
-        this.setDimension(new java.awt.Dimension(5, 15));
-        this.setPunto(new java.awt.Point(X, Y));
+        this.setBounds(new java.awt.Rectangle(X, Y, 5, 15));
         this.velocidad = velocidad;
     }
     

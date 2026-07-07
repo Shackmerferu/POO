@@ -1,7 +1,6 @@
 package py_poo.entities;
 
-import java.awt.Dimension;
-import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.List;
 
 public abstract class Personaje extends ObjetoGrafico {
@@ -41,8 +40,7 @@ public abstract class Personaje extends ObjetoGrafico {
             private final long creadoEn = System.currentTimeMillis();
 
             {
-                setDimension(new Dimension(30, 30));
-                setPunto(new Point(x, y));
+                setBounds(new Rectangle(x, y, 30, 30));
                 setSprite(getRutaExplosion());
             }
 

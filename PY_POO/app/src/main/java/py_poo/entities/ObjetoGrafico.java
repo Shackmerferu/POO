@@ -1,8 +1,6 @@
 package py_poo.entities;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -31,11 +29,11 @@ public abstract class ObjetoGrafico {
         }
     }
 
-    // Constructor completo (imagen + tamaño forzado + posicion inicial)
-    public ObjetoGrafico(String sprite, Dimension dimension, Point punto) {
+    // Constructor completo (imagen + bounds: posicion + tamaño)
+    public ObjetoGrafico(String sprite, Rectangle bounds) {
         try {
             this.sprite = ImageIO.read(getClass().getClassLoader().getResourceAsStream(sprite));
-            this.bounds = new Rectangle(punto.x, punto.y, dimension.width, dimension.height);
+            this.bounds = new Rectangle(bounds);
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -63,14 +61,9 @@ public abstract class ObjetoGrafico {
         g.drawImage(sprite, (int) this.getX(), (int) this.getY(), null);
     }
 
-    // Cambia el tamaño del objeto
-    public void setDimension(Dimension dimension) {
-        this.bounds.setSize(dimension.width, dimension.height);
-    }
-
-    // Cambia la posicion del objeto
-    public void setPunto(Point punto) {
-        this.bounds.setLocation(punto.x, punto.y);
+    // Cambia posicion y tamaño del objeto en un solo paso
+    public void setBounds(Rectangle bounds) {
+        this.bounds.setBounds(bounds);
     }
 
     public int getWidth() {
@@ -102,10 +95,6 @@ public abstract class ObjetoGrafico {
     // Devuelve un rectangulo matematico para calcular choques (AABB Collision)
     public Rectangle getBounds() {
         return bounds;
-    }
-
-    public Point getPunto() {
-        return bounds.getLocation();
     }
 
     public boolean isParaEliminar() {

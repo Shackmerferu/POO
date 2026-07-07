@@ -20,7 +20,7 @@ public class PelotaPong extends ObjetoGrafico {
 
         // Forzamos la "caja de colisión" a ser de 16x16 píxeles, aunque el dibujo original sea de 130x130.
         // Esto es clave para que los choques se sientan justos y precisos.
-        setDimension(new java.awt.Dimension(16, 16));
+        bounds.setSize(16, 16);
         reiniciar(); // Coloca la pelota en el centro al nacer
     }
 

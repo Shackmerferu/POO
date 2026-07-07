@@ -12,8 +12,7 @@ public class Enemigo extends Personaje {
     public Enemigo(int X, int Y, Animacion animacion) {
         super();
         this.animacion=animacion;
-        this.setDimension(new java.awt.Dimension(30, 30));
-        this.setPunto(new java.awt.Point(X, Y));
+        this.setBounds(new java.awt.Rectangle(X, Y, 30, 30));
        
     }
 

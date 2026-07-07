@@ -8,8 +8,7 @@ public class Escudo extends ObjetoGrafico {
 
     public Escudo(int X, int Y) {
         super();
-        this.setDimension(new java.awt.Dimension(60, 30));
-        this.setPunto(new java.awt.Point(X, Y));
+        this.setBounds(new java.awt.Rectangle(X, Y, 60, 30));
         
         this.segmentos = new SegmentoEscudo[9];
         

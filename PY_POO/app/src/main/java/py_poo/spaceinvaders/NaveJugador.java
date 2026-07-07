@@ -17,7 +17,7 @@ public class NaveJugador extends Personaje implements Armado {
     }
     
     public void Muerto(int X, int Y){
-        this.setDimension(new java.awt.Dimension(30, 30)); 
+        this.bounds.setSize(30, 30);
         this.setSprite("imagenes/Space Invaders/Invaders/space__0010_PlayerExplosion.png");
     }
     public void Mover(InputManager input) {

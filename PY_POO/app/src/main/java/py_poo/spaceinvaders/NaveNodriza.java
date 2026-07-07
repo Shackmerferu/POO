@@ -12,8 +12,7 @@ public class NaveNodriza extends Personaje {
     public NaveNodriza(String ruta) {
         super();
         this.setSprite(ruta);
-        this.setDimension(new java.awt.Dimension(50,30));
-        this.setPunto(new java.awt.Point(-50, 25));
+        this.setBounds(new java.awt.Rectangle(-50, 25, 50, 30));
     }
 
     public int puntaje(int contadorDisparos) {

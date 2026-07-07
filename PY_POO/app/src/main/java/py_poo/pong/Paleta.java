@@ -27,7 +27,7 @@ public class Paleta extends ObjetoGrafico implements Movible {
 
         // Forzamos el tamaño de la caja de colisión a 20 píxeles de ancho por 100 de alto.
         // Esto es vital para que la pelota rebote bien, sin importar el tamaño original del .png.
-        setDimension(new java.awt.Dimension(20, 100));
+        bounds.setSize(20, 100);
     }
 
     //  MOVIMIENTO

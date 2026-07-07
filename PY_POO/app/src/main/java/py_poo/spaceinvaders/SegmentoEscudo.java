@@ -15,8 +15,7 @@ public class SegmentoEscudo extends ObjetoGrafico {
         this.archivoSano = archivoSano;
         this.archivoDaniado = archivoDaniado;
         
-        this.setDimension(new java.awt.Dimension(20, 10));
-        this.setPunto(new java.awt.Point(x, y));
+        this.setBounds(new java.awt.Rectangle(x, y, 20, 10));
         
         actualizarSprite();
     }
