@@ -1,5 +1,7 @@
 package py_poo.interfaces;
 
+import py_poo.spaceinvaders.Laser;
+
 public interface Armado {
-    public void Disparar();
+    public Laser Disparar();
 }

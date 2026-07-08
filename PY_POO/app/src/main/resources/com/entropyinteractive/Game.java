@@ -76,6 +76,7 @@ public abstract class Game extends GameLoop {
    public void draw() {
       Graphics2D g = (Graphics2D)this.buffer.getDrawGraphics();
       g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
       g.setColor(Color.BLACK);
       g.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
       this.gameDraw(g);
