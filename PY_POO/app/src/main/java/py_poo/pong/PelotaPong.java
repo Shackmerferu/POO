@@ -62,11 +62,17 @@ public class PelotaPong extends ObjetoGrafico {
         if (segmento > 7) segmento = 7;
 
         //  Asignamos un ángulo de rebote según el segmento golpeado.
-        // Si pega en las puntas rebota muy inclinado (80 o -80 grados). Si pega al medio rebota casi recto (10 o -10 grados).
+        // Si pega en el centro, el ángulo se vuelve aleatorio para que no salga siempre recto.
         double[] angulosGrados = {-60, -40, -25, -10, 10, 25, 40, 60};
+        double anguloRad;
 
-
-        double anguloRad = Math.toRadians(angulosGrados[segmento]);
+        boolean impactoCentral = Math.abs(diferencia) <= alturaSegmento;
+        if (impactoCentral) {
+            double anguloAleatorio = (Math.random() < 0.5 ? -1 : 1) * (10 + Math.random() * 35);
+            anguloRad = Math.toRadians(anguloAleatorio);
+        } else {
+            anguloRad = Math.toRadians(angulosGrados[segmento]);
+        }
 
         //  Calculamos la velocidad actual total usando el Teorema de Pitágoras (a² + b² = c²)
         double speed = Math.max(velocidadBase, Math.sqrt(dx * dx + dy * dy));
@@ -132,7 +138,7 @@ public class PelotaPong extends ObjetoGrafico {
         dy = 0; // Sale recta, sin inclinación vertical
     }
 
-    // Versión 2: Saque dirigido al que acaba de perder el punto (Regla oficial de Pong)
+    // Versión 2: Saque dirigido al que acaba de perder el punto 
     public void reiniciar(boolean haciaLaDerecha) {
         setX(Constantes.WIDTH / 2.0 - getWidth() / 2.0);
         setY(Constantes.HEIGHT / 2.0 - getHeight() / 2.0);

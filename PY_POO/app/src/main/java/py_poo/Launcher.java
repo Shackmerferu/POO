@@ -55,24 +55,22 @@ import py_poo.utils.CargadorRecursos;
 
 public class Launcher extends JFrame {
 
-    static final Color
-            C_BG = new Color(0x16,0x18,0x1F), C_SURFACE = new Color(0x20,0x23,0x2C),
-            C_CARD = new Color(0x2B,0x2E,0x3A), C_CARD_HOV = new Color(0x35,0x39,0x48),
-            C_CARD_SEL = new Color(0x3A,0x32,0x12),
-            C_BORDER = new Color(255,255,255,28), C_BORDER_GOLD = new Color(255,200,60,110),
-            C_TEXT = Color.WHITE, C_TEXT2 = new Color(255,255,255,160),
-            C_TEXT3 = new Color(255,255,255,90),
-            C_GOLD = new Color(255,200,60), C_GOLD_BG = new Color(255,200,60,38),
-            C_RED = new Color(240,100,100), C_RED_BG = new Color(240,100,100,38);
+    static final Color C_BG = new Color(0x16, 0x18, 0x1F), C_SURFACE = new Color(0x20, 0x23, 0x2C),
+            C_CARD = new Color(0x2B, 0x2E, 0x3A), C_CARD_HOV = new Color(0x35, 0x39, 0x48),
+            C_CARD_SEL = new Color(0x3A, 0x32, 0x12),
+            C_BORDER = new Color(255, 255, 255, 28), C_BORDER_GOLD = new Color(255, 200, 60, 110),
+            C_TEXT = Color.WHITE, C_TEXT2 = new Color(255, 255, 255, 160),
+            C_TEXT3 = new Color(255, 255, 255, 90),
+            C_GOLD = new Color(255, 200, 60), C_GOLD_BG = new Color(255, 200, 60, 38),
+            C_RED = new Color(240, 100, 100), C_RED_BG = new Color(240, 100, 100, 38);
 
-    static final Font
-            F_TITLE = new Font("Dialog",Font.BOLD,17),
-            F_SEC   = new Font("Dialog",Font.BOLD,15),
-            F_BODY  = new Font("Dialog",Font.PLAIN,13),
-            F_CARD  = new Font("Dialog",Font.BOLD,14),
-            F_SMALL = new Font("Dialog",Font.PLAIN,12),
-            F_ICON  = new Font("Segoe UI Emoji",Font.PLAIN,40),
-            F_BTN   = new Font("Dialog",Font.BOLD,13);
+    static final Font F_TITLE = new Font("Dialog", Font.BOLD, 17),
+            F_SEC = new Font("Dialog", Font.BOLD, 15),
+            F_BODY = new Font("Dialog", Font.PLAIN, 13),
+            F_CARD = new Font("Dialog", Font.BOLD, 14),
+            F_SMALL = new Font("Dialog", Font.PLAIN, 12),
+            F_ICON = new Font("Segoe UI Emoji", Font.PLAIN, 40),
+            F_BTN = new Font("Dialog", Font.BOLD, 13);
 
     private static class RoundBtn extends JLabel {
         boolean hov;
@@ -80,19 +78,29 @@ public class Launcher extends JFrame {
 
         RoundBtn(String text, boolean gold) {
             super(text, CENTER);
-            bg = gold ? C_GOLD_BG : new Color(255,255,255,18);
-            bgHov = gold ? new Color(255,200,60,70) : new Color(255,255,255,35);
+            bg = gold ? C_GOLD_BG : new Color(255, 255, 255, 18);
+            bgHov = gold ? new Color(255, 200, 60, 70) : new Color(255, 255, 255, 35);
             brd = gold ? C_BORDER_GOLD : C_BORDER;
             setFont(F_BTN);
             setForeground(gold ? C_GOLD : C_TEXT2);
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             addMouseListener(new MouseAdapter() {
-                @Override public void mouseEntered(MouseEvent e) { hov = true; repaint(); }
-                @Override public void mouseExited(MouseEvent e) { hov = false; repaint(); }
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    hov = true;
+                    repaint();
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    hov = false;
+                    repaint();
+                }
             });
         }
 
-        @Override protected void paintComponent(Graphics g0) {
+        @Override
+        protected void paintComponent(Graphics g0) {
             Graphics2D g = aa(g0);
             paintRnd(g, this, hov ? bgHov : bg, brd, 0.8f, 7);
             g.dispose();
@@ -111,12 +119,16 @@ public class Launcher extends JFrame {
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         }
 
-        void setActive(boolean v) { on = v; repaint(); }
+        void setActive(boolean v) {
+            on = v;
+            repaint();
+        }
 
-        @Override protected void paintComponent(Graphics g0) {
+        @Override
+        protected void paintComponent(Graphics g0) {
             Graphics2D g = aa(g0);
-            paintRnd(g, this, new Color(255,255,255,on?45:12),
-                    on ? new Color(255,255,255,55) : null, 0.8f, 8);
+            paintRnd(g, this, new Color(255, 255, 255, on ? 45 : 12),
+                    on ? new Color(255, 255, 255, 55) : null, 0.8f, 8);
             g.dispose();
         }
     }
@@ -126,7 +138,9 @@ public class Launcher extends JFrame {
         BufferedImage cover;
 
         GameEntry(String name, String icon, String coverPath) {
-            this.name = name; this.icon = icon; this.coverPath = coverPath;
+            this.name = name;
+            this.icon = icon;
+            this.coverPath = coverPath;
         }
     }
 
@@ -151,8 +165,7 @@ public class Launcher extends JFrame {
         games.addAll(Arrays.asList(
                 new GameEntry("Pong", "🏓", "imagenes/Portada Pong.png"),
                 new GameEntry("Space Invaders", "👾", "imagenes/Portada Space.png"),
-                new GameEntry("Lode Runner", "🏃", "imagenes/Portada Lode_Runner.png")
-        ));
+                new GameEntry("Lode Runner", "🏃", "imagenes/Portada Lode_Runner.png")));
         JPanel root = darkPanel(new BorderLayout());
         root.add(buildTopBar(), BorderLayout.NORTH);
         root.add(buildBody(), BorderLayout.CENTER);
@@ -167,26 +180,55 @@ public class Launcher extends JFrame {
         bar.setBorder(new EmptyBorder(12, 20, 8, 20));
 
         JPanel left = darkPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        JLabel logo = new JLabel("R");
-        logo.setFont(new Font("Dialog", Font.BOLD, 15));
-        logo.setForeground(C_BG);
-        logo.setOpaque(true);
-        logo.setBackground(new Color(0xE0, 0xE0, 0xE0));
-        logo.setBorder(new EmptyBorder(4, 8, 4, 8));
+        
+        // --- MODIFICACIÓN DEL LOGO (32x32 OBLIGATORIO) ---
+        JLabel logo = new JLabel("", SwingConstants.CENTER) {
+            @Override
+            protected void paintComponent(Graphics g0) {
+                // Solo pinta el fondo gris redondeado si la imagen falló y se usa el texto "R"
+                if ("R".equals(getText())) {
+                    Graphics2D g = aa(g0);
+                    paintRnd(g, this, new Color(0xE0, 0xE0, 0xE0), null, 0, 8);
+                    g.dispose();
+                } else {
+                    super.paintComponent(g0);
+                }
+            }
+        };
+
+        // Forzar dimensiones del contenedor a 32x32
+        Dimension logoSize = new Dimension(32, 32);
+        logo.setPreferredSize(logoSize);
+        logo.setMinimumSize(logoSize);
+        logo.setMaximumSize(logoSize);
+
+        // Cargar y redimensionar la imagen a 32x32 obligatoriamente
+        BufferedImage imgLogo = recursos.cargarImagen("imagenes/images.jfif");
+        if (imgLogo != null) {
+            java.awt.Image scaledImg = imgLogo.getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH);
+            logo.setIcon(new javax.swing.ImageIcon(scaledImg));
+        } else {
+            logo.setText("R"); // Respaldo por si no encuentra la imagen
+            logo.setFont(new Font("Dialog", Font.BOLD, 15));
+            logo.setForeground(C_BG);
+        }
+        // -------------------------------------------------
 
         JLabel back = styledLabel("\u2190", F_SEC, C_TEXT3);
         back.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         back.addMouseListener(hover(back, C_TEXT3, C_TEXT, e -> clearFocus()));
 
-        left.add(logo); left.add(back);
+        left.add(logo);
+        left.add(back);
         left.add(styledLabel("Library", F_TITLE, C_TEXT));
 
         JPanel right = darkPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         sessionBtn = new JLabel("Iniciar Sesion") {
-            @Override protected void paintComponent(Graphics g0) {
+            @Override
+            protected void paintComponent(Graphics g0) {
                 Graphics2D g = aa(g0);
                 boolean lg = player != null;
-                paintRnd(g, this, lg ? C_GOLD_BG : new Color(255,255,255,18),
+                paintRnd(g, this, lg ? C_GOLD_BG : new Color(255, 255, 255, 18),
                         lg ? C_BORDER_GOLD : C_BORDER, 0.8f, 7);
                 g.dispose();
             }
@@ -197,7 +239,10 @@ public class Launcher extends JFrame {
         sessionBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         sessionBtn.setHorizontalAlignment(SwingConstants.CENTER);
         sessionBtn.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) { openSession(); }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openSession();
+            }
         });
 
         // Restauramos el botón de la ruedita para configuración global
@@ -205,7 +250,8 @@ public class Launcher extends JFrame {
         gear.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         gear.addMouseListener(hover(gear, C_TEXT3, C_TEXT, e -> openGlobalSettings()));
 
-        right.add(sessionBtn); right.add(gear);
+        right.add(sessionBtn);
+        right.add(gear);
 
         bar.add(left, BorderLayout.WEST);
         bar.add(right, BorderLayout.EAST);
@@ -224,12 +270,19 @@ public class Launcher extends JFrame {
         tabGames = new TabLbl("My Games", true);
         tabStore = new TabLbl("Store", false);
         tabGames.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) { switchTab("games"); }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                switchTab("games");
+            }
         });
         tabStore.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) { switchTab("store"); }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                switchTab("store");
+            }
         });
-        tabRow.add(tabGames); tabRow.add(tabStore);
+        tabRow.add(tabGames);
+        tabRow.add(tabStore);
         body.add(tabRow, BorderLayout.NORTH);
 
         bodyLayout = new CardLayout();
@@ -275,24 +328,27 @@ public class Launcher extends JFrame {
 
     private JPanel buildCard(GameEntry g, boolean sel, int idx) {
         int W = 140, H = 180, ARC = 14;
-        boolean[] hov = {false};
+        boolean[] hov = { false };
 
         if (g.cover == null && g.coverPath != null) {
             g.cover = recursos.cargarImagen(g.coverPath);
         }
 
         JPanel card = new JPanel() {
-            @Override protected void paintComponent(Graphics g0) {
+            @Override
+            protected void paintComponent(Graphics g0) {
                 Graphics2D gr = aa(g0);
                 Color bg = sel ? C_CARD_SEL : (hov[0] ? C_CARD_HOV : C_CARD);
                 gr.setColor(bg);
                 gr.fill(round(0, 0, W, H, ARC));
                 if (sel) {
-                    gr.setColor(C_GOLD); gr.setStroke(new BasicStroke(2f));
+                    gr.setColor(C_GOLD);
+                    gr.setStroke(new BasicStroke(2f));
                 } else {
-                    gr.setColor(C_BORDER); gr.setStroke(new BasicStroke(0.8f));
+                    gr.setColor(C_BORDER);
+                    gr.setStroke(new BasicStroke(0.8f));
                 }
-                gr.draw(round(1, 1, W-2, H-2, ARC));
+                gr.draw(round(1, 1, W - 2, H - 2, ARC));
 
                 if (g.cover != null) {
                     int pad = 8;
@@ -307,13 +363,21 @@ public class Launcher extends JFrame {
                 } else {
                     gr.setFont(F_ICON);
                     FontMetrics fm = gr.getFontMetrics();
-                    gr.setColor(new Color(255,255,255, sel ? 230 : 170));
-                    gr.drawString(g.icon, (W - fm.stringWidth(g.icon)) / 2, H/2 + fm.getAscent()/2 - 6);
+                    gr.setColor(new Color(255, 255, 255, sel ? 230 : 170));
+                    gr.drawString(g.icon, (W - fm.stringWidth(g.icon)) / 2, H / 2 + fm.getAscent() / 2 - 6);
                 }
                 gr.dispose();
             }
-            @Override public Dimension getPreferredSize() { return new Dimension(W, H); }
-            @Override public Dimension getMinimumSize() { return getPreferredSize(); }
+
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(W, H);
+            }
+
+            @Override
+            public Dimension getMinimumSize() {
+                return getPreferredSize();
+            }
         };
         card.setOpaque(false);
         card.setLayout(null);
@@ -326,17 +390,31 @@ public class Launcher extends JFrame {
         wrapper.add(nameLbl, BorderLayout.SOUTH);
         wrapper.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         wrapper.addMouseListener(new MouseAdapter() {
-            @Override public void mouseEntered(MouseEvent e) { hov[0] = true; card.repaint(); }
-            @Override public void mouseExited(MouseEvent e) { hov[0] = false; card.repaint(); }
-            @Override public void mouseClicked(MouseEvent e) {
-                focused = idx; rebuildCarousel(); scrollToFocused();
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                hov[0] = true;
+                card.repaint();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                hov[0] = false;
+                card.repaint();
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                focused = idx;
+                rebuildCarousel();
+                scrollToFocused();
             }
         });
         return wrapper;
     }
 
     private void scrollToFocused() {
-        if (games.isEmpty()) return;
+        if (games.isEmpty())
+            return;
         SwingUtilities.invokeLater(() -> {
             JScrollBar hsb = carouselScroll.getHorizontalScrollBar();
             int total = hsb.getMaximum() - hsb.getMinimum();
@@ -351,7 +429,8 @@ public class Launcher extends JFrame {
                 int now = hsb.getValue();
                 int dist = target - now;
                 if (Math.abs(dist) <= Math.abs(step)) {
-                    hsb.setValue(target); t.stop();
+                    hsb.setValue(target);
+                    t.stop();
                 } else {
                     hsb.setValue(now + step);
                 }
@@ -367,7 +446,10 @@ public class Launcher extends JFrame {
 
         RoundBtn launchBtn = buildActionBtn("\u25B6  Jugar", true);
         launchBtn.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) { launchGame(); }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                launchGame();
+            }
         });
 
         bar.add(detailNameLbl);
@@ -399,10 +481,16 @@ public class Launcher extends JFrame {
         removeBtn.setForeground(C_RED);
 
         addBtn.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) { openAddGame(); }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                openAddGame();
+            }
         });
         removeBtn.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) { removeSelected(); }
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                removeSelected();
+            }
         });
 
         bar.add(addBtn, BorderLayout.WEST);
@@ -441,7 +529,8 @@ public class Launcher extends JFrame {
             acts.add(buildDialogBtn("Ingresar", true, e -> {
                 String n = field.getText().trim();
                 if (n.isEmpty()) {
-                    field.setBorder(BorderFactory.createLineBorder(C_RED)); return;
+                    field.setBorder(BorderFactory.createLineBorder(C_RED));
+                    return;
                 }
                 player = n;
                 updateSessionLabel();
@@ -449,13 +538,18 @@ public class Launcher extends JFrame {
             }));
             field.addActionListener(e -> {
                 String n = field.getText().trim();
-                if (!n.isEmpty()) { player = n; updateSessionLabel(); dlg.dispose(); }
+                if (!n.isEmpty()) {
+                    player = n;
+                    updateSessionLabel();
+                    dlg.dispose();
+                }
             });
 
             p.add(center, BorderLayout.CENTER);
             p.add(acts, BorderLayout.SOUTH);
             dlg.setContentPane(p);
-            dlg.pack(); dlg.setMinimumSize(new Dimension(340, 0));
+            dlg.pack();
+            dlg.setMinimumSize(new Dimension(340, 0));
             dlg.setLocationRelativeTo(this);
             dlg.setVisible(true);
             return;
@@ -465,8 +559,11 @@ public class Launcher extends JFrame {
         RoundBtn logoutBtn = buildDialogBtn("Cerrar sesión", false, null);
         logoutBtn.setForeground(C_RED);
         logoutBtn.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) {
-                player = null; updateSessionLabel(); dlg.dispose();
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                player = null;
+                updateSessionLabel();
+                dlg.dispose();
             }
         });
         acts.add(logoutBtn);
@@ -475,7 +572,8 @@ public class Launcher extends JFrame {
         p.add(center, BorderLayout.CENTER);
         p.add(acts, BorderLayout.SOUTH);
         dlg.setContentPane(p);
-        dlg.pack(); dlg.setMinimumSize(new Dimension(320, 0));
+        dlg.pack();
+        dlg.setMinimumSize(new Dimension(320, 0));
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
     }
@@ -510,7 +608,9 @@ public class Launcher extends JFrame {
         List<String> current = games.stream().map(g -> g.name).toList();
         List<String> avail = new ArrayList<>();
         avail.add("— Seleccionar —");
-        for (String b : builtin) if (!current.contains(b)) avail.add(b);
+        for (String b : builtin)
+            if (!current.contains(b))
+                avail.add(b);
         avail.add("Otro (nombre personalizado)");
 
         JComboBox<String> combo = darkCombo(avail.toArray(new String[0]));
@@ -542,7 +642,8 @@ public class Launcher extends JFrame {
             } else {
                 name = sel;
             }
-            if (name.isEmpty()) return;
+            if (name.isEmpty())
+                return;
             if (games.stream().anyMatch(g -> g.name.equals(name))) {
                 JOptionPane.showMessageDialog(dlg, "Ya está en la librería.",
                         "Aviso", JOptionPane.WARNING_MESSAGE);
@@ -568,13 +669,15 @@ public class Launcher extends JFrame {
         p.add(center, BorderLayout.CENTER);
         p.add(acts, BorderLayout.SOUTH);
         dlg.setContentPane(p);
-        dlg.pack(); dlg.setMinimumSize(new Dimension(360, 0));
+        dlg.pack();
+        dlg.setMinimumSize(new Dimension(360, 0));
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
     }
 
     private void removeSelected() {
-        if (games.isEmpty()) return;
+        if (games.isEmpty())
+            return;
         GameEntry g = games.get(focused);
 
         JDialog dlg = dialog("Eliminar Juego");
@@ -591,9 +694,11 @@ public class Launcher extends JFrame {
         RoundBtn delBtn = buildDialogBtn("Eliminar", false, null);
         delBtn.setForeground(C_RED);
         delBtn.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) {
+            @Override
+            public void mouseClicked(MouseEvent e) {
                 games.remove(focused);
-                if (focused >= games.size() && focused > 0) focused--;
+                if (focused >= games.size() && focused > 0)
+                    focused--;
                 rebuildCarousel();
                 scrollToFocused();
                 dlg.dispose();
@@ -603,7 +708,8 @@ public class Launcher extends JFrame {
 
         p.add(acts, BorderLayout.SOUTH);
         dlg.setContentPane(p);
-        dlg.pack(); dlg.setMinimumSize(new Dimension(320, 0));
+        dlg.pack();
+        dlg.setMinimumSize(new Dimension(320, 0));
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
     }
@@ -616,23 +722,25 @@ public class Launcher extends JFrame {
 
         JPanel form = darkPanel(new GridLayout(0, 2, 12, 12));
         addFormRow(form, "Pantalla completa", darkCheck("", false));
-        addFormRow(form, "Sonido general",    darkCheck("", true));
-        addFormRow(form, "Música de fondo",   darkCheck("", true));
+        addFormRow(form, "Sonido general", darkCheck("", true));
+        addFormRow(form, "Música de fondo", darkCheck("", true));
         p.add(form, BorderLayout.CENTER);
 
         JPanel acts = darkPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         acts.add(buildDialogBtn("Cancelar", false, e -> dlg.dispose()));
-        acts.add(buildDialogBtn("Guardar",  true,  e -> dlg.dispose()));
+        acts.add(buildDialogBtn("Guardar", true, e -> dlg.dispose()));
         p.add(acts, BorderLayout.SOUTH);
 
         dlg.setContentPane(p);
-        dlg.pack(); dlg.setMinimumSize(new Dimension(320, 0));
+        dlg.pack();
+        dlg.setMinimumSize(new Dimension(320, 0));
         dlg.setLocationRelativeTo(this);
         dlg.setVisible(true);
     }
 
     private void launchGame() {
-        if (games.isEmpty()) return;
+        if (games.isEmpty())
+            return;
         if (player == null) {
             JOptionPane.showMessageDialog(this,
                     "Iniciá sesión antes de jugar.", "Sin sesión",
@@ -698,9 +806,13 @@ public class Launcher extends JFrame {
 
     private RoundBtn buildDialogBtn(String text, boolean gold, ActionListener al) {
         RoundBtn btn = buildActionBtn(text, gold);
-        if (al != null) btn.addMouseListener(new MouseAdapter() {
-            @Override public void mouseClicked(MouseEvent e) { al.actionPerformed(null); }
-        });
+        if (al != null)
+            btn.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    al.actionPerformed(null);
+                }
+            });
         return btn;
     }
 
@@ -711,11 +823,15 @@ public class Launcher extends JFrame {
         return p;
     }
 
-    private JPanel darkPanel() { return darkPanel(new FlowLayout()); }
+    private JPanel darkPanel() {
+        return darkPanel(new FlowLayout());
+    }
 
     private JLabel styledLabel(String text, Font f, Color fg) {
         JLabel l = new JLabel(text);
-        l.setFont(f); l.setForeground(fg); l.setOpaque(false);
+        l.setFont(f);
+        l.setForeground(fg);
+        l.setOpaque(false);
         return l;
     }
 
@@ -726,7 +842,7 @@ public class Launcher extends JFrame {
         f.setCaretColor(C_GOLD);
         f.setFont(F_BODY);
         f.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(255,255,255,60)),
+                BorderFactory.createLineBorder(new Color(255, 255, 255, 60)),
                 new EmptyBorder(6, 10, 6, 10)));
         return f;
     }
@@ -771,24 +887,36 @@ public class Launcher extends JFrame {
         hsb.setOpaque(true);
         hsb.setBackground(C_BG);
         hsb.setUI(new javax.swing.plaf.basic.BasicScrollBarUI() {
-            @Override protected void configureScrollBarColors() {
-                thumbColor = new Color(255,255,255,40);
-                thumbDarkShadowColor = new Color(255,255,255,60);
-                thumbHighlightColor = new Color(255,255,255,60);
-                thumbLightShadowColor = new Color(255,255,255,60);
+            @Override
+            protected void configureScrollBarColors() {
+                thumbColor = new Color(255, 255, 255, 40);
+                thumbDarkShadowColor = new Color(255, 255, 255, 60);
+                thumbHighlightColor = new Color(255, 255, 255, 60);
+                thumbLightShadowColor = new Color(255, 255, 255, 60);
                 trackColor = C_BG;
             }
-            @Override protected JButton createDecreaseButton(int o) { return zero(); }
-            @Override protected JButton createIncreaseButton(int o) { return zero(); }
+
+            @Override
+            protected JButton createDecreaseButton(int o) {
+                return zero();
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int o) {
+                return zero();
+            }
+
             private JButton zero() {
                 JButton b = new JButton();
                 b.setPreferredSize(new Dimension(0, 0));
                 return b;
             }
-            @Override protected void paintThumb(Graphics g, JComponent c, Rectangle r) {
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle r) {
                 Graphics2D g2 = aa(g);
                 g2.setColor(thumbColor);
-                g2.fillRoundRect(r.x+2, r.y+2, r.width-4, r.height-4, 4, 4);
+                g2.fillRoundRect(r.x + 2, r.y + 2, r.width - 4, r.height - 4, 4, 4);
                 g2.dispose();
             }
         });
@@ -808,14 +936,14 @@ public class Launcher extends JFrame {
     }
 
     private static void paintRnd(Graphics2D g, JComponent c, Color bg,
-                                 Color brd, float stroke, int arc) {
+            Color brd, float stroke, int arc) {
         int w = c.getWidth(), h = c.getHeight();
         g.setColor(bg);
         g.fill(round(0, 0, w, h, arc));
         if (brd != null) {
             g.setColor(brd);
             g.setStroke(new BasicStroke(stroke));
-            g.draw(round(1, 1, w-2, h-2, arc));
+            g.draw(round(1, 1, w - 2, h - 2, arc));
         }
         g.setFont(c.getFont());
         g.setColor(c.getForeground());
@@ -826,12 +954,22 @@ public class Launcher extends JFrame {
     }
 
     private MouseAdapter hover(JLabel lbl, Color normal, Color hot,
-                               Consumer<MouseEvent> onClick) {
+            Consumer<MouseEvent> onClick) {
         return new MouseAdapter() {
-            @Override public void mouseEntered(MouseEvent e) { lbl.setForeground(hot); }
-            @Override public void mouseExited(MouseEvent e) { lbl.setForeground(normal); }
-            @Override public void mouseClicked(MouseEvent e) {
-                if (onClick != null) onClick.accept(e);
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                lbl.setForeground(hot);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                lbl.setForeground(normal);
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (onClick != null)
+                    onClick.accept(e);
             }
         };
     }
