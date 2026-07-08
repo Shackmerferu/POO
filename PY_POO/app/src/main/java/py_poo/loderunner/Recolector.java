@@ -315,11 +315,6 @@ public class Recolector extends Personaje {
         }
     }
 
-    // Incrementa el contador de oro recolectado
-    public void recogerOro() {
-        oroRecolectado++;
-    }
-
     // Reinicia la posición del recolector a su tile de spawn, cancelando caídas y estados
     public void reiniciarPosicion() {
         setX(tileX * tileSize);
