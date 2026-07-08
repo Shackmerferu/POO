@@ -10,6 +10,4 @@ public abstract class Bloque extends ObjetoGrafico {
 
     public void recoger() {
     }
-    public void destruir() {
-    }
 }
